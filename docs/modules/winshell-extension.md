@@ -26,7 +26,7 @@ Extensão GNOME Shell 46 que adiciona barra, Start, Snap Layouts, previews, Quic
 
 ## Erros/fallbacks
 
-Falha geral de enable gera log, cleanup e relançamento. Serviços/hardware ausentes produzem estados indisponíveis e logs locais. Redes novas e configuração avançada abrem GNOME Settings. Snap valida limites do cliente, verifica o frame final e informa quando a operação não cabe na área útil.
+Falha geral de enable gera log, cleanup e relançamento. Serviços/hardware ausentes produzem estados indisponíveis e logs locais. Redes novas e configuração avançada abrem GNOME Settings. Snap valida template e limites do cliente, desabilita graficamente regiões incompatíveis, revalida no clique, verifica o frame final e informa quando a operação não cabe na área útil.
 
 ## Lifecycle
 
@@ -43,6 +43,7 @@ Falha geral de enable gera log, cleanup e relançamento. Serviços/hardware ause
 - `context-menu.test.mjs`;
 - `quick-settings.test.mjs`;
 - `layouts.test.mjs`;
+- `graphical-snap.test.mjs`;
 - `taskbar-conflicts.test.mjs`;
 - `taskbar-geometry.test.mjs`.
 - `appearance.test.mjs`;

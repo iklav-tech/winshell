@@ -19,7 +19,7 @@
 - **RN-15 — capacidade real:** controles e ações de janela ausentes, bloqueados por hardware ou não suportados não ficam acionáveis.
 - **RN-16 — notificações autoritativas:** WinShell não persiste cópia; ativação e descarte chamam a API da notificação do Shell.
 - **RN-17 — sincronização externa:** serviços, GSettings, fontes/notificações e janelas emitem sinais que atualizam a projeção WinShell.
-- **RN-18 — versão:** release v0.5.5 usa `metadata.version=12` e `version-name=0.5.5`.
+- **RN-18 — versão:** release v0.5.6 usa `metadata.version=13` e `version-name=0.5.6`.
 - **RN-19 — consentimento visual:** nenhuma aparência global é alterada antes de Aplicar; sincronização de color scheme/GTK requer opção explícita.
 - **RN-20 — backup:** o primeiro valor observado de cada chave alterada é preservado no backup v1 e não é substituído por reaplicações.
 - **RN-21 — conflito externo:** valores atuais diferentes do original e do último aplicado interrompem apply/restore sem confirmação forçada.
@@ -37,6 +37,11 @@
 - **RN-26 — janela minimizada:** preview usa fallback explícito, identifica o estado e chama `unminimize()` antes de ativar ou aplicar Snap.
 - **RN-27 — fechar em preview:** a ação só existe quando `Meta.Window.can_close()` retorna verdadeiro.
 - **RN-28 — autoridade de notificações:** hotplug/rebuild pode recriar a projeção visual, mas não cria armazenamento ou infraestrutura de notificação paralela ao MessageTray.
+- **RN-29 — contrato dos layouts:** os cinco templates Snap têm IDs únicos,
+  regiões normalizadas imutáveis, sem sobreposição e com cobertura integral.
+- **RN-30 — elegibilidade gráfica:** todos os diagramas permanecem visíveis;
+  somente regiões compatíveis com a work area e limites da janela recebem
+  clique/foco, e a ausência total de região compatível produz estado explícito.
 
 ## Hipóteses abertas
 
@@ -50,5 +55,5 @@
 
 ## Pendências
 
-- TODO: validar RN-02, RN-04, RN-10, RN-11, RN-13 a RN-17 e RN-19 a RN-28 numa sessão GNOME 46/Wayland.
+- TODO: validar RN-02, RN-04, RN-10, RN-11, RN-13 a RN-17 e RN-19 a RN-30 numa sessão GNOME 46/Wayland.
 - TODO: reavaliar H-02, H-05, H-06 e H-07 após o checklist manual.

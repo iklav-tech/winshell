@@ -77,7 +77,16 @@ são identificadas e restauradas antes de ativar. Em `monitors-changed` ou troca
 de `multi-monitor`, barras antigas e seus popups/timers são destruídos antes de
 criar uma barra por índice selecionado; falha parcial faz rollback.
 
+## UC-17 — Escolher um Snap Layout gráfico
+
+O menu contextual ou a ação do preview abre cinco diagramas validados. A UI
+calcula a work area e limites mínimo/máximo uma vez para projetar quais regiões
+podem receber clique e foco; as demais continuam visíveis com estado
+indisponível. Ao escolher uma região elegível, o executor consulta novamente o
+estado da janela, fecha o painel e segue UC-05, evitando aplicar uma decisão
+obsoleta se a janela ou monitor mudou enquanto o painel estava aberto.
+
 ## Pendências
 
-- TODO: executar UC-01, UC-04 a UC-10, UC-13 e UC-16 em GNOME Shell 46/Wayland.
+- TODO: executar UC-01, UC-04 a UC-10, UC-13, UC-16 e UC-17 em GNOME Shell 46/Wayland.
 - TODO: validar recuperação de falha parcial de cópia/compilação no instalador.

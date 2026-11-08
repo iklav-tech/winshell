@@ -37,6 +37,7 @@
 .winshell-snap-template-name { font-size: 9pt; }
 .winshell-snap-canvas { border-radius: 7px; }
 .winshell-snap-region { border-radius: 5px; }
+.winshell-snap-region-disabled { opacity: 0.45; }
 .winshell-calendar { spacing: 6px; padding: 8px 4px 11px; }
 .winshell-calendar-header { spacing: 5px; }
 .winshell-calendar-nav, .winshell-calendar-month { padding: 7px; border-radius: 7px; }
@@ -64,16 +65,20 @@
 .winshell-theme-light .winshell-preview-title, .winshell-theme-light .winshell-notification-title { color: #172033; }
 .winshell-theme-light .winshell-task-icon:hover, .winshell-theme-light .winshell-app-item:hover,
 .winshell-theme-light .winshell-context-item:hover, .winshell-theme-light .winshell-quick-list-item:hover,
-.winshell-theme-light .winshell-calendar-day:hover, .winshell-theme-light .winshell-mini-action:hover { background-color: #e8eef7; }
+.winshell-theme-light .winshell-calendar-day:hover, .winshell-theme-light .winshell-mini-action:hover,
+.winshell-theme-light .winshell-preview-title:hover { background-color: #e8eef7; }
 .winshell-theme-light .winshell-task-icon:focus, .winshell-theme-light .winshell-app-item:focus,
 .winshell-theme-light .winshell-context-item:focus, .winshell-theme-light .winshell-quick-list-item:focus,
-.winshell-theme-light .winshell-calendar-day:focus, .winshell-theme-light .winshell-footer-button:focus { border: 2px solid #005fb8; }
+.winshell-theme-light .winshell-calendar-day:focus, .winshell-theme-light .winshell-footer-button:focus,
+.winshell-theme-light .winshell-preview-title:focus, .winshell-theme-light .winshell-mini-action:focus,
+.winshell-theme-light .winshell-snap-region:focus { border: 2px solid #005fb8; }
 .winshell-theme-light .winshell-task-icon.winshell-active, .winshell-theme-light .winshell-calendar-selected,
 .winshell-theme-light .winshell-tile-on { background-color: #256fce; color: white; }
 .winshell-theme-light .winshell-task-icon.winshell-running { border-bottom: 3px solid #256fce; }
 .winshell-theme-light .winshell-quick-section, .winshell-theme-light .winshell-notification-card,
 .winshell-theme-light .winshell-preview-line, .winshell-theme-light .winshell-snap-template { background-color: #e8eef7; }
 .winshell-theme-light .winshell-snap-region { background-color: #256fce; border: 1px solid #9aaac033; }
+.winshell-theme-light .winshell-snap-region:hover { background-color: #185aa9; }
 .winshell-theme-light .winshell-empty, .winshell-theme-light .winshell-menu-footer, .winshell-theme-light .winshell-app-description,
 .winshell-theme-light .winshell-quick-status, .winshell-theme-light .winshell-slider-value, .winshell-theme-light .winshell-calendar-weekday,
 .winshell-theme-light .winshell-calendar-selected-label, .winshell-theme-light .winshell-notification-time,
@@ -93,16 +98,20 @@
 .winshell-theme-dark .winshell-preview-title, .winshell-theme-dark .winshell-notification-title { color: #f5f7fb; }
 .winshell-theme-dark .winshell-task-icon:hover, .winshell-theme-dark .winshell-app-item:hover,
 .winshell-theme-dark .winshell-context-item:hover, .winshell-theme-dark .winshell-quick-list-item:hover,
-.winshell-theme-dark .winshell-calendar-day:hover, .winshell-theme-dark .winshell-mini-action:hover { background-color: #303642; }
+.winshell-theme-dark .winshell-calendar-day:hover, .winshell-theme-dark .winshell-mini-action:hover,
+.winshell-theme-dark .winshell-preview-title:hover { background-color: #303642; }
 .winshell-theme-dark .winshell-task-icon:focus, .winshell-theme-dark .winshell-app-item:focus,
 .winshell-theme-dark .winshell-context-item:focus, .winshell-theme-dark .winshell-quick-list-item:focus,
-.winshell-theme-dark .winshell-calendar-day:focus, .winshell-theme-dark .winshell-footer-button:focus { border: 2px solid #60a5fa; }
+.winshell-theme-dark .winshell-calendar-day:focus, .winshell-theme-dark .winshell-footer-button:focus,
+.winshell-theme-dark .winshell-preview-title:focus, .winshell-theme-dark .winshell-mini-action:focus,
+.winshell-theme-dark .winshell-snap-region:focus { border: 2px solid #60a5fa; }
 .winshell-theme-dark .winshell-task-icon.winshell-active, .winshell-theme-dark .winshell-calendar-selected,
 .winshell-theme-dark .winshell-tile-on { background-color: #4b91e5; color: white; }
 .winshell-theme-dark .winshell-task-icon.winshell-running { border-bottom: 3px solid #4b91e5; }
 .winshell-theme-dark .winshell-quick-section, .winshell-theme-dark .winshell-notification-card,
 .winshell-theme-dark .winshell-preview-line, .winshell-theme-dark .winshell-snap-template { background-color: #303642; }
 .winshell-theme-dark .winshell-snap-region { background-color: #4b91e5; border: 1px solid #b7c3d44d; }
+.winshell-theme-dark .winshell-snap-region:hover { background-color: #73adf0; }
 .winshell-theme-dark .winshell-empty, .winshell-theme-dark .winshell-menu-footer, .winshell-theme-dark .winshell-app-description,
 .winshell-theme-dark .winshell-quick-status, .winshell-theme-dark .winshell-slider-value, .winshell-theme-dark .winshell-calendar-weekday,
 .winshell-theme-dark .winshell-calendar-selected-label, .winshell-theme-dark .winshell-notification-time,

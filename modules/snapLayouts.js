@@ -4,7 +4,8 @@ import Meta from 'gi://Meta';
 import St from 'gi://St';
 import {PopupSurface} from './popup.js';
 import {constrainedPosition, rectangleWithinArea, rectanglesApproximatelyEqual,
-    sizeConstraintFromResult, snapGeometry, TEMPLATES} from './layoutGeometry.mjs';
+    sizeConstraintFromResult, snapGeometry, snapTemplateGeometry,
+    TEMPLATES} from './layoutGeometry.mjs';
 import {notify} from './shellCompat.js';
 
 function windowConstraint(win, method) {
@@ -17,15 +18,30 @@ function windowConstraint(win, method) {
     }
 }
 
+function windowSnapContext(win) {
+    try {
+        if (!win || !win.allows_move() || !win.allows_resize() || win.is_fullscreen())
+            return null;
+        const monitor = win.get_monitor();
+        return {
+            area: win.get_work_area_for_monitor(monitor),
+            constraints: {
+                minimum: windowConstraint(win, 'get_min_size'),
+                maximum: windowConstraint(win, 'get_max_size'),
+            },
+        };
+    } catch (error) {
+        console.debug(`[WinShell] Não foi possível consultar a janela para Snap: ${error.message}`);
+        return null;
+    }
+}
+
 export function applyLayout(win, region, onApplied = null) {
-    if (!win || !win.allows_move() || !win.allows_resize() || win.is_fullscreen())
+    const context = windowSnapContext(win);
+    if (!context)
         return false;
-    const monitor = win.get_monitor();
-    const area = win.get_work_area_for_monitor(monitor);
-    const rectangle = snapGeometry(area, region, {
-        minimum: windowConstraint(win, 'get_min_size'),
-        maximum: windowConstraint(win, 'get_max_size'),
-    });
+    const {area, constraints} = context;
+    const rectangle = snapGeometry(area, region, constraints);
     if (!rectangle) return false;
     try {
         if (win.minimized && typeof win.unminimize === 'function')
@@ -80,7 +96,8 @@ export class SnapLayoutPanel extends PopupSurface {
         this.actor.add_child(new St.Label({text: 'Organizar janela', style_class: 'winshell-flyout-title'}));
         const title = win?.get_title?.() || 'Janela';
         this.actor.add_child(new St.Label({text: title.slice(0, 54), style_class: 'winshell-snap-subtitle'}));
-        if (!win || !win.allows_move() || !win.allows_resize() || win.is_fullscreen()) {
+        const context = windowSnapContext(win);
+        if (!context) {
             this.actor.add_child(new St.Label({text: 'Esta janela não pode ser reorganizada.', style_class: 'winshell-empty'}));
             super.show(anchorX, bottomY);
             return;
@@ -89,22 +106,35 @@ export class SnapLayoutPanel extends PopupSurface {
         const content = new St.BoxLayout({vertical: true, style_class: 'winshell-snap-list'});
         scroll.set_child(content);
         this.actor.add_child(scroll);
+        let eligibleRegions = 0;
         for (const template of TEMPLATES) {
+            const geometries = snapTemplateGeometry(template, context.area, context.constraints);
             const wrapper = new St.BoxLayout({vertical: true, style_class: 'winshell-snap-template'});
             wrapper.add_child(new St.Label({text: template.label, style_class: 'winshell-snap-template-name'}));
             const canvas = new St.Widget({layout_manager: new Clutter.FixedLayout(),
                 style_class: 'winshell-snap-canvas', x_expand: true, height: 52});
             // Position each segment proportionally, so the chosen region is unmistakable.
             for (const [index, region] of template.regions.entries()) {
-                const button = new St.Button({style_class: 'winshell-snap-region',
-                    reactive: true, can_focus: true, track_hover: true});
-                button.set_accessible_name(`${template.label}: região ${index + 1}`);
-                button.connect('clicked', () => {
-                    this.hide();
-                    if (!applyLayout(win, region,
-                        (area, requested) => this._verifyResult(win, area, requested)))
-                        notify('WinShell', 'O aplicativo não aceitou o posicionamento solicitado.');
+                const eligible = Boolean(geometries?.[index]);
+                if (eligible)
+                    eligibleRegions++;
+                const button = new St.Button({
+                    style_class: eligible
+                        ? 'winshell-snap-region'
+                        : 'winshell-snap-region winshell-snap-region-disabled',
+                    reactive: eligible, can_focus: eligible, track_hover: eligible,
                 });
+                button.set_accessible_name(eligible
+                    ? `${template.label}: região ${index + 1}`
+                    : `${template.label}: região ${index + 1}, indisponível para o tamanho desta janela`);
+                if (eligible) {
+                    button.connect('clicked', () => {
+                        this.hide();
+                        if (!applyLayout(win, region,
+                            (area, requested) => this._verifyResult(win, area, requested)))
+                            notify('WinShell', 'O aplicativo não aceitou o posicionamento solicitado.');
+                    });
+                }
                 canvas.add_child(button);
                 // Relative size is calculated when the canvas is allocated.
                 button._winshellRegion = region;
@@ -114,6 +144,12 @@ export class SnapLayoutPanel extends PopupSurface {
             void allocationId;
             wrapper.add_child(canvas);
             content.add_child(wrapper);
+        }
+        if (!eligibleRegions) {
+            content.insert_child_at_index(new St.Label({
+                text: 'Nenhuma região comporta os limites de tamanho desta janela.',
+                style_class: 'winshell-empty',
+            }), 0);
         }
         super.show(anchorX, bottomY);
     }

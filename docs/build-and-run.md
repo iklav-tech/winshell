@@ -1,4 +1,4 @@
-# Build, testes e execução — v0.5.5
+# Build, testes e execução — v0.5.6
 
 ## Ambiente observado em 2026-11-08
 
@@ -14,7 +14,7 @@
 O perfil gráfico real não foi modificado por esta validação. O `doctor.sh`
 encontrou temas e ícones WinShell preexistentes no `XDG_DATA_HOME`, além do schema
 DING; o plugin Nautilus não está instalado. A extensão não foi reconhecida por
-`gnome-extensions info`, portanto esses assets não são evidência do artefato v0.5.5.
+`gnome-extensions info`, portanto esses assets não são evidência do artefato v0.5.6.
 
 ## Suíte confirmada
 
@@ -25,7 +25,7 @@ DING; o plugin Nautilus não está instalado. A extensão não foi reconhecida p
 Exit code 0. A execução confirmou:
 
 ```text
-OK: metadata v0.5.5, GSettings, imports, assets, licenses and lifecycle contracts
+OK: metadata v0.5.6, GSettings, imports, assets, licenses and lifecycle contracts
 OK: SPEC 0.0.1 metadata, ESM lifecycle, local install, rollback and project baseline
 OK: generated visual assets match design tokens
 OK: Shell API boundary, nonblocking contracts, explicit chrome cleanup and popup focus
@@ -33,6 +33,7 @@ OK: versioned appearance backup, conflicts, force, restore and idempotence
 OK: appearance modes, wallpaper selection and optional integration detection
 OK: calendar navigation, alignment, leap year and locale
 OK: context menu window visibility, capabilities and state labels
+OK: SPEC 0.4.0 five graphical layouts, eligibility, controls and interaction states
 OK: preflight rejection, isolated idempotent install and clean uninstall
 OK: Snap templates, constraints, work-area bounds and negative origins
 OK: notification grouping, sanitization and snapshot lifecycle
@@ -60,11 +61,13 @@ node --test tests/*.test.mjs
 ./scripts/doctor.sh
 ```
 
-Ambos terminaram com exit code 0; o runner registrou 16 testes, sem falhas ou
+Ambos terminaram com exit code 0; o runner registrou 17 testes, sem falhas ou
 skips. O doctor detectou GNOME 46/Wayland, `gsettings`, Nautilus, Python, schema
-DING e assets WinShell preexistentes; o plugin Nautilus segue ausente. A consulta
-de journal não retornou linhas recentes correspondentes. Nenhum desses dados foi
-tratado como evidência runtime da v0.5.5 deste repositório.
+DING e assets WinShell preexistentes; o plugin Nautilus segue ausente. O journal
+mostrou erros `contains(null)` de uma cópia instalada antes desta implementação;
+o handler correspondente foi protegido, mas o artefato v0.5.6 não foi instalado
+nem retestado dentro do Shell. Nenhum desses dados foi
+tratado como evidência runtime da v0.5.6 deste repositório.
 
 `gnome-extensions info winshell@iklav-tech` terminou com exit code 2 e sem dados
 da extensão. Portanto, não conta como validação runtime do artefato do repositório.

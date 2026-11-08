@@ -74,7 +74,10 @@ O adaptador global agenda no máximo um idle de atualização e guarda cada cone
 - O calendário WinShell não modifica nem substitui objetos do calendário nativo.
 - Modelos puros separam cálculos/normalização da UI GJS.
 - Geometria de popup seleciona o monitor e limita superfícies em coordenadas lógicas, incluindo origens negativas e âncoras fracionárias.
-- Geometria Snap valida restrições do cliente antes de chamar Mutter e contém o frame final na área útil quando possível; a verificação é assíncrona e cancelável.
+- Geometria Snap valida templates puros (IDs, limites, cobertura e sobreposição),
+  projeta a elegibilidade de cada região pelas restrições do cliente antes de
+  chamar Mutter e contém o frame final na área útil quando possível; a verificação
+  é assíncrona e cancelável.
 - `addChrome` mantém a barra abaixo de janelas/popups, `affectsStruts` reserva área útil e `trackFullscreen` a oculta por monitor em fullscreen.
 - Tokens em `themes/design-tokens.json` geram o CSS da extensão, os temas GTK/Shell, ícones e wallpapers reproduzíveis.
 - Libadwaita não recebe injeção de CSS; seus limites são preservados.

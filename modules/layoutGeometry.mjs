@@ -1,19 +1,75 @@
 // GNOME-independent Snap Layout geometry: testable with Node.js.
 // Each template is a set of normalized regions in screen coordinates.
+function layoutTemplate(id, label, regions) {
+    return Object.freeze({id, label,
+        regions: Object.freeze(regions.map(region => Object.freeze(region)))});
+}
+
 export const TEMPLATES = Object.freeze([
-    {id: 'halves', label: 'Duas metades', regions: [[0,0,.5,1],[.5,0,.5,1]]},
-    {id: 'thirds', label: 'Três colunas', regions: [[0,0,1/3,1],[1/3,0,1/3,1],[2/3,0,1/3,1]]},
-    {id: 'large-left', label: 'Principal à esquerda', regions: [[0,0,2/3,1],[2/3,0,1/3,1]]},
-    {id: 'large-right', label: 'Principal à direita', regions: [[0,0,1/3,1],[1/3,0,2/3,1]]},
-    {id: 'quarters', label: 'Quatro quadrantes', regions: [[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]]},
+    layoutTemplate('halves', 'Duas metades', [[0, 0, .5, 1], [.5, 0, .5, 1]]),
+    layoutTemplate('thirds', 'Três colunas',
+        [[0, 0, 1 / 3, 1], [1 / 3, 0, 1 / 3, 1], [2 / 3, 0, 1 / 3, 1]]),
+    layoutTemplate('large-left', 'Principal à esquerda',
+        [[0, 0, 2 / 3, 1], [2 / 3, 0, 1 / 3, 1]]),
+    layoutTemplate('large-right', 'Principal à direita',
+        [[0, 0, 1 / 3, 1], [1 / 3, 0, 2 / 3, 1]]),
+    layoutTemplate('quarters', 'Quatro quadrantes',
+        [[0, 0, .5, .5], [.5, 0, .5, .5], [0, .5, .5, .5], [.5, .5, .5, .5]]),
 ]);
 
+function normalizedRegion(region) {
+    if (!Array.isArray(region) || region.length !== 4 || !region.every(Number.isFinite))
+        return null;
+    const [x, y, width, height] = region;
+    if (x < 0 || y < 0 || width <= 0 || height <= 0 ||
+        x + width > 1.000001 || y + height > 1.000001)
+        return null;
+    return {x, y, width, height};
+}
+
+function overlapArea(first, second) {
+    const width = Math.max(0, Math.min(first.x + first.width, second.x + second.width) -
+        Math.max(first.x, second.x));
+    const height = Math.max(0, Math.min(first.y + first.height, second.y + second.height) -
+        Math.max(first.y, second.y));
+    return width * height;
+}
+
+export function validateLayoutTemplate(template, tolerance = 1e-8) {
+    if (!template || typeof template.id !== 'string' || !template.id ||
+        typeof template.label !== 'string' || !template.label ||
+        !Array.isArray(template.regions) || !template.regions.length ||
+        !Number.isFinite(tolerance) || tolerance < 0)
+        return false;
+    const regions = template.regions.map(normalizedRegion);
+    if (regions.some(region => !region))
+        return false;
+    for (let first = 0; first < regions.length; first++)
+        for (let second = first + 1; second < regions.length; second++)
+            if (overlapArea(regions[first], regions[second]) > tolerance)
+                return false;
+    const coverage = regions.reduce((total, region) => total + region.width * region.height, 0);
+    return Math.abs(coverage - 1) <= tolerance;
+}
+
+export function validateLayoutTemplates(templates, tolerance = 1e-8) {
+    if (!Array.isArray(templates) || !templates.length)
+        return false;
+    const ids = new Set();
+    for (const template of templates) {
+        if (!validateLayoutTemplate(template, tolerance) || ids.has(template.id))
+            return false;
+        ids.add(template.id);
+    }
+    return true;
+}
+
 export function regionToPixels(area, region, inset = 0) {
-    if (!area || !Array.isArray(region) || region.length !== 4 ||
-        ![area.x, area.y, area.width, area.height, ...region].every(Number.isFinite) ||
+    const normalized = normalizedRegion(region);
+    if (!area || !normalized ||
+        ![area.x, area.y, area.width, area.height].every(Number.isFinite) ||
         area.width <= 0 || area.height <= 0 || inset < 0) return null;
-    const [x, y, w, h] = region;
-    if (x < 0 || y < 0 || w <= 0 || h <= 0 || x + w > 1.000001 || y + h > 1.000001) return null;
+    const {x, y, width: w, height: h} = normalized;
     const left = area.x + Math.round(x * area.width) + inset;
     const top = area.y + Math.round(y * area.height) + inset;
     const right = area.x + Math.round((x + w) * area.width) - inset;
@@ -59,6 +115,12 @@ export function snapGeometry(area, region, {minimum = [0, 0], maximum = [0, 0]} 
         (max.height > 0 && rectangle.height > max.height))
         return null;
     return rectangle;
+}
+
+export function snapTemplateGeometry(template, area, constraints = {}) {
+    if (!validateLayoutTemplate(template))
+        return null;
+    return template.regions.map(region => snapGeometry(area, region, constraints));
 }
 
 export function rectangleWithinArea(rectangle, area, tolerance = 1) {

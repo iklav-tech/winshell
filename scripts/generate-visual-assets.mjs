@@ -31,16 +31,20 @@ ${prefix} .winshell-calendar-day, ${prefix} .winshell-calendar-month, ${prefix} 
 ${prefix} .winshell-preview-title, ${prefix} .winshell-notification-title { color: ${p.text}; }
 ${prefix} .winshell-task-icon:hover, ${prefix} .winshell-app-item:hover,
 ${prefix} .winshell-context-item:hover, ${prefix} .winshell-quick-list-item:hover,
-${prefix} .winshell-calendar-day:hover, ${prefix} .winshell-mini-action:hover { background-color: ${p.surfaceAlt}; }
+${prefix} .winshell-calendar-day:hover, ${prefix} .winshell-mini-action:hover,
+${prefix} .winshell-preview-title:hover { background-color: ${p.surfaceAlt}; }
 ${prefix} .winshell-task-icon:focus, ${prefix} .winshell-app-item:focus,
 ${prefix} .winshell-context-item:focus, ${prefix} .winshell-quick-list-item:focus,
-${prefix} .winshell-calendar-day:focus, ${prefix} .winshell-footer-button:focus { border: 2px solid ${p.focus}; }
+${prefix} .winshell-calendar-day:focus, ${prefix} .winshell-footer-button:focus,
+${prefix} .winshell-preview-title:focus, ${prefix} .winshell-mini-action:focus,
+${prefix} .winshell-snap-region:focus { border: 2px solid ${p.focus}; }
 ${prefix} .winshell-task-icon.winshell-active, ${prefix} .winshell-calendar-selected,
 ${prefix} .winshell-tile-on { background-color: ${p.accent}; color: white; }
 ${prefix} .winshell-task-icon.winshell-running { border-bottom: 3px solid ${p.accent}; }
 ${prefix} .winshell-quick-section, ${prefix} .winshell-notification-card,
 ${prefix} .winshell-preview-line, ${prefix} .winshell-snap-template { background-color: ${p.surfaceAlt}; }
 ${prefix} .winshell-snap-region { background-color: ${p.accent}; border: 1px solid ${p.border}; }
+${prefix} .winshell-snap-region:hover { background-color: ${p.accentHover}; }
 ${prefix} .winshell-empty, ${prefix} .winshell-menu-footer, ${prefix} .winshell-app-description,
 ${prefix} .winshell-quick-status, ${prefix} .winshell-slider-value, ${prefix} .winshell-calendar-weekday,
 ${prefix} .winshell-calendar-selected-label, ${prefix} .winshell-notification-time,
@@ -89,6 +93,7 @@ ${prefix} .winshell-slider-row .slider { -barlevel-background-color: ${p.border}
 .winshell-snap-template-name { font-size: ${tokens.typography.caption}; }
 .winshell-snap-canvas { border-radius: 7px; }
 .winshell-snap-region { border-radius: 5px; }
+.winshell-snap-region-disabled { opacity: ${tokens.opacity.disabled}; }
 .winshell-calendar { spacing: 6px; padding: ${s.sm}px 4px 11px; }
 .winshell-calendar-header { spacing: 5px; }
 .winshell-calendar-nav, .winshell-calendar-month { padding: 7px; border-radius: 7px; }

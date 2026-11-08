@@ -17,7 +17,7 @@
 | `ShellFoundationModel` | Busca/ordenação de apps, fixação e decisão ativar/minimizar sem dependência GJS |
 | `app` | `Shell.App` identificado por ID `.desktop` |
 | `win` | `Meta.Window` com capacidades consultadas antes de mostrar ações |
-| `template/region` | Modelo Snap e tupla normalizada convertida para pixels |
+| `template/region` | Modelo Snap imutável, validado e tupla normalizada convertida para pixels/elegibilidade |
 | `ShellAppearanceController` | Resolve Follow System e mantém classes Light/Dark/preset no `uiGroup` |
 | `AppearanceManager` | Cliente assíncrono das preferências e resolvedor de recursos instalados |
 | backup de aparência | Registro v1 de original/applied/changed para restauração segura |

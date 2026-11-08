@@ -1,4 +1,4 @@
-# WinShell for GNOME v0.5.5
+# WinShell for GNOME v0.5.6
 
 WinShell is an experimental Windows 11-inspired visual and interaction layer for
 **Ubuntu 24.04 LTS / GNOME Shell 46**. It adds a taskbar, Start menu, Quick
@@ -8,10 +8,21 @@ Mutter, Nautilus, NetworkManager or system libraries and is not affiliated with
 Microsoft or the GNOME Foundation.
 
 > **Pre-release status.** Static, unit, asset and isolated filesystem tests cover
-> v0.5.5. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
+> v0.5.6. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
 > still required; target compatibility is not a claim of completed certification.
 
-## What v0.5.5 provides
+## What v0.5.6 provides
+
+- A reconciled SPEC 0.4.0 graphical-Snap baseline with five immutable, validated
+  templates: halves, equal thirds, dominant left/right and four quadrants.
+  Pure tests verify normalized and rounded-pixel coverage, non-overlap, offset
+  work areas, duplicate IDs and window size-constraint eligibility.
+- Every diagram remains visible; regions that cannot satisfy the selected
+  window's size limits are clearly unavailable, while eligible regions are
+  keyboard-focusable, hoverable and activate the real Mutter placement path.
+  Snap and preview controls now have explicit generated focus/hover styling.
+- Popup outside-click handling tolerates source-less stage events observed in a
+  preexisting installed copy instead of forwarding `null` to Clutter containment.
 
 - A reconciled SPEC 0.3.0 window-workflow baseline: Snap validates the target
   work area and client size constraints, then checks the compositor result;
@@ -103,7 +114,7 @@ WinShell never installs packages or writes system-wide files itself.
 ## Install or upgrade
 
 ```bash
-unzip winshell-for-gnome-v0.5.5.zip
+unzip winshell-for-gnome-v0.5.6.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
@@ -137,7 +148,7 @@ User-local installation paths:
 | Appearance backup | `$XDG_CONFIG_HOME/winshell/appearance-backup-v1.json` |
 
 Defaults are `~/.local/share` and `~/.config` when the XDG variables are unset.
-Metadata uses GNOME integer version **12** and `version-name` **0.5.5**.
+Metadata uses GNOME integer version **13** and `version-name` **0.5.6**.
 
 ## Appearance workflow
 
@@ -251,11 +262,12 @@ Wayland/XWayland windows; enable/disable loops; fullscreen, hotplug and v0.4.x
 settings migration.
 
 The release evidence and rollback checklist are in
-[`docs/verification/0.5.5.md`](docs/verification/0.5.5.md). Retrospective SPEC
+[`docs/verification/0.5.6.md`](docs/verification/0.5.6.md). Retrospective SPEC
 evidence is in [`docs/verification/v0.0.1.md`](docs/verification/v0.0.1.md),
 [`docs/verification/v0.1.0.md`](docs/verification/v0.1.0.md) and
 [`docs/verification/v0.2.0.md`](docs/verification/v0.2.0.md), plus
-[`docs/verification/v0.3.0.md`](docs/verification/v0.3.0.md).
+[`docs/verification/v0.3.0.md`](docs/verification/v0.3.0.md) and
+[`docs/verification/v0.4.0.md`](docs/verification/v0.4.0.md).
 
 ## Repository layout
 

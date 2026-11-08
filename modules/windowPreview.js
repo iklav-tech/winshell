@@ -44,7 +44,8 @@ export class WindowPreview extends PopupSurface {
             }
             const windowTitle = (win.get_title() || app.get_name()).slice(0, 38);
             const title = new St.Button({label: win.minimized ? `${windowTitle} (minimizada)` : windowTitle,
-                style_class: 'winshell-preview-title', x_expand: true, can_focus: true});
+                style_class: 'winshell-preview-title', x_expand: true, can_focus: true,
+                reactive: true, track_hover: true});
             title.connect('clicked', () => {
                 this.hide();
                 if (win.minimized && typeof win.unminimize === 'function')
@@ -53,7 +54,8 @@ export class WindowPreview extends PopupSurface {
             });
             line.add_child(title);
             if (this._settings.get_boolean('snap-layouts')) {
-                const snap = new St.Button({style_class: 'winshell-mini-action', can_focus: true});
+                const snap = new St.Button({style_class: 'winshell-mini-action', can_focus: true,
+                    reactive: true, track_hover: true});
                 snap.set_child(new St.Icon({icon_name: 'view-grid-symbolic', icon_size: 16}));
                 snap.set_accessible_name('Organizar janela');
                 snap.connect('clicked', () => {
@@ -64,7 +66,8 @@ export class WindowPreview extends PopupSurface {
                 line.add_child(snap);
             }
             if (win.can_close()) {
-                const close = new St.Button({style_class: 'winshell-mini-action', can_focus: true});
+                const close = new St.Button({style_class: 'winshell-mini-action', can_focus: true,
+                    reactive: true, track_hover: true});
                 close.set_child(new St.Icon({icon_name: 'window-close-symbolic', icon_size: 16}));
                 close.set_accessible_name('Fechar janela');
                 close.connect('clicked', () => { win.delete(global.get_current_time()); this.hide(); });

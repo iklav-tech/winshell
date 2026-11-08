@@ -162,7 +162,7 @@ export class Taskbar {
             const windows = app.get_windows();
             const active = focused && windows.includes(focused);
             const button = new St.Button({style_class: `winshell-task-icon ${windows.length ? 'winshell-running' : ''} ${active ? 'winshell-active' : ''}`,
-                can_focus: true, reactive: true});
+                can_focus: true, reactive: true, track_hover: true});
             button._winshellAppButton = true;
             button.set_child(app.create_icon_texture(26));
             button.set_accessible_name(app.get_name());

@@ -2,11 +2,13 @@
 
 ## Confirmado pelo código/testes
 
-- UUID `winshell@iklav-tech`, Shell 46, integer version 12 e version-name 0.5.5.
+- UUID `winshell@iklav-tech`, Shell 46, integer version 13 e version-name 0.5.6.
 - Vinte e cinco chaves GSettings; as chaves v0.4.x foram preservadas.
 - Assets SVG parseáveis, metadata de fallback, licenças, geração por tokens e instalação XDG isolada.
 - Backup v1 idempotente, detecção de divergência e restauração sob backend de teste.
-- Cinco modelos Snap, geometria pura, limites de tamanho e contenção/correção em work area.
+- Cinco modelos Snap imutáveis, IDs/cobertura/não sobreposição validados,
+  geometria pura, elegibilidade por limites de tamanho e contenção/correção
+  em work area.
 - Calendário com grade fixa 6×7, navegação e locale.
 - Agrupamento/ordenação/sanitização de notificações.
 - Capacidade/labels de janelas e normalização de controles.

@@ -68,7 +68,7 @@ nenhuma informação é escrita em arquivo ou banco.
 
 ```text
 GSettings.pinned-apps[] -> Shell.App -> Meta.Window[]
-TEMPLATES[] -> region[x,y,w,h] -> rectangle -> Meta.Window
+TEMPLATES[] -> validação/cobertura -> region[x,y,w,h] -> elegibilidade/rectangle -> Meta.Window
 messageTray -> Source[] -> Notification[]
 ```
 
@@ -88,4 +88,6 @@ O registro `managed-taskbar-extensions` não representa todas as extensões inst
 - `calendarGrid`, `groupNotifications`, `windowCapabilities`, `normalizeQuickState`,
   `searchApplications`, `togglePinnedApp` e `taskbarPrimaryAction` são funções
   puras testadas.
+- `validateLayoutTemplate`, `validateLayoutTemplates` e `snapTemplateGeometry`
+  validam os cinco diagramas e projetam regiões elegíveis sem dependência GJS.
 - `planTaskbarConflicts`, `taskbarGeometry` e `taskbarMonitorIndexes` são funções puras testadas.

@@ -22,6 +22,7 @@
 | R-18 | média | Assets gerados podem divergir dos tokens; `generate-visual-assets.mjs --check` bloqueia drift na suíte |
 | R-19 | média | Clientes Wayland/XWayland podem aplicar geometria depois da janela de verificação de 160 ms; timer é não bloqueante/descartável e o resultado real permanece no checklist manual |
 | R-20 | baixa | A tolerância de hover de 180 ms pode variar com escala/recursos de acessibilidade; hover não toma foco e o teclado tem entrada explícita por Down Arrow |
+| R-21 | média | Limites da janela/monitor podem mudar enquanto o seletor Snap está aberto; a elegibilidade orienta a UI e o executor revalida tudo no clique |
 
 ## Melhorias da v0.4.1
 
@@ -82,6 +83,17 @@
   teclado, estado minimizado explícito e fechamento condicionado à capacidade.
 - O contrato da SPEC 0.3.0 cobre hotplug/cleanup e preservação da autoridade do
   MessageTray, além de geometria negativa e restrições puras.
+
+## Melhorias da v0.5.6
+
+- Os cinco templates Snap são imutáveis e validados por ID, limites, cobertura
+  e não sobreposição; arredondamento para pixels também preserva a cobertura.
+- Limites do cliente projetam a elegibilidade antes do clique sem substituir a
+  revalidação no executor; estados vazios e indisponíveis ficam explícitos.
+- Regiões Snap e ações de preview ganharam estados gerados de hover/foco, com
+  contrato automatizado separado da homologação gráfica.
+- O outside-click de popups passou a aceitar evento sem ator de origem, caso
+  observado no journal de uma cópia preexistente, sem chamar `contains(null)`.
 
 ## Validação pendente
 

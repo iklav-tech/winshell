@@ -18,7 +18,8 @@ export class PopupSurface {
         this._escapeId = 0;
         try {
             this._outsideId = global.stage.connect('button-press-event', (_stage, event) => {
-                if (this.actor.visible && !this.actor.contains(event.get_source()))
+                const source = event.get_source();
+                if (this.actor.visible && (!source || !this.actor.contains(source)))
                     this.hide();
                 return Clutter.EVENT_PROPAGATE;
             });

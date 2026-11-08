@@ -1,5 +1,35 @@
 # Changelog
 
+## v0.5.6 — 2026-11-08
+
+### Added
+
+- Immutable pure Snap template contracts that validate unique IDs, normalized
+  bounds, complete coverage and non-overlap before UI integration.
+- Per-region eligibility projection for client minimum/maximum size limits, with
+  visible but non-interactive unavailable regions and an explicit empty state.
+- Focused SPEC 0.4.0 tests and separate historical/current verification
+  artifacts covering graphical diagrams, offset work areas and pixel rounding.
+
+### Changed
+
+- Snap region, preview-title and mini-action controls now expose generated
+  hover/focus styling; taskbar and preview buttons track hover explicitly.
+- Geometry tests now prove exact rounded-pixel coverage in addition to normalized
+  coverage and preserve negative/non-zero monitor origins.
+- Metadata integer version advanced from 12 to 13 with `version-name` 0.5.6;
+  README, installer, tests and technical documentation were synchronized.
+
+### Fixed
+
+- Outside-click handling now treats a stage event with no source actor as an
+  outside event instead of passing `null` to `Clutter.Actor.contains()`.
+
+### Validation status
+
+- Static, unit, schema, asset and isolated XDG tests pass.
+- GNOME 46/Wayland and X11 runtime validation remains pending and is not claimed.
+
 ## v0.5.5 — 2026-11-08
 
 ### Added
