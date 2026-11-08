@@ -109,7 +109,7 @@ export class Taskbar {
 
     _render() {
         this._position();
-        this._preview.cancelPending();
+        this._preview.dismiss();
         this._left.destroy_all_children();
         this._center.destroy_all_children();
         this._start = this._iconButton('view-app-grid-symbolic', 'Iniciar', () => {
@@ -145,7 +145,7 @@ export class Taskbar {
 
     _renderApps() {
         if (!this._center || !this._start) return;
-        this._preview.cancelPending();
+        this._preview.dismiss();
         for (const item of [...this._center.get_children()])
             if (item._winshellAppButton) item.destroy();
         const apps = [];
@@ -184,12 +184,18 @@ export class Taskbar {
                 return Clutter.EVENT_STOP;
             });
             if (this._settings.get_boolean('window-previews')) {
+                button.connect('key-press-event', (_actor, event) => {
+                    if (event.get_key_symbol() !== Clutter.KEY_Down || !app.get_windows().length)
+                        return Clutter.EVENT_PROPAGATE;
+                    this._preview.showFor(app, button, this._anchor(button)[1], true);
+                    return Clutter.EVENT_STOP;
+                });
                 button.connect('enter-event', () => {
                     if (app.get_windows().length) this._preview.schedule(app, button, this._anchor(button)[1]);
                     return Clutter.EVENT_PROPAGATE;
                 });
                 button.connect('leave-event', () => {
-                    this._preview.cancelPending();
+                    this._preview.leaveButton(button);
                     return Clutter.EVENT_PROPAGATE;
                 });
             }

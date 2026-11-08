@@ -26,11 +26,11 @@ Extensão GNOME Shell 46 que adiciona barra, Start, Snap Layouts, previews, Quic
 
 ## Erros/fallbacks
 
-Falha geral de enable gera log, cleanup e relançamento. Serviços/hardware ausentes produzem estados indisponíveis e logs locais. Redes novas e configuração avançada abrem GNOME Settings. Snap informa quando o compositor rejeita a operação.
+Falha geral de enable gera log, cleanup e relançamento. Serviços/hardware ausentes produzem estados indisponíveis e logs locais. Redes novas e configuração avançada abrem GNOME Settings. Snap valida limites do cliente, verifica o frame final e informa quando a operação não cabe na área útil.
 
 ## Lifecycle
 
-`TaskbarManager` compartilha um `SystemControls`, cria/destrói uma barra por índice de monitor em mudanças de topologia e faz rollback de construção. `TaskbarConflictManager` remove seu idle/sinais e restaura somente UUIDs registrados. Popups desconectam stage; controles removem sinais/idles; notificações removem observadores; preview remove timer; extensão restaura o painel superior.
+`TaskbarManager` compartilha um `SystemControls`, cria/destrói uma barra por índice de monitor em mudanças de topologia e faz rollback de construção. `TaskbarConflictManager` remove seu idle/sinais e restaura somente UUIDs registrados. Popups desconectam stage; controles removem sinais/idles; notificações removem observadores; preview e Snap removem seus timers; extensão restaura o painel superior.
 
 `ShellAppearanceController` remove todas as classes que adicionou no disable. Nautilus e o helper de aparência não são carregados no processo GNOME Shell.
 
@@ -49,6 +49,7 @@ Falha geral de enable gera log, cleanup e relançamento. Serviços/hardware ause
 - `appearance-backup.test.mjs`;
 - `install.test.mjs`.
 - `bootstrap.test.mjs`.
+- `window-workflows.test.mjs`.
 
 Testes gráficos e D-Bus reais permanecem manuais.
 

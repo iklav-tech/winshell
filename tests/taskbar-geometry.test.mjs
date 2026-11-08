@@ -10,4 +10,10 @@ assert.deepEqual(taskbarMonitorIndexes([{}, {}, {}], 2, false), [2]);
 assert.deepEqual(taskbarMonitorIndexes([{}, {}, {}], 5, false), [0]);
 assert.deepEqual(taskbarMonitorIndexes([{}, {}, {}], 1, true), [0, 1, 2]);
 assert.deepEqual(taskbarMonitorIndexes([], 0, true), []);
-console.log('OK: taskbar bottom anchoring and unique monitor topology');
+assert.deepEqual([
+    taskbarMonitorIndexes([{}], 0, true),
+    taskbarMonitorIndexes([{}, {}], 0, true),
+    taskbarMonitorIndexes([{}, {}], 1, false),
+    taskbarMonitorIndexes([{}], 0, true),
+], [[0], [0, 1], [1], [0]]);
+console.log('OK: taskbar bottom anchoring, hotplug transitions and unique monitor topology');

@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.5.5 — 2026-11-08
+
+### Added
+
+- Client minimum/maximum size validation and asynchronous post-operation
+  work-area verification for Snap Layout requests.
+- Pointer-safe hover transitions, an explicit Down-arrow keyboard entry path,
+  minimized-window state/restoration and capability-gated close actions in
+  taskbar previews.
+- A focused SPEC 0.3.0 contract, negative-origin/constraint tests and separate
+  historical/release verification artifacts.
+
+### Changed
+
+- Hover previews no longer take Shell keyboard focus; keyboard-opened previews
+  retain the normal popup focus and restoration lifecycle.
+- A compositor result shifted by application constraints is clamped back into
+  the monitor work area when possible and reported when it cannot fit.
+- Metadata integer version advanced from 11 to 12 with `version-name` 0.5.5;
+  README, installer, tests and technical documentation were synchronized.
+
+### Validation status
+
+- Static, unit, schema, asset and isolated XDG tests pass.
+- GNOME 46/Wayland and X11 runtime validation remains pending and is not claimed.
+
 ## v0.5.4 — 2026-11-08
 
 ### Added

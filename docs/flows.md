@@ -18,7 +18,11 @@ O menu lista até oito janelas para ativação. Para a janela selecionada, consu
 
 ## UC-05 — Aplicar Snap
 
-O painel valida a janela/região, converte a work area, desmaximiza, move/redimensiona e ativa. Falhas são registradas e informadas ao usuário.
+O painel valida janela, região, work area e limites mínimo/máximo do cliente. Se
+estiver minimizada, restaura; depois desmaximiza, solicita mover/redimensionar e
+ativa. Um timer não bloqueante inspeciona o frame final: reposiciona se ele couber
+na área útil ou informa a restrição incompatível. Todos os timers pertencem ao
+painel e são removidos no destroy.
 
 ## UC-06 — Controlar Wi‑Fi
 
@@ -64,7 +68,16 @@ Preferências resolvem wallpapers instalados, iniciam `winshell-appearance` sem 
 
 A página habilita controles DING somente quando schema e extensão compatíveis existem. O helper aplica visibilidade de Home/Trash/volumes. O plugin Nautilus, instalado opcionalmente, verifica o flag do usuário e abre as preferências pela API pública de subprocesso; ícones vêm do tema padrão selecionado.
 
+## UC-16 — Abrir preview e alterar monitores
+
+Hover por 450 ms abre o preview sem alterar o foco; uma tolerância curta mantém o
+popup durante o percurso entre ícone e flyout. Down Arrow sobre o botão abre o
+mesmo conteúdo com foco navegável e restauração por Escape. Janelas minimizadas
+são identificadas e restauradas antes de ativar. Em `monitors-changed` ou troca
+de `multi-monitor`, barras antigas e seus popups/timers são destruídos antes de
+criar uma barra por índice selecionado; falha parcial faz rollback.
+
 ## Pendências
 
-- TODO: executar UC-01, UC-04 a UC-10 e UC-13 em GNOME Shell 46/Wayland.
+- TODO: executar UC-01, UC-04 a UC-10, UC-13 e UC-16 em GNOME Shell 46/Wayland.
 - TODO: validar recuperação de falha parcial de cópia/compilação no instalador.

@@ -8,14 +8,14 @@ tree=ET.parse(root/'schemas/org.gnome.shell.extensions.winshell.gschema.xml'); a
 keys={k.get('name') for k in tree.findall('.//key')}
 required={'panel-height','center-icons','show-clock','show-search','show-notifications','show-quick-settings','show-activities-panel','pinned-apps','multi-monitor','window-previews','snap-layouts','taskbar-conflict-handling','managed-taskbar-extensions','appearance-mode','visual-preset','icon-theme','wallpaper-selection','custom-wallpaper-uri','background-style','sync-system-appearance','desktop-icons-enabled','desktop-show-home','desktop-show-trash','desktop-show-volumes','nautilus-integration-enabled'}
 assert required <= keys, f'Missing GSettings keys: {required-keys}'
-assert data['version']==11 and data['version-name']=='0.5.4'
+assert data['version']==12 and data['version-name']=='0.5.5'
 required_modules={'popup.js','popupGeometry.mjs','shellCompat.js','quickSettings.js','quickSettingsModel.mjs','systemControls.js','calendar.js','calendarModel.mjs','contextMenu.js','windowActions.mjs','systemActions.js','taskbar.js','startMenu.js','apps.js','shellFoundationModel.mjs','snapLayouts.js','windowPreview.js','notificationCenter.js','notificationModel.mjs','multiMonitor.js','layoutGeometry.mjs','taskbarConflict.js','taskbarConflictModel.mjs','taskbarGeometry.mjs'}
 assert required_modules <= {p.name for p in (root/'modules').iterdir() if p.suffix in ('.js', '.mjs')}
 for item in ['themes/WinShell','themes/WinShell-Dark','icons/WinShell','wallpapers','integrations/desktop','integrations/nautilus','integrations/appearance','modules/appearance']:
     assert (root/item).is_dir(), item
 for f in [root/'extension.js',root/'prefs.js',*sorted((root/'modules').rglob('*.js'))]: assert f.stat().st_size>0
-readme=(root/'README.md').read_text(); assert 'v0.5.4' in readme and 'winshell-for-gnome-v0.5.4.zip' in readme
-assert (root/'CHANGELOG.md').is_file() and 'v0.5.4' in (root/'CHANGELOG.md').read_text()
+readme=(root/'README.md').read_text(); assert 'v0.5.5' in readme and 'winshell-for-gnome-v0.5.5.zip' in readme
+assert (root/'CHANGELOG.md').is_file() and 'v0.5.5' in (root/'CHANGELOG.md').read_text()
 assert (root/'CONTRIBUTING.md').is_file()
 for source in [root/'extension.js',root/'prefs.js',*sorted((root/'modules').rglob('*.js')), *sorted((root/'modules').rglob('*.mjs'))]:
     text=source.read_text()
@@ -34,7 +34,7 @@ for theme in ['WinShell','WinShell-Dark']:
     assert (root/f'themes/{theme}/gnome-shell/gnome-shell.css').stat().st_size > 200
 assert 'CC0' in (root/'icons/WinShell/LICENSE').read_text()
 assert 'CC0' in (root/'wallpapers/LICENSE').read_text()
-verification=root/'docs/verification/0.5.4.md'
+verification=root/'docs/verification/0.5.5.md'
 assert verification.is_file() and 'runtime GNOME 46/Wayland: pending' in verification.read_text()
 historical=root/'docs/verification/v0.0.1.md'
 assert historical.is_file() and 'runtime GNOME 46/Wayland: pending' in historical.read_text()
@@ -42,7 +42,9 @@ shell_foundation=root/'docs/verification/v0.1.0.md'
 assert shell_foundation.is_file() and 'runtime GNOME 46/Wayland: pending' in shell_foundation.read_text()
 system_panels=root/'docs/verification/v0.2.0.md'
 assert system_panels.is_file() and 'runtime GNOME 46/Wayland: pending' in system_panels.read_text()
-print('OK: metadata v0.5.4, GSettings, imports, assets, licenses and lifecycle contracts')
+window_workflows=root/'docs/verification/v0.3.0.md'
+assert window_workflows.is_file() and 'runtime GNOME 46/Wayland: pending' in window_workflows.read_text()
+print('OK: metadata v0.5.5, GSettings, imports, assets, licenses and lifecycle contracts')
 PY
 if command -v node >/dev/null; then
   for file in "$ROOT/extension.js" "$ROOT/prefs.js" "$ROOT"/modules/*.js "$ROOT"/modules/*.mjs "$ROOT"/modules/appearance/*.js "$ROOT"/modules/appearance/*.mjs "$ROOT"/scripts/*.mjs; do node --check "$file"; done

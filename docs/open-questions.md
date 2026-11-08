@@ -2,11 +2,11 @@
 
 ## Confirmado pelo código/testes
 
-- UUID `winshell@iklav-tech`, Shell 46, integer version 11 e version-name 0.5.4.
+- UUID `winshell@iklav-tech`, Shell 46, integer version 12 e version-name 0.5.5.
 - Vinte e cinco chaves GSettings; as chaves v0.4.x foram preservadas.
 - Assets SVG parseáveis, metadata de fallback, licenças, geração por tokens e instalação XDG isolada.
 - Backup v1 idempotente, detecção de divergência e restauração sob backend de teste.
-- Cinco modelos Snap e geometria pura.
+- Cinco modelos Snap, geometria pura, limites de tamanho e contenção/correção em work area.
 - Calendário com grade fixa 6×7, navegação e locale.
 - Agrupamento/ordenação/sanitização de notificações.
 - Capacidade/labels de janelas e normalização de controles.
@@ -16,6 +16,8 @@
   ativar/minimizar cobertas pelo modelo puro `shellFoundationModel.mjs`.
 - Capacidades de ativar/dispensar notificações e suas ações são projetadas antes
   da UI; sinais internos indisponíveis têm fallback sem abortar a extensão.
+- Preview de hover usa caminho sem foco; Down Arrow usa foco/restauração normal,
+  e janelas minimizadas têm estado/fallback explícitos.
 
 ## Não confirmado neste ambiente
 
@@ -28,6 +30,8 @@
 - Restauração runtime após disable, restart/crash e reativação manual de cada dock suportado.
 - GVC com cada combinação PulseAudio/PipeWire.
 - Comportamento de notificações residentes/críticas de aplicativos reais.
+- Momento em que cada cliente Wayland/XWayland estabiliza o frame após Snap.
+- Adequação da ponte de hover de 180 ms em escala fracionária e acessibilidade.
 
 ## Decisões de produto abertas
 

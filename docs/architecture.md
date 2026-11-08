@@ -64,7 +64,7 @@ flowchart TD
 
 ## Lifecycle
 
-O adaptador global agenda no máximo um idle de atualização e guarda cada conexão de sinal. Destruição remove o idle, sinais dinâmicos de AP/device/sink e assinantes. Cada centro de notificação desconecta tray/sources/items; cada popup desconecta stage, devolve foco e remove explicitamente seu chrome; previews removem timeouts. Construção e rebuild parcial das barras fazem rollback se falharem. O gerenciador de conflitos também usa um único idle e distingue disable real do rebase transitório do GNOME 46, restaurando docks apenas no lifecycle real.
+O adaptador global agenda no máximo um idle de atualização e guarda cada conexão de sinal. Destruição remove o idle, sinais dinâmicos de AP/device/sink e assinantes. Cada centro de notificação desconecta tray/sources/items; cada popup desconecta stage, devolve foco quando o possui e remove explicitamente seu chrome; previews removem timeouts de abertura/saída e Snap remove verificações pendentes. Construção e rebuild parcial das barras fazem rollback se falharem. O gerenciador de conflitos também usa um único idle e distingue disable real do rebase transitório do GNOME 46, restaurando docks apenas no lifecycle real.
 
 ## Decisões
 
@@ -74,6 +74,7 @@ O adaptador global agenda no máximo um idle de atualização e guarda cada cone
 - O calendário WinShell não modifica nem substitui objetos do calendário nativo.
 - Modelos puros separam cálculos/normalização da UI GJS.
 - Geometria de popup seleciona o monitor e limita superfícies em coordenadas lógicas, incluindo origens negativas e âncoras fracionárias.
+- Geometria Snap valida restrições do cliente antes de chamar Mutter e contém o frame final na área útil quando possível; a verificação é assíncrona e cancelável.
 - `addChrome` mantém a barra abaixo de janelas/popups, `affectsStruts` reserva área útil e `trackFullscreen` a oculta por monitor em fullscreen.
 - Tokens em `themes/design-tokens.json` geram o CSS da extensão, os temas GTK/Shell, ícones e wallpapers reproduzíveis.
 - Libadwaita não recebe injeção de CSS; seus limites são preservados.

@@ -1,4 +1,4 @@
-# WinShell for GNOME v0.5.4
+# WinShell for GNOME v0.5.5
 
 WinShell is an experimental Windows 11-inspired visual and interaction layer for
 **Ubuntu 24.04 LTS / GNOME Shell 46**. It adds a taskbar, Start menu, Quick
@@ -8,10 +8,19 @@ Mutter, Nautilus, NetworkManager or system libraries and is not affiliated with
 Microsoft or the GNOME Foundation.
 
 > **Pre-release status.** Static, unit, asset and isolated filesystem tests cover
-> v0.5.4. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
+> v0.5.5. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
 > still required; target compatibility is not a claim of completed certification.
 
-## What v0.5.4 provides
+## What v0.5.5 provides
+
+- A reconciled SPEC 0.3.0 window-workflow baseline: Snap validates the target
+  work area and client size constraints, then checks the compositor result;
+  hover previews preserve input focus, bridge pointer movement into the flyout,
+  expose a Down-arrow keyboard path and restore minimized windows explicitly.
+- Per-monitor bars retain hotplug rollback and unique monitor indexes, while the
+  notification panel continues to project GNOME MessageTray data without a
+  parallel history store. Negative-origin geometry and lifecycle paths have
+  focused pure/static coverage.
 
 - A reconciled SPEC 0.2.0 system-panel baseline covering real Quick Settings
   service actions, locale-aware calendar behavior, capable window/context
@@ -94,7 +103,7 @@ WinShell never installs packages or writes system-wide files itself.
 ## Install or upgrade
 
 ```bash
-unzip winshell-for-gnome-v0.5.4.zip
+unzip winshell-for-gnome-v0.5.5.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
@@ -128,7 +137,7 @@ User-local installation paths:
 | Appearance backup | `$XDG_CONFIG_HOME/winshell/appearance-backup-v1.json` |
 
 Defaults are `~/.local/share` and `~/.config` when the XDG variables are unset.
-Metadata uses GNOME integer version **11** and `version-name` **0.5.4**.
+Metadata uses GNOME integer version **12** and `version-name` **0.5.5**.
 
 ## Appearance workflow
 
@@ -172,7 +181,9 @@ removed.
   clock and per-monitor mode.
 - Start search across application names, descriptions, executables and keywords,
   with pinned apps first and a visible/accessible running-app state.
-- Five Snap Layout grids and previews with activate, close and arrange actions.
+- Five Snap Layout grids with work-area/client-constraint checks and previews
+  with activate, capability-gated close and arrange actions. Hover does not take
+  keyboard focus; Down Arrow opens the same preview for keyboard navigation.
 - Real Wi-Fi, Bluetooth, audio, brightness, battery and Do Not Disturb controls,
   with unavailable services isolated instead of failing extension startup.
 - Locale-aware calendar and capability-gated notifications from
@@ -227,8 +238,8 @@ node scripts/generate-visual-assets.mjs --check
 - The optional Nautilus plugin cannot restyle private navigation widgets and only
   exposes a supported preferences action; file/folder visuals come from icons.
 - WinShell does not enable DING or disable unknown desktop providers.
-- Snap Layouts do not automatically fill remaining regions, and previews can be
-  absent for minimized/unmapped windows.
+- Snap Layouts do not automatically fill remaining regions. Minimized/unmapped
+  windows use an explicit icon fallback instead of a live compositor thumbnail.
 - GNOME Shell, MessageTray and GVC JavaScript APIs are version-specific;
   unsupported notification capabilities are disabled and must be validated
   against the target Shell build.
@@ -240,10 +251,11 @@ Wayland/XWayland windows; enable/disable loops; fullscreen, hotplug and v0.4.x
 settings migration.
 
 The release evidence and rollback checklist are in
-[`docs/verification/0.5.4.md`](docs/verification/0.5.4.md). Retrospective SPEC
+[`docs/verification/0.5.5.md`](docs/verification/0.5.5.md). Retrospective SPEC
 evidence is in [`docs/verification/v0.0.1.md`](docs/verification/v0.0.1.md),
 [`docs/verification/v0.1.0.md`](docs/verification/v0.1.0.md) and
-[`docs/verification/v0.2.0.md`](docs/verification/v0.2.0.md).
+[`docs/verification/v0.2.0.md`](docs/verification/v0.2.0.md), plus
+[`docs/verification/v0.3.0.md`](docs/verification/v0.3.0.md).
 
 ## Repository layout
 

@@ -20,6 +20,8 @@
 | R-16 | média | Remover tema ainda selecionado deixaria fallback inconsistente; uninstall restaura antes de remover e aborta em conflito externo |
 | R-17 | média | Schemas/versões DING e Nautilus variam; detecção desabilita controles e integração é processo opcional separado |
 | R-18 | média | Assets gerados podem divergir dos tokens; `generate-visual-assets.mjs --check` bloqueia drift na suíte |
+| R-19 | média | Clientes Wayland/XWayland podem aplicar geometria depois da janela de verificação de 160 ms; timer é não bloqueante/descartável e o resultado real permanece no checklist manual |
+| R-20 | baixa | A tolerância de hover de 180 ms pode variar com escala/recursos de acessibilidade; hover não toma foco e o teclado tem entrada explícita por Down Arrow |
 
 ## Melhorias da v0.4.1
 
@@ -72,6 +74,15 @@
 - Ausência da enumeração de sources é diferenciada de uma lista realmente vazia.
 - A SPEC 0.2.0 ganhou contrato e evidência separados da homologação gráfica.
 
+## Melhorias da v0.5.5
+
+- Snap passou a validar limites mínimo/máximo e a inspecionar o frame final sem
+  bloquear o loop principal; correções permanecem dentro da work area.
+- Preview de hover deixou de tomar foco, ganhou ponte de ponteiro, entrada por
+  teclado, estado minimizado explícito e fechamento condicionado à capacidade.
+- O contrato da SPEC 0.3.0 cobre hotplug/cleanup e preservação da autoridade do
+  MessageTray, além de geometria negativa e restrições puras.
+
 ## Validação pendente
 
 - TODO: medir sinais/renderizações com Wi‑Fi e Bluetooth movimentados.
@@ -79,4 +90,5 @@
 - TODO: exercitar indisponibilidade e permission denied de cada serviço.
 - TODO: verificar notificações normais, críticas, residentes e com ações.
 - TODO: executar os dez cenários de aceitação de docks, restart, multi-monitor, escala, fullscreen e reativação manual.
+- TODO: medir o tempo de acomodação de clientes Wayland/XWayland após Snap e a tolerância de hover em escalas fracionárias.
 

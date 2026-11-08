@@ -12,6 +12,7 @@ export class PopupSurface {
             visible: false, reactive: true, can_focus: true});
         addChrome(this.actor, {affectsStruts: false, trackFullscreen: true});
         this._previousFocus = null;
+        this._focusCaptured = false;
         this._destroyed = false;
         this._outsideId = 0;
         this._escapeId = 0;
@@ -38,7 +39,7 @@ export class PopupSurface {
         }
     }
 
-    show(anchorX, bottomY) {
+    show(anchorX, bottomY, {takeFocus = true} = {}) {
         if (this._destroyed)
             return false;
         const manager = layoutManager();
@@ -47,12 +48,14 @@ export class PopupSurface {
         const geometry = popupGeometry(monitor, anchorX, bottomY, this.width, this.height);
         if (!geometry)
             return false;
-        if (!this.actor.visible)
+        if (takeFocus && !this._focusCaptured) {
             this._previousFocus = global.stage.key_focus;
+            this._focusCaptured = true;
+        }
         this.actor.set_size(geometry.width, geometry.height);
         this.actor.set_position(geometry.x, geometry.y);
         this.actor.show();
-        if (!this.actor.navigate_focus(null, St.DirectionType.TAB_FORWARD, false))
+        if (takeFocus && !this.actor.navigate_focus(null, St.DirectionType.TAB_FORWARD, false))
             global.stage.set_key_focus(this.actor);
         return true;
     }
@@ -69,6 +72,7 @@ export class PopupSurface {
         if (this._previousFocus?.get_stage?.())
             global.stage.set_key_focus(this._previousFocus);
         this._previousFocus = null;
+        this._focusCaptured = false;
     }
 
     destroy() {
@@ -84,5 +88,6 @@ export class PopupSurface {
         this.actor?.destroy();
         this.actor = null;
         this._previousFocus = null;
+        this._focusCaptured = false;
     }
 }

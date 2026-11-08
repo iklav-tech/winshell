@@ -31,7 +31,7 @@ if [[ "${WINSHELL_SKIP_GNOME_CHECK:-0}" != '1' ]]; then
   fi
   VERSION="$(gnome-shell --version | sed -nE 's/.* ([0-9]+)\..*/\1/p')"
   if [[ "$VERSION" != '46' ]]; then
-    echo "ERROR: WinShell v0.5.4 targets GNOME 46 (detected: ${VERSION:-unknown})." >&2
+    echo "ERROR: WinShell v0.5.5 targets GNOME 46 (detected: ${VERSION:-unknown})." >&2
     exit 1
   fi
 fi
@@ -82,7 +82,7 @@ else
   echo 'Optional Nautilus integration not requested. Use --with-nautilus to install it.'
 fi
 
-echo "WinShell v0.5.4 installed at: $EXTENSION_DEST"
+echo "WinShell v0.5.5 installed at: $EXTENSION_DEST"
 echo "Themes: $THEME_DEST/WinShell and $THEME_DEST/WinShell-Dark"
 echo "Icons: $ICON_DEST/WinShell"
 echo "Wallpapers and appearance helper: $RESOURCE_DEST"

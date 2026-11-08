@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import {TEMPLATES, regionToPixels} from '../modules/layoutGeometry.mjs';
+import {constrainedPosition, rectangleWithinArea, rectanglesApproximatelyEqual,
+    sizeConstraintFromResult, snapGeometry, TEMPLATES,
+    regionToPixels} from '../modules/layoutGeometry.mjs';
 assert.equal(TEMPLATES.length, 5);
 const ids = TEMPLATES.map(t => t.id);
 assert.equal(new Set(ids).size, ids.length);
@@ -29,4 +31,27 @@ assert.deepEqual(regionToPixels({x: 0,y: 0,width: 1000,height: 800}, [0,0,.5,1])
 assert.equal(regionToPixels(area, [-1,0,1,1]), null);
 assert.equal(regionToPixels(area, [0,0,0,1]), null);
 assert.equal(regionToPixels(null, [0,0,1,1]), null);
-console.log('OK: all graphical layout templates and pixel bounds');
+assert.deepEqual(sizeConstraintFromResult([true, 640, 480]), [640, 480]);
+assert.deepEqual(sizeConstraintFromResult([false, 640, 480]), [0, 0]);
+assert.deepEqual(sizeConstraintFromResult([800, 600]), [800, 600]);
+assert.deepEqual(sizeConstraintFromResult([true, -1, 480]), [0, 0]);
+assert.deepEqual(sizeConstraintFromResult(null), [0, 0]);
+assert.deepEqual(snapGeometry({x: -1920, y: -120, width: 1920, height: 1026},
+    [0, 0, .5, 1], {minimum: [640, 480], maximum: [0, 0]}),
+{x: -1920, y: -120, width: 960, height: 1026});
+assert.equal(snapGeometry(area, [0, 0, 1 / 3, 1], {minimum: [700, 200]}), null);
+assert.equal(snapGeometry(area, [0, 0, .5, 1], {maximum: [800, 0]}), null);
+assert.equal(snapGeometry(area, [0, 0, .5, 1], {minimum: [-1, 0]}), null);
+assert.equal(rectangleWithinArea({x: -1920, y: -120, width: 960, height: 1026},
+    {x: -1920, y: -120, width: 1920, height: 1026}), true);
+assert.equal(rectangleWithinArea({x: -1921, y: -120, width: 960, height: 1026},
+    {x: -1920, y: -120, width: 1920, height: 1026}, 0), false);
+assert.equal(rectanglesApproximatelyEqual({x: 0, y: 0, width: 960, height: 1026},
+    {x: 1, y: -1, width: 959, height: 1027}), true);
+assert.equal(rectanglesApproximatelyEqual({x: 0, y: 0, width: 960, height: 1026},
+    {x: 4, y: 0, width: 960, height: 1026}), false);
+assert.deepEqual(constrainedPosition({x: -2000, y: -200, width: 960, height: 900},
+    {x: -1920, y: -120, width: 1920, height: 1026}), {x: -1920, y: -120});
+assert.equal(constrainedPosition({x: 0, y: 0, width: 2000, height: 900},
+    {x: 0, y: 0, width: 1920, height: 1026}), null);
+console.log('OK: Snap templates, constraints, work-area bounds and negative origins');

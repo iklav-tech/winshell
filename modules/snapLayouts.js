@@ -1,20 +1,39 @@
 import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
 import St from 'gi://St';
 import {PopupSurface} from './popup.js';
-import {TEMPLATES, regionToPixels} from './layoutGeometry.mjs';
+import {constrainedPosition, rectangleWithinArea, rectanglesApproximatelyEqual,
+    sizeConstraintFromResult, snapGeometry, TEMPLATES} from './layoutGeometry.mjs';
 import {notify} from './shellCompat.js';
 
-export function applyLayout(win, region) {
+function windowConstraint(win, method) {
+    try {
+        const value = win?.[method]?.();
+        return sizeConstraintFromResult(value);
+    } catch (error) {
+        console.debug(`[WinShell] Restrição de janela indisponível (${method}): ${error.message}`);
+        return [0, 0];
+    }
+}
+
+export function applyLayout(win, region, onApplied = null) {
     if (!win || !win.allows_move() || !win.allows_resize() || win.is_fullscreen())
         return false;
     const monitor = win.get_monitor();
-    const rectangle = regionToPixels(win.get_work_area_for_monitor(monitor), region);
+    const area = win.get_work_area_for_monitor(monitor);
+    const rectangle = snapGeometry(area, region, {
+        minimum: windowConstraint(win, 'get_min_size'),
+        maximum: windowConstraint(win, 'get_max_size'),
+    });
     if (!rectangle) return false;
     try {
+        if (win.minimized && typeof win.unminimize === 'function')
+            win.unminimize();
         win.unmaximize(Meta.MaximizeFlags.BOTH);
         win.move_resize_frame(true, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
         win.activate(global.get_current_time());
+        onApplied?.(area, rectangle);
         return true;
     } catch (error) {
         console.warn(`[WinShell] Could not snap window: ${error}`);
@@ -25,6 +44,35 @@ export function applyLayout(win, region) {
 export class SnapLayoutPanel extends PopupSurface {
     constructor() {
         super('winshell-flyout winshell-snap-panel', 420, 390);
+        this._verificationIds = new Set();
+    }
+
+    _verifyResult(win, area, requested) {
+        const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 160, () => {
+            this._verificationIds.delete(id);
+            try {
+                const actual = win.get_frame_rect();
+                if (rectangleWithinArea(actual, area)) {
+                    if (!rectanglesApproximatelyEqual(actual, requested)) {
+                        console.debug(`[WinShell] Aplicativo ajustou a geometria Snap: ${JSON.stringify({requested, actual})}`);
+                        notify('WinShell', 'O aplicativo aplicou seus próprios limites de tamanho ao layout.');
+                    }
+                    return GLib.SOURCE_REMOVE;
+                }
+                const position = constrainedPosition(actual, area);
+                if (position && win.allows_move()) {
+                    win.move_frame(true, position.x, position.y);
+                    console.debug('[WinShell] Snap reposicionado após restrições do aplicativo.');
+                } else {
+                    console.warn(`[WinShell] Resultado do Snap fora da área útil: ${JSON.stringify({requested, actual, area})}`);
+                    notify('WinShell', 'A restrição de tamanho do aplicativo não cabe nesta área útil.');
+                }
+            } catch (error) {
+                console.debug(`[WinShell] Não foi possível verificar o resultado do Snap: ${error.message}`);
+            }
+            return GLib.SOURCE_REMOVE;
+        });
+        this._verificationIds.add(id);
     }
 
     forWindow(win, anchorX, bottomY) {
@@ -53,7 +101,8 @@ export class SnapLayoutPanel extends PopupSurface {
                 button.set_accessible_name(`${template.label}: região ${index + 1}`);
                 button.connect('clicked', () => {
                     this.hide();
-                    if (!applyLayout(win, region))
+                    if (!applyLayout(win, region,
+                        (area, requested) => this._verifyResult(win, area, requested)))
                         notify('WinShell', 'O aplicativo não aceitou o posicionamento solicitado.');
                 });
                 canvas.add_child(button);
@@ -80,5 +129,12 @@ export class SnapLayoutPanel extends PopupSurface {
             button.set_size(Math.max(1, Math.round(rw * width) - gap * 2),
                 Math.max(1, Math.round(rh * height) - gap * 2));
         }
+    }
+
+    destroy() {
+        for (const id of this._verificationIds)
+            GLib.Source.remove(id);
+        this._verificationIds.clear();
+        super.destroy();
     }
 }
