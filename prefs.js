@@ -15,6 +15,8 @@ export default class WinShellPreferences extends ExtensionPreferences {
             ['show-clock', 'Mostrar relógio', 'Data e hora na área direita'],
             ['show-notifications', 'Mostrar notificações', 'Atalho para o centro de notificações nativo'],
             ['show-quick-settings', 'Mostrar configurações rápidas', 'Painel WinShell e controles do GNOME'],
+            ['multi-monitor', 'Barra em todos os monitores', 'Mostra uma barra em cada monitor conectado'],
+            ['window-previews', 'Pré-visualização de janelas', 'Miniaturas e ações ao passar o mouse'],
             ['show-activities-panel', 'Manter painel superior GNOME', 'Recomendado inicialmente para acessar os controles nativos'],
         ]) {
             const row = new Adw.SwitchRow({title, subtitle});

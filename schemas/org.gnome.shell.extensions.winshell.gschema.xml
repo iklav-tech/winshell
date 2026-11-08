@@ -8,6 +8,8 @@
     <key name="show-notifications" type="b"><default>true</default><summary>Botão de notificações</summary></key>
     <key name="show-quick-settings" type="b"><default>true</default><summary>Botão de configurações rápidas</summary></key>
     <key name="show-activities-panel" type="b"><default>true</default><summary>Manter o painel GNOME superior</summary></key>
+    <key name="multi-monitor" type="b"><default>false</default><summary>Barra em todos os monitores</summary></key>
+    <key name="window-previews" type="b"><default>true</default><summary>Pré-visualizações de janelas</summary></key>
     <key name="pinned-apps" type="as"><default>['org.gnome.Nautilus.desktop', 'firefox.desktop', 'org.gnome.Terminal.desktop']</default><summary>IDs dos aplicativos fixados</summary></key>
   </schema>
 </schemalist>

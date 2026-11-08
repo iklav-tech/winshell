@@ -1,9 +1,9 @@
-# WinShell for GNOME 0.2.0
+# WinShell for GNOME v0.3.0
 
 Extensão GNOME Shell 46 para Ubuntu 24.04, com uma interface inspirada no Windows 11.
 Projeto experimental, sem vínculo com Microsoft ou GNOME Foundation.
 
-## Novidades 0.2.0
+## Funcionalidades herdadas da v0.2.0
 
 - Painel de configurações rápidas no canto inferior: alternar modo escuro e Não Perturbe; atalhos de Rede/Wi-Fi, Bluetooth, Som e Configurações.
 - Atalhos para o centro nativo de notificações/calendário e para o menu nativo de controles completos do GNOME.
@@ -14,12 +14,20 @@ Projeto experimental, sem vínculo com Microsoft ou GNOME Foundation.
 - Atalhos para Configurações e Arquivos no Menu Iniciar.
 - Novas opções de preferências para os botões de notificações e configurações rápidas.
 
+## Resumo da v0.3.0
+
+- **Snap Layouts:** nove regiões de posicionamento via menu contextual de aplicativos em execução.
+- **Pré-visualizações:** ao posicionar o cursor sobre aplicativos abertos, exibe janelas disponíveis e ações de gerenciamento.
+- **Multimonitor:** opção de barra por monitor, desabilitada por padrão.
+- **Centro de notificações:** painel próprio de leitura das notificações expostas pelo GNOME, com acesso ao histórico nativo.
+- **Novas preferências:** controles das pré-visualizações e da barra em vários monitores.
+
 ## Limitações conhecidas
 
-- O conteúdo de notificações e as opções completas de som/rede continuam sendo fornecidos pelos **menus originais** do GNOME, não por uma recriação fiel do Windows. A interface rápida própria oferece ações e atalhos.
+- O novo painel exibe notificações disponíveis via fontes do GNOME, mas não substitui seu histórico completo. Os controles avançados de som e rede continuam nos **menus originais** do GNOME.
 - Busca limitada aos aplicativos instalados (metadados de .desktop); **não busca documentos, Internet ou conteúdo de arquivos**.
 - Os atalhos Wi-Fi/Bluetooth dependem dos arquivos .desktop disponibilizados pelo GNOME Control Center na distribuição. Quando não existirem, aparecerá uma mensagem de aplicativo não encontrado.
-- Somente o monitor primário recebe a barra. Sem Snap Layouts do Windows 11 nem substituição do Nautilus.
+- A barra aparece no monitor principal por padrão; a exibição nos demais monitores é opcional. A substituição do Nautilus ainda não foi implementada.
 - Sem teste em sessão real nesta entrega; testes de sintaxe/estrutura não substituem teste no GNOME 46.
 - Se o painel superior GNOME estiver oculto, usar seus menus nativos provoca o aparecimento temporário do painel superior.
 
@@ -36,7 +44,7 @@ sudo apt install gnome-shell-extensions gnome-shell-extension-prefs \
 ## Instalar
 
 ```bash
-unzip winshell-for-gnome-v0.2.0.zip
+unzip winshell-for-gnome-v0.3.0.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
@@ -88,6 +96,11 @@ Então encerre a sessão gráfica ou reinicie o computador. Se necessário, rest
 
 ## Estrutura
 
+- `modules/snapLayouts.js`: opções de organização e redimensionamento de janelas.
+- `modules/windowPreview.js`: pré-visualizações de janelas.
+- `modules/multiMonitor.js`: criação e atualização das barras por monitor.
+- `modules/notificationCenter.js`: painel próprio para notificações disponíveis.
+
 - `extension.js`: ativação e restauração da interface nativa.
 - `modules/taskbar.js`: barra, aplicativos, relógio e botões.
 - `modules/startMenu.js`: menu e pesquisa.
@@ -103,3 +116,34 @@ Então encerre a sessão gráfica ou reinicie o computador. Se necessário, rest
 ## Licença
 
 MIT. Consulte `LICENSE`.
+
+## Novidades da v0.3.0 (versão de desenvolvimento)
+
+- **Snap Layouts:** right-click an application icon, choose *Organizar janela*, and select one of nine tiling regions. A snap action requires a movable, resizable, non-fullscreen window; compositor/client constraints may limit the resulting frame, particularly on Wayland.
+- **Window previews:** hover over an application icon for roughly 450 ms to open a flyout showing currently known windows, window activation, close action and Snap Layout shortcut. Previews clone the compositor's current window actor; they are not a separate screen-capture API, so unmapped/minimized windows may lack a live image.
+- **Multi-monitor taskbars:** enable *Barra em todos os monitores* in the preferences to show one taskbar per monitor. It defaults to disabled, allowing compatibility testing before turning it on. Each taskbar currently lists the same pinned/running apps; per-monitor filtering is not included.
+- **Notification center:** the notification button opens a WinShell flyout with a best-effort, read-only list of notifications currently exposed by GNOME message sources. Its Calendar button opens GNOME's authoritative native notifications/calendar panel. This is **not** a full replacement for GNOME's notification history or service.
+
+### Atualização a partir da v0.2.0
+
+```bash
+# Back up settings if desired: dconf dump /org/gnome/shell/extensions/winshell/ > winshell-settings.ini
+gnome-extensions disable winshell@iklav-tech
+unzip winshell-for-gnome-v0.3.0.zip
+cd winshell-for-gnome
+./tests/check.sh
+./scripts/install.sh
+# On Wayland, log out and log back in before enabling a new extension version.
+gnome-extensions enable winshell@iklav-tech
+```
+
+### Verificação dos novos recursos
+
+1. Check `gnome-shell --version` shows GNOME 46.
+2. Launch two normal, resizable application windows; right-click their taskbar icons and apply left/right Snap Layouts. Verify both windows remain usable.
+3. Hover over a running app with one or more windows; check title, activation, close and arrangement actions.
+4. Enable *Barra em todos os monitores*, add/remove a monitor and verify taskbars are properly recreated. Switch this setting off if you encounter GNOME Shell conflicts.
+5. Open the notification icon and verify the panel opens even without any notifications; use *Calendário* to reach native GNOME history.
+6. Disable/enable the extension and confirm the original GNOME top panel returns with no orphan WinShell actors.
+
+**Validação:** as verificações de sintaxe e estrutura não substituem testes no GNOME Shell. Esta versão **não foi testada em uma sessão GNOME 46 / Wayland real** durante a geração. Recomenda-se publicar como *Pre-release* até homologação.

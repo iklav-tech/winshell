@@ -15,7 +15,7 @@ export class ContextMenu extends PopupSurface {
         this.actor.add_child(button);
     }
 
-    forApp(app, anchorX, bottomY) {
+    forApp(app, anchorX, bottomY, openSnap = null) {
         this.actor.destroy_all_children();
         const id = app.get_id();
         const pinned = this._settings.get_strv('pinned-apps').includes(id);
@@ -27,6 +27,8 @@ export class ContextMenu extends PopupSurface {
         this._item('Abrir nova janela', () => app.open_new_window(-1));
         if (app.get_windows().length)
             this._item('Fechar janelas', () => app.get_windows().forEach(win => win.delete(global.get_current_time())));
+        if (openSnap && app.get_windows().length)
+            this._item('Organizar janela (Snap Layouts)', () => openSnap(app.get_windows()[0]));
         this._item('Configurações do WinShell', () => openDesktop('org.gnome.Extensions.desktop'));
         this.show(anchorX, bottomY);
     }

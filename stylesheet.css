@@ -69,3 +69,17 @@
 .winshell-context-menu { spacing: 4px; padding: 10px; }
 .winshell-context-item { padding: 10px 12px; border-radius: 6px; text-align: left; color: #20314a; }
 .winshell-context-item:hover { background-color: #d8e8fb; }
+
+/* 0.3.0 — window thumbnails, tiling choices and notification cards */
+.winshell-preview { spacing: 8px; padding: 12px; }
+.winshell-preview-scroll, .winshell-notifications-scroll { padding: 4px; }
+.winshell-preview-list, .winshell-notifications-list { spacing: 8px; }
+.winshell-preview-line { spacing: 7px; padding: 6px; border-radius: 8px; background-color: rgba(220,232,247,0.72); }
+.winshell-preview-title { text-align: left; color: #20314a; padding: 5px; }
+.winshell-mini-action { padding: 5px; border-radius: 6px; color: #20314a; }
+.winshell-mini-action:hover { background-color: #d0e0f6; }
+.winshell-snap-panel { spacing: 2px; padding: 10px; }
+.winshell-notification-center { padding: 14px; }
+.winshell-notification-heading { spacing: 8px; }
+.winshell-notification-card { padding: 10px; border-radius: 8px; background-color: #e2eaf6; spacing: 5px; }
+.winshell-notification-body { color: #3c4b60; font-size: 10pt; }

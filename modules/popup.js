@@ -26,7 +26,9 @@ export class PopupSurface {
     }
 
     show(anchorX, bottomY) {
-        const monitor = Main.layoutManager.primaryMonitor;
+        const monitors = Main.layoutManager.monitors;
+        const monitor = monitors.find(m => anchorX >= m.x && anchorX < m.x + m.width &&
+            bottomY >= m.y && bottomY <= m.y + m.height) ?? Main.layoutManager.primaryMonitor;
         if (!monitor) return;
         const width = Math.min(this.width, monitor.width - 24);
         const height = Math.min(this.height, monitor.height - 32);

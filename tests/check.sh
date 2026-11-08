@@ -6,10 +6,10 @@ import json, sys, pathlib, xml.etree.ElementTree as ET
 root=pathlib.Path(sys.argv[1]); data=json.loads((root/'metadata.json').read_text()); assert data['uuid']=='winshell@iklav-tech'
 tree=ET.parse(root/'schemas/org.gnome.shell.extensions.winshell.gschema.xml'); assert tree.find('.//schema') is not None
 keys={k.get('name') for k in tree.findall('.//key')}
-required={'panel-height','center-icons','show-clock','show-search','show-notifications','show-quick-settings','show-activities-panel','pinned-apps'}
+required={'panel-height','center-icons','show-clock','show-search','show-notifications','show-quick-settings','show-activities-panel','pinned-apps','multi-monitor','window-previews'}
 assert required <= keys, f'Missing GSettings keys: {required-keys}'
-assert data['version']==2
-required_modules={'popup.js','quickSettings.js','contextMenu.js','systemActions.js','taskbar.js','startMenu.js','apps.js'}
+assert data['version']==3
+required_modules={'popup.js','quickSettings.js','contextMenu.js','systemActions.js','taskbar.js','startMenu.js','apps.js','snapLayouts.js','windowPreview.js','notificationCenter.js','multiMonitor.js'}
 assert required_modules <= {p.name for p in (root/'modules').glob('*.js')}
 for f in [root/'extension.js',root/'prefs.js',*sorted((root/'modules').glob('*.js'))]:
     assert f.stat().st_size>0

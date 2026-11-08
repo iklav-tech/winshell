@@ -1,6 +1,6 @@
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {Taskbar} from './modules/taskbar.js';
+import {TaskbarManager} from './modules/multiMonitor.js';
 import {StartMenu} from './modules/startMenu.js';
 
 // Restore the native panel after a native menu closes when in immersive mode.
@@ -44,7 +44,7 @@ export default class WinShellExtension extends Extension {
         try {
             this._panelController = new NativePanelController(this._settings);
             this._menu = new StartMenu(this._settings);
-            this._taskbar = new Taskbar(this._settings, this._menu, this._panelController);
+            this._taskbar = new TaskbarManager(this._settings, this._menu, this._panelController);
             this._settingsSignal = this._settings.connect('changed::show-activities-panel',
                 () => this._updateNativePanel());
             this._updateNativePanel();

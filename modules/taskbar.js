@@ -7,9 +7,13 @@ import {activateApp, appById, runningApps} from './apps.js';
 import {ContextMenu} from './contextMenu.js';
 import {QuickSettingsPanel} from './quickSettings.js';
 import {openNativeMenu} from './systemActions.js';
+import {WindowPreview} from './windowPreview.js';
+import {SnapLayoutPanel} from './snapLayouts.js';
+import {NotificationCenter} from './notificationCenter.js';
 
 export class Taskbar {
-    constructor(settings, menu, panelController) {
+    constructor(settings, menu, panelController, monitorIndex = 0) {
+        this._monitorIndex = monitorIndex;
         this._settings = settings;
         this._menu = menu;
         this._panelController = panelController;
@@ -26,6 +30,9 @@ export class Taskbar {
         Main.layoutManager.addChrome(this.actor, {affectsStruts: true, trackFullscreen: true});
         this._context = new ContextMenu(settings);
         this._quick = new QuickSettingsPanel(panelController);
+        this._snap = new SnapLayoutPanel();
+        this._preview = new WindowPreview(this._snap);
+        this._notifications = new NotificationCenter(panelController);
         this._clockButton = this._iconButton('x-office-calendar-symbolic', 'Notificações e calendário',
             () => openNativeMenu('calendar', this._panelController));
         this._clock = new St.Label({style_class: 'winshell-clock', y_align: Clutter.ActorAlign.CENTER});
@@ -35,7 +42,10 @@ export class Taskbar {
             this._quick.toggle(x, y);
         });
         this._notificationButton = this._iconButton('preferences-system-notifications-symbolic',
-            'Centro de notificações', () => openNativeMenu('calendar', this._panelController));
+            'Centro de notificações', () => {
+                const [x, y] = this._anchor(this._notificationButton);
+                this._notifications.toggle(x, y);
+            });
         this._right.add_child(this._notificationButton);
         this._right.add_child(this._quickButton);
         this._right.add_child(this._clockButton);
@@ -67,7 +77,7 @@ export class Taskbar {
     _anchor(button) {
         const [x] = button.get_transformed_position();
         const [w] = button.get_transformed_size();
-        const monitor = Main.layoutManager.primaryMonitor;
+        const monitor = Main.layoutManager.monitors[this._monitorIndex] ?? Main.layoutManager.primaryMonitor;
         return [x + w / 2, monitor.y + monitor.height - this._settings.get_int('panel-height')];
     }
 
@@ -105,7 +115,7 @@ export class Taskbar {
     }
 
     _position() {
-        const monitor = Main.layoutManager.primaryMonitor;
+        const monitor = Main.layoutManager.monitors[this._monitorIndex] ?? Main.layoutManager.primaryMonitor;
         if (!monitor) return;
         const height = this._settings.get_int('panel-height');
         this.actor.set_position(monitor.x, monitor.y + monitor.height - height);
@@ -143,9 +153,19 @@ export class Taskbar {
                 if (event.get_button() !== Clutter.BUTTON_SECONDARY)
                     return Clutter.EVENT_PROPAGATE;
                 const [x, y] = this._anchor(button);
-                this._context.forApp(app, x, y);
+                this._context.forApp(app, x, y, win => this._snap.forWindow(win, x, y));
                 return Clutter.EVENT_STOP;
             });
+            if (this._settings.get_boolean('window-previews')) {
+                button.connect('enter-event', () => {
+                    if (app.get_windows().length) this._preview.schedule(app, button, this._anchor(button)[1]);
+                    return Clutter.EVENT_PROPAGATE;
+                });
+                button.connect('leave-event', () => {
+                    this._preview.cancelPending();
+                    return Clutter.EVENT_PROPAGATE;
+                });
+            }
             this._center.add_child(button);
         }
     }
@@ -159,6 +179,9 @@ export class Taskbar {
         if (this._timeout) GLib.Source.remove(this._timeout);
         for (const [object, id] of this._signals) object.disconnect(id);
         for (const id of this._settingsSignals) this._settings.disconnect(id);
+        this._preview.destroy();
+        this._snap.destroy();
+        this._notifications.destroy();
         this._context.destroy();
         this._quick.destroy();
         this.actor.destroy();
