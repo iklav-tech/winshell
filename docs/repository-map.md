@@ -4,10 +4,11 @@
 |---|---|
 | `extension.js` | enable/disable e painel superior |
 | `prefs.js` | preferências GTK/Libadwaita |
-| `metadata.json` | UUID, Shell 46, versão inteira 5 / 0.4.1 |
+| `metadata.json` | UUID, Shell 46, versão inteira 6 / 0.4.2 |
 | `stylesheet.css` | barra, flyouts, claro/escuro |
 | `modules/taskbar.js` | composição e eventos da barra |
 | `modules/multiMonitor.js` | topologia e controles compartilhados |
+| `modules/taskbarConflict.js` | detecção, política e restauração de docks concorrentes |
 | `modules/systemControls.js` | NM, Bluetooth, GVC, brilho, UPower e desktop |
 | `modules/quickSettings.js` | UI de controles reais |
 | `modules/calendar.js` | calendário mensal |
@@ -17,11 +18,11 @@
 | `modules/windowPreview.js` | miniaturas e ações |
 | `modules/snapLayouts.js` | UI/aplicação de layouts |
 | `modules/popup.js` | base/posicionamento de flyouts |
-| `modules/*Model.mjs`, `windowActions.mjs`, `layoutGeometry.mjs` | lógica pura testável |
-| `schemas/` | onze preferências persistentes |
-| `tests/` | estrutura, sintaxe, schema e cinco suítes unitárias |
+| `modules/*Model.mjs`, `windowActions.mjs`, `layoutGeometry.mjs`, `taskbarGeometry.mjs` | lógica pura testável |
+| `schemas/` | doze valores de usuário e um registro interno persistente |
+| `tests/` | estrutura, sintaxe, schema e sete suítes unitárias |
 | `scripts/` | instalação, remoção e diagnóstico |
-| `docs/` | referência alinhada à v0.4.1 |
+| `docs/` | referência alinhada à v0.4.2 |
 
 ## Dependências de runtime
 

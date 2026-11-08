@@ -7,7 +7,7 @@ Extensão GNOME Shell 46 que adiciona barra, Start, Snap Layouts, previews, Quic
 ## Entradas
 
 - Lifecycle `enable()/disable()`.
-- Onze chaves do schema da extensão.
+- Treze chaves do schema da extensão: doze configurações/valores de usuário e um registro interno de restauração.
 - Apps e janelas do Shell/Mutter.
 - Sinais de monitor, foco, apps e MessageTray.
 - NM, gnome-bluetooth/rfkill, GVC, Settings Daemon, UPower e GSettings desktop.
@@ -21,6 +21,7 @@ Extensão GNOME Shell 46 que adiciona barra, Start, Snap Layouts, previews, Quic
 - Mudanças de Wi‑Fi/Bluetooth/áudio/brilho/Não Perturbe/tema solicitadas aos serviços.
 - Ativação e descarte de notificações pela API do Shell.
 - Escrita apenas em GSettings; nenhum histórico/credencial próprio.
+- Alteração reversível do estado de docks conhecidos pela API pública do gerenciador de extensões.
 
 ## Erros/fallbacks
 
@@ -28,7 +29,7 @@ Falha geral de enable gera log, cleanup e relançamento. Serviços/hardware ause
 
 ## Lifecycle
 
-`TaskbarManager` compartilha um `SystemControls`, cria/destrói barras em mudanças de monitor e faz rollback de construção. Popups desconectam stage; controles removem sinais/idles; notificações removem observadores; preview remove timer; extensão restaura o painel superior.
+`TaskbarManager` compartilha um `SystemControls`, cria/destrói uma barra por índice de monitor em mudanças de topologia e faz rollback de construção. `TaskbarConflictManager` remove seu idle/sinais e restaura somente UUIDs registrados. Popups desconectam stage; controles removem sinais/idles; notificações removem observadores; preview remove timer; extensão restaura o painel superior.
 
 ## Testes
 
@@ -38,7 +39,9 @@ Falha geral de enable gera log, cleanup e relançamento. Serviços/hardware ause
 - `notifications.test.mjs`;
 - `context-menu.test.mjs`;
 - `quick-settings.test.mjs`;
-- `layouts.test.mjs`.
+- `layouts.test.mjs`;
+- `taskbar-conflicts.test.mjs`;
+- `taskbar-geometry.test.mjs`.
 
 Testes gráficos e D-Bus reais permanecem manuais.
 

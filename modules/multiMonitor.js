@@ -1,6 +1,7 @@
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Taskbar} from './taskbar.js';
 import {SystemControls} from './systemControls.js';
+import {taskbarMonitorIndexes} from './taskbarGeometry.mjs';
 
 export class TaskbarManager {
     constructor(settings, menu) {
@@ -22,12 +23,10 @@ export class TaskbarManager {
     _rebuild() {
         this._bars.forEach(bar => bar.destroy());
         this._bars = [];
-        const count = this._settings.get_boolean('multi-monitor') ? Main.layoutManager.monitors.length : 1;
-        const primary = Main.layoutManager.primaryIndex ?? 0;
-        for (let i = 0; i < count; i++) {
-            const index = this._settings.get_boolean('multi-monitor') ? i : primary;
+        const indexes = taskbarMonitorIndexes(Main.layoutManager.monitors,
+            Main.layoutManager.primaryIndex, this._settings.get_boolean('multi-monitor'));
+        for (const index of indexes)
             this._bars.push(new Taskbar(this._settings, this._menu, this._systemControls, index));
-        }
     }
     destroy() {
         if (this._monitorSignal) Main.layoutManager.disconnect(this._monitorSignal);

@@ -6,6 +6,7 @@
 |---|---|
 | `TaskbarManager` | Possui o `SystemControls` compartilhado e uma ou mais barras |
 | `Taskbar` | Barra inferior vinculada a um monitor |
+| `TaskbarConflictManager` | Detecta/coordena docks conhecidos e possui o registro reversível |
 | `PopupSurface` | Base de flyouts posicionados e limitados ao monitor da âncora |
 | `SystemControls` | Adaptador assíncrono para NM, Bluetooth/rfkill, GVC, brilho, UPower e GSettings |
 | `QuickSettingsPanel` | Projeção/ações dos controles de sistema |
@@ -21,6 +22,7 @@
 ```text
 WinShellExtension
 ├── StartMenu
+├── TaskbarConflictManager ── GNOME ExtensionManager
 └── TaskbarManager
     ├── SystemControls (um por extensão)
     └── Taskbar[] (uma ou várias)
@@ -41,6 +43,7 @@ WinShellExtension
 - Áudio/brilho/bateria: disponíveis somente quando os serviços expõem dados válidos.
 - Notificação: criada, atualizada, ativada ou destruída pela fonte autoritativa do Shell.
 - Janela: normal, minimizada, maximizada ou sem capacidade específica.
+- Conflito de barra: ausente, ativo/mutável, ativo/bloqueado ou gerenciado aguardando restauração.
 
 ## Fora do domínio
 
@@ -48,6 +51,7 @@ WinShellExtension
 - Persistir histórico próprio de notificações.
 - Organizar automaticamente todas as janelas depois de escolher uma região Snap.
 - Pesquisar documentos ou web no menu Iniciar.
+- Destruir atores ou reconfigurar opções privadas de extensões de terceiros.
 
 ## Pendências
 

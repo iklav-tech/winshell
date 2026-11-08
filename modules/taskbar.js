@@ -9,6 +9,7 @@ import {QuickSettingsPanel} from './quickSettings.js';
 import {WindowPreview} from './windowPreview.js';
 import {SnapLayoutPanel} from './snapLayouts.js';
 import {NotificationCenter} from './notificationCenter.js';
+import {taskbarGeometry} from './taskbarGeometry.mjs';
 
 export class Taskbar {
     constructor(settings, menu, systemControls, monitorIndex = 0) {
@@ -17,7 +18,8 @@ export class Taskbar {
         this._menu = menu;
         this._signals = [];
         this._settingsSignals = [];
-        this.actor = new St.BoxLayout({style_class: 'winshell-taskbar', reactive: true,
+        this.actor = new St.BoxLayout({name: `winshell-taskbar-${monitorIndex}`,
+            style_class: 'winshell-taskbar', reactive: true,
             x_expand: true, track_hover: true});
         this._left = new St.BoxLayout({style_class: 'winshell-taskbar-left'});
         this._center = new St.BoxLayout({style_class: 'winshell-taskbar-center'});
@@ -119,8 +121,10 @@ export class Taskbar {
         const monitor = Main.layoutManager.monitors[this._monitorIndex] ?? Main.layoutManager.primaryMonitor;
         if (!monitor) return;
         const height = this._settings.get_int('panel-height');
-        this.actor.set_position(monitor.x, monitor.y + monitor.height - height);
-        this.actor.set_size(monitor.width, height);
+        const geometry = taskbarGeometry(monitor, height);
+        if (!geometry) return;
+        this.actor.set_position(geometry.x, geometry.y);
+        this.actor.set_size(geometry.width, geometry.height);
     }
 
     _renderApps() {

@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.4.2 — 2026-11-08
+
+### Added
+
+- Automatic, warn-only and disabled taskbar conflict policies in GSettings and GTK4/Libadwaita preferences.
+- Runtime detection for Ubuntu Dock, Dash to Dock and Dash to Panel through GNOME Shell's extension manager.
+- Persistent ownership records for docks disabled by WinShell, enabling lifecycle restoration without touching third-party actors.
+- Unit tests for conflict policy, reversible records, negative/non-zero monitor origins and unique per-monitor topology.
+
+### Changed
+
+- Taskbar geometry now comes from a validated pure helper and always anchors to the corresponding monitor's logical bottom edge.
+- Multi-monitor rebuilds derive a unique index set and safely support the transient zero-monitor state.
+- Metadata integer version advanced from 5 to 6 with `version-name` 0.4.2.
+
+### Fixed
+
+- WinShell no longer leaves a supported dock visible behind its own taskbar in Automatic mode.
+- Disabling WinShell restores only taskbar extensions that WinShell recorded as previously active.
+- GNOME Shell 46 extension-order rebasing no longer triggers premature dock restoration or loses the original top-panel visibility state.
+
+### Limitations
+
+- Visual/runtime acceptance scenarios remain pending in a disposable GNOME Shell 46 Wayland session.
+- Unknown third-party panels are not modified; administrative policy can prevent automatic changes and produces a warning.
+- A Shell process crash can defer restoration until the next WinShell lifecycle; manual recovery commands are documented in README.
+
 ## v0.4.1 — 2026-11-08
 
 ### Added

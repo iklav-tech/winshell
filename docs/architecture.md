@@ -8,6 +8,8 @@ WinShell é uma extensão GJS/ES Modules sem daemon ou armazenamento próprio. `
 flowchart TD
   E[extension.js] --> S[StartMenu]
   E --> M[TaskbarManager]
+  E --> H[TaskbarConflictManager]
+  H --> EM[GNOME ExtensionManager]
   M --> C[SystemControls]
   M --> T[Taskbar por monitor]
   T --> Q[QuickSettingsPanel]
@@ -24,10 +26,10 @@ flowchart TD
 
 | Camada | Módulos |
 |---|---|
-| Lifecycle/topologia | `extension.js`, `multiMonitor.js`, `taskbar.js` |
+| Lifecycle/topologia | `extension.js`, `multiMonitor.js`, `taskbar.js`, `taskbarConflict.js` |
 | Plataforma | `systemControls.js`, `systemActions.js`, `apps.js` |
 | Apresentação | Quick Settings, calendário, notificações, contexto, Start, previews e Snap |
-| Domínio puro | `calendarModel.mjs`, `notificationModel.mjs`, `quickSettingsModel.mjs`, `windowActions.mjs`, `layoutGeometry.mjs` |
+| Domínio puro | `calendarModel.mjs`, `notificationModel.mjs`, `quickSettingsModel.mjs`, `windowActions.mjs`, `layoutGeometry.mjs`, `taskbarConflictModel.mjs`, `taskbarGeometry.mjs` |
 | Persistência/configuração | schema GSettings e `prefs.js` |
 
 ## Integrações
@@ -38,10 +40,11 @@ flowchart TD
 - Brilho e UPower são proxies D-Bus construídos de forma assíncrona.
 - Tema e Não Perturbe usam GSettings e recebem mudanças externas.
 - Notificações continuam sob autoridade de `Main.messageTray`; a extensão usa seus sinais e métodos públicos da versão alvo.
+- Conflitos são identificados por `Main.extensionManager.lookup()` e alterados somente por `disableExtension()`/`enableExtension()`; atores de terceiros nunca são destruídos.
 
 ## Lifecycle
 
-O adaptador global agenda no máximo um idle de atualização e guarda cada conexão de sinal. Destruição remove o idle, sinais dinâmicos de AP/device/sink e assinantes. Cada centro de notificação desconecta tray/sources/items; cada popup desconecta stage; previews removem timeouts. A construção do gerenciador faz rollback se falhar.
+O adaptador global agenda no máximo um idle de atualização e guarda cada conexão de sinal. Destruição remove o idle, sinais dinâmicos de AP/device/sink e assinantes. Cada centro de notificação desconecta tray/sources/items; cada popup desconecta stage; previews removem timeouts. A construção do gerenciador faz rollback se falhar. O gerenciador de conflitos também usa um único idle e distingue disable real do rebase transitório do GNOME 46, restaurando docks apenas no lifecycle real.
 
 ## Decisões
 
@@ -50,6 +53,7 @@ O adaptador global agenda no máximo um idle de atualização e guarda cada cone
 - Redes novas, pareamento e configuração avançada permanecem no GNOME Settings.
 - O calendário WinShell não modifica nem substitui objetos do calendário nativo.
 - Modelos puros separam cálculos/normalização da UI GJS.
+- `addChrome` mantém a barra abaixo de janelas/popups, `affectsStruts` reserva área útil e `trackFullscreen` a oculta por monitor em fullscreen.
 
 ## Compatibilidade
 

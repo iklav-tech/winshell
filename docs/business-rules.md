@@ -19,7 +19,12 @@
 - **RN-15 — capacidade real:** controles e ações de janela ausentes, bloqueados por hardware ou não suportados não ficam acionáveis.
 - **RN-16 — notificações autoritativas:** WinShell não persiste cópia; ativação e descarte chamam a API da notificação do Shell.
 - **RN-17 — sincronização externa:** serviços, GSettings, fontes/notificações e janelas emitem sinais que atualizam a projeção WinShell.
-- **RN-18 — versão:** release v0.4.1 usa `metadata.version=5` e `version-name=0.4.1`.
+- **RN-18 — versão:** release v0.4.2 usa `metadata.version=6` e `version-name=0.4.2`.
+- **RN-19 — conflito automático:** somente Ubuntu Dock, Dash to Dock e Dash to Panel ativos e mutáveis são desativados pela API pública do Shell.
+- **RN-20 — restauração:** somente UUIDs que o WinShell registrou em `managed-taskbar-extensions` são reabilitados em disable real ou saída do modo Automático.
+- **RN-21 — fallback seguro:** Warn Only apenas notifica; Disabled não detecta nem altera; extensão bloqueada por política administrativa recebe aviso em vez de manipulação de atores.
+- **RN-22 — chrome:** cada barra usa `addChrome` com strut e tracking de fullscreen, ficando abaixo de janelas e diálogos do sistema.
+- **RN-23 — geometria:** a barra ocupa a largura e borda inferior lógicas do monitor correspondente; origens não zero/negativas são preservadas e cada índice recebe no máximo uma barra.
 
 ## Hipóteses abertas
 
@@ -33,5 +38,5 @@
 
 ## Pendências
 
-- TODO: validar RN-02, RN-04, RN-13 a RN-17 numa sessão GNOME 46/Wayland.
+- TODO: validar RN-02, RN-04, RN-13 a RN-17 e RN-19 a RN-23 numa sessão GNOME 46/Wayland.
 - TODO: reavaliar H-02, H-05, H-06 e H-07 após o checklist manual.

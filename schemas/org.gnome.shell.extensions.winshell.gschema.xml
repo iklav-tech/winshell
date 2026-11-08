@@ -11,6 +11,21 @@
     <key name="multi-monitor" type="b"><default>false</default><summary>Barra em todos os monitores</summary></key>
     <key name="snap-layouts" type="b"><default>true</default><summary>Habilitar Snap Layouts gráficos</summary></key>
     <key name="window-previews" type="b"><default>true</default><summary>Pré-visualizações de janelas</summary></key>
+    <key name="taskbar-conflict-handling" type="s">
+      <choices>
+        <choice value="automatic"/>
+        <choice value="warn-only"/>
+        <choice value="disabled"/>
+      </choices>
+      <default>'automatic'</default>
+      <summary>Tratamento de conflitos da barra de tarefas</summary>
+      <description>Desativa com segurança, apenas avisa ou ignora barras concorrentes conhecidas.</description>
+    </key>
+    <key name="managed-taskbar-extensions" type="as">
+      <default>[]</default>
+      <summary>Extensões temporariamente gerenciadas pelo WinShell</summary>
+      <description>Estado interno usado para restaurar extensões concorrentes que o WinShell desativou.</description>
+    </key>
     <key name="pinned-apps" type="as"><default>['org.gnome.Nautilus.desktop', 'firefox.desktop', 'org.gnome.Terminal.desktop']</default><summary>IDs dos aplicativos fixados</summary></key>
   </schema>
 </schemalist>

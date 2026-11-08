@@ -27,6 +27,24 @@ export default class WinShellPreferences extends ExtensionPreferences {
         const height = new Adw.SpinRow({title: 'Altura da barra (px)', adjustment: new Gtk.Adjustment({lower: 40, upper: 88, step_increment: 2, page_increment: 8, value: settings.get_int('panel-height')})});
         settings.bind('panel-height', height, 'value', Gio.SettingsBindFlags.DEFAULT);
         group.add(height);
+        const conflict = new Adw.ComboRow({
+            title: 'Tratamento de conflitos da barra de tarefas',
+            subtitle: 'Coordena Ubuntu Dock, Dash to Dock e Dash to Panel',
+            model: Gtk.StringList.new(['Automático (recomendado)', 'Apenas avisar', 'Desativado']),
+        });
+        const conflictValues = ['automatic', 'warn-only', 'disabled'];
+        const updateConflictRow = () => {
+            const index = conflictValues.indexOf(settings.get_string('taskbar-conflict-handling'));
+            conflict.selected = index >= 0 ? index : 1;
+        };
+        updateConflictRow();
+        conflict.connect('notify::selected', () => {
+            const value = conflictValues[conflict.selected];
+            if (value && value !== settings.get_string('taskbar-conflict-handling'))
+                settings.set_string('taskbar-conflict-handling', value);
+        });
+        settings.connectObject('changed::taskbar-conflict-handling', updateConflictRow, window);
+        group.add(conflict);
         const apps = new Adw.PreferencesGroup({title: 'Aplicativos fixados', description: 'IDs .desktop separados por vírgula. Ex.: firefox.desktop,org.gnome.Nautilus.desktop'});
         const row = new Adw.EntryRow({title: 'Aplicativos'});
         row.text = settings.get_strv('pinned-apps').join(', ');

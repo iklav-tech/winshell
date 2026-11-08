@@ -14,6 +14,8 @@
 | R-10 | média | APIs de hardware variam; ausência/permissão precisa ser validada em máquinas reais |
 | R-11 | média | Re-render de flyouts por sinais intensos pode afetar interação/desempenho |
 | R-12 | média | Notificações residentes podem reaparecer por decisão do aplicativo |
+| R-13 | média | Painéis de terceiros fora dos três UUIDs suportados não podem ser administrados com segurança; política Warn Only e troubleshooting evitam workaround frágil |
+| R-14 | média | Queda abrupta do Shell pode adiar a restauração de um dock persistente; registro interno e comandos documentados permitem recuperação |
 
 ## Melhorias da v0.4.1
 
@@ -23,10 +25,18 @@
 - Idles, sinais, callbacks e atores têm caminhos explícitos de cleanup.
 - Operações de D-Bus e NetworkManager usadas pela extensão são assíncronas.
 
+## Melhorias da v0.4.2
+
+- Conflitos conhecidos usam somente lookup/enable/disable do ExtensionManager e restauração por propriedade registrada.
+- Geometria negativa/não zero e unicidade por monitor ganharam funções puras e testes.
+- A barra usa a camada de chrome normal, strut inferior e tracking de fullscreen em vez de elevar Z-index.
+- O rebase de ordem do GNOME 46 é distinguido do disable real para evitar ciclos e restauração prematura.
+
 ## Validação pendente
 
 - TODO: medir sinais/renderizações com Wi‑Fi e Bluetooth movimentados.
 - TODO: repetir enable/disable/hotplug e inspecionar logs/atores.
 - TODO: exercitar indisponibilidade e permission denied de cada serviço.
 - TODO: verificar notificações normais, críticas, residentes e com ações.
+- TODO: executar os dez cenários de aceitação de docks, restart, multi-monitor, escala, fullscreen e reativação manual.
 

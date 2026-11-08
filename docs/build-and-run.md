@@ -28,7 +28,9 @@ OK: context menu window visibility, capabilities and state labels
 OK: all graphical layout templates and pixel bounds
 OK: notification grouping, sanitization and snapshot lifecycle
 OK: quick settings normalization, bounds and external synchronization snapshots
-OK: modelos de calendário, notificações, contexto, Quick Settings e Snap Layouts
+OK: taskbar conflict detection, policies and reversible state
+OK: taskbar bottom anchoring and unique monitor topology
+OK: modelos, Snap Layouts, conflitos e geometria da barra de tarefas
 OK: esquema GSettings validado
 OK: sintaxe dos scripts Bash
 ```
@@ -38,10 +40,10 @@ O script executa `node --check` em entradas/módulos, todos os `*.test.mjs`, `gl
 ## Instalação isolada confirmada
 
 ```bash
-XDG_DATA_HOME=/tmp/winshell-v041-install.FpXjh8 ./scripts/install.sh
+XDG_DATA_HOME=/tmp/winshell-v042-install.dYj9Qu ./scripts/install.sh
 ```
 
-Exit code 0. Foram conferidos metadata, entradas, CSS, os 18 módulos, XML e `gschemas.compiled` no destino temporário, removido após a checagem. Isso valida o empacotamento por cópia e compilação, não o enable no Shell.
+Exit code 0. Foram conferidos metadata, entradas, CSS, os 21 módulos, XML e `gschemas.compiled` no destino temporário, removido após a checagem. Isso valida o empacotamento por cópia e compilação, não o enable no Shell.
 
 ## Diagnóstico confirmado
 
@@ -49,11 +51,11 @@ Exit code 0. Foram conferidos metadata, entradas, CSS, os 18 módulos, XML e `gs
 ./scripts/doctor.sh
 ```
 
-Exit code 0; detectou `gnome-shell`, `gnome-extensions`, `glib-compile-schemas`, GNOME 46.0, Wayland e `ubuntu:GNOME`. Não havia logs WinShell recentes na saída.
+Exit code 0; detectou `gnome-shell`, `gnome-extensions`, `glib-compile-schemas`, GNOME 46.0, Wayland e `ubuntu:GNOME`. A saída continha linhas históricas de stack de `PopupSurface` da instalação v0.4.1 já ativa no perfil; a v0.4.2 do repositório não foi instalada nessa sessão, portanto essas linhas não validam nem reprovam a alteração atual.
 
 ## Pacote GNOME confirmado
 
-`gnome-extensions pack` com `modules/` e o schema produziu um ZIP válido em `/tmp`; `unzip -l` confirmou entradas, CSS, os 18 módulos, metadata e schema. O diretório temporário foi removido. Esse teste valida a composição do bundle, não sua ativação.
+`gnome-extensions pack --force --extra-source=modules --schema=...` produziu `winshell@iklav-tech.shell-extension.zip` em `/tmp`. `unzip -l` confirmou metadata, entradas, CSS, os 21 módulos e o schema (28 entradas no total); o diretório temporário foi removido. Esse teste valida a composição do bundle, não sua ativação.
 
 ## Checagem GJS adicional
 
@@ -66,6 +68,7 @@ Exit code 0; detectou `gnome-shell`, `gnome-extensions`, `glib-compile-schemas`,
 - janela de preferências;
 - controles D-Bus/GVC em interação real;
 - checklist visual multi-monitor/Wayland;
+- os dez cenários runtime de conflito, restart, fullscreen e reativação manual;
 - `uninstall.sh`, pois remove a instalação do usuário.
 
 ## Comandos para validação manual

@@ -2,8 +2,8 @@
 
 ## Confirmado pelo código/testes
 
-- UUID `winshell@iklav-tech`, Shell 46, integer version 5 e version-name 0.4.1.
-- Onze chaves GSettings, sem migração na v0.4.1.
+- UUID `winshell@iklav-tech`, Shell 46, integer version 6 e version-name 0.4.2.
+- Treze chaves GSettings; duas foram adicionadas na v0.4.2 sem remover as anteriores.
 - Cinco modelos Snap e geometria pura.
 - Calendário com grade fixa 6×7, navegação e locale.
 - Agrupamento/ordenação/sanitização de notificações.
@@ -16,6 +16,7 @@
 - Compatibilidade de todas as variantes de hardware/driver e políticas D-Bus.
 - Resultado visual claro/escuro e escalas fracionárias.
 - Ausência de leaks após ciclos longos de enable/disable/hotplug.
+- Restauração runtime após disable, restart/crash e reativação manual de cada dock suportado.
 - GVC com cada combinação PulseAudio/PipeWire.
 - Comportamento de notificações residentes/críticas de aplicativos reais.
 

@@ -1,11 +1,14 @@
-# WinShell for GNOME v0.4.1
+# WinShell for GNOME v0.4.2
 
 Extensão experimental para **Ubuntu 24.04 LTS / GNOME Shell 46**, inspirada na experiência do Windows 11 sem substituir o GNOME, Mutter, NetworkManager ou os serviços do sistema. O projeto é independente e não tem vínculo com Microsoft ou GNOME Foundation.
 
-> **Status: pré-lançamento.** A v0.4.1 foi validada com testes estáticos e unitários no ambiente de desenvolvimento. A integração visual e o ciclo completo em uma sessão GNOME Shell 46/Wayland ainda exigem validação manual; “compatível” abaixo descreve o alvo do código, não uma homologação concluída.
+> **Status: pré-lançamento.** A v0.4.2 foi validada com testes estáticos e unitários no ambiente de desenvolvimento. A integração visual e o ciclo completo em uma sessão GNOME Shell 46/Wayland ainda exigem validação manual; “compatível” abaixo descreve o alvo do código, não uma homologação concluída.
 
-## Destaques da v0.4.1
+## Destaques da v0.4.2
 
+- Tratamento configurável e reversível de conflitos com Ubuntu Dock, Dash to Dock e Dash to Panel, usando o gerenciador de extensões do GNOME Shell.
+- Barra ancorada pela geometria lógica de cada monitor, inclusive origens não zero/negativas, com uma única instância por monitor e rebuild em hotplug.
+- Chrome inferior com strut de área útil, ocultação automática em fullscreen e camada abaixo de janelas, popups e diálogos do sistema.
 - Configurações rápidas reais e sincronizadas: Wi‑Fi via NetworkManager, Bluetooth via gnome-bluetooth/rfkill, volume e saídas via GVC, brilho via GNOME Settings Daemon, bateria via UPower e Não Perturbe via GSettings.
 - Calendário mensal próprio, ligado ao relógio e ao centro de notificações, com navegação, seleção, destaque do dia atual, primeira semana/formatação conforme locale e posicionamento restrito ao monitor.
 - Menus contextuais com abrir/nova janela, fixar, listar e ativar janelas, minimizar/restaurar, maximizar/restaurar tamanho, fechar, fechar todas, ações do arquivo `.desktop`, Snap Layouts e preferências da barra.
@@ -50,7 +53,7 @@ sudo apt install nodejs
 ## Instalação
 
 ```bash
-unzip winshell-for-gnome-v0.4.1.zip
+unzip winshell-for-gnome-v0.4.2.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
@@ -70,7 +73,7 @@ O instalador aceita somente GNOME 46, copia o código para o diretório de exten
 ```bash
 dconf dump /org/gnome/shell/extensions/winshell/ > winshell-settings-backup.ini
 gnome-extensions disable winshell@iklav-tech
-unzip winshell-for-gnome-v0.4.1.zip
+unzip winshell-for-gnome-v0.4.2.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
@@ -78,11 +81,19 @@ cd winshell-for-gnome
 gnome-extensions enable winshell@iklav-tech
 ```
 
-Não há migração de schema na v0.4.1: as preferências da v0.4.0 são preservadas. O `metadata.json` usa versão inteira **5** e `version-name` **0.4.1**.
+A v0.4.2 adiciona duas chaves de schema sem remover as anteriores; as preferências existentes são preservadas. O `metadata.json` usa versão inteira **6** e `version-name` **0.4.2**.
 
 ## Configuração e uso
 
 Abra `gnome-extensions prefs winshell@iklav-tech` ou clique com o botão direito na barra e escolha **Preferências da barra de tarefas**. É possível configurar altura, alinhamento, pesquisa, relógio, notificações, Quick Settings, múltiplos monitores, Snap Layouts, pré-visualizações, painel superior e IDs `.desktop` fixados.
+
+**Tratamento de conflitos da barra de tarefas** oferece:
+
+- **Automático (recomendado):** identifica extensões ativas pelos UUIDs oficiais, desativa Ubuntu Dock, Dash to Dock e Dash to Panel pela API pública do Shell e registra somente as que o WinShell gerenciou. Ao desabilitar/desinstalar o WinShell ou trocar de política, elas são reabilitadas.
+- **Apenas avisar:** não altera outras extensões; mostra uma notificação com instruções quando encontra uma barra conhecida ativa.
+- **Desativado:** não detecta nem administra barras concorrentes.
+
+O painel superior nativo do GNOME não é uma dessas barras e permanece ativo por padrão. Ele só é ocultado quando o usuário desativa explicitamente **Manter painel superior GNOME**. Extensões desconhecidas ou bloqueadas por política administrativa não têm atores manipulados: o WinShell avisa quando reconhece que não pode fazer a mudança com segurança.
 
 - Clique no relógio ou no sino para abrir calendário/notificações.
 - Clique no botão de sistema para Quick Settings. Redes com perfil conhecido podem ser conectadas ali; redes novas ou 802.1x devem ser configuradas em **Todas as redes**.
@@ -100,6 +111,8 @@ node tests/notifications.test.mjs
 node tests/context-menu.test.mjs
 node tests/quick-settings.test.mjs
 node tests/layouts.test.mjs
+node tests/taskbar-conflicts.test.mjs
+node tests/taskbar-geometry.test.mjs
 
 # Diagnóstico do host
 ./scripts/doctor.sh
@@ -114,7 +127,15 @@ node tests/layouts.test.mjs
 - Brilho indisponível: comum em desktops e monitores sem suporte do GNOME Settings Daemon.
 - Sem histórico antigo de notificações: o centro mostra apenas notificações ativas expostas pelo Shell.
 - Erro ao habilitar: execute `./scripts/doctor.sh` e consulte `journalctl --user -b | grep -i winshell`.
+- Duas barras visíveis: abra as preferências e use **Automático**. Em **Apenas avisar**, desative o dock indicado pelo aplicativo Extensões.
+- Dock original não voltou: primeiro desabilite normalmente o WinShell. Se o Shell encerrou de forma abrupta antes do cleanup, reabilite o dock desejado com um dos comandos abaixo; o registro interno também permite nova tentativa no próximo lifecycle do WinShell.
 - Em Wayland, mudanças de código normalmente exigem encerrar e reabrir a sessão.
+
+```bash
+gnome-extensions enable ubuntu-dock@ubuntu.com
+gnome-extensions enable dash-to-dock@micxgx.gmail.com
+gnome-extensions enable dash-to-panel@jderose9.github.com
+```
 
 Para recuperar uma sessão problemática:
 
@@ -129,7 +150,9 @@ mv ~/.local/share/gnome-shell/extensions/winshell@iklav-tech \
 
 ## Limitações conhecidas
 
-- A v0.4.1 ainda não foi homologada visualmente numa sessão descartável Ubuntu 24.04/GNOME 46/Wayland.
+- A v0.4.2 ainda não foi homologada visualmente numa sessão descartável Ubuntu 24.04/GNOME 46/Wayland.
+- A detecção automática cobre apenas Ubuntu Dock, Dash to Dock e Dash to Panel. Outras extensões podem desenhar painéis inferiores sem um contrato seguro de controle.
+- Uma queda do processo GNOME Shell entre a desativação de um dock e o cleanup pode adiar a restauração até o próximo lifecycle do WinShell; os comandos de recuperação acima são o fallback explícito.
 - APIs JavaScript do GNOME Shell, `Main.messageTray` e GVC são específicas da versão alvo; uma futura versão do Shell pode exigir adaptação.
 - O centro respeita a fonte autoritativa do GNOME: não cria armazenamento próprio e só mostra/descarta notificações ainda ativas.
 - O botão **Limpar tudo** chama o descarte suportado de cada notificação; aplicativos podem recriar notificações residentes.
@@ -146,13 +169,13 @@ mv ~/.local/share/gnome-shell/extensions/winshell@iklav-tech \
 
 Em Ubuntu 24.04 / GNOME Shell 46 / Wayland:
 
-1. Habilitar/desabilitar/recarregar a extensão repetidamente e procurar atores, timers ou sinais remanescentes.
+1. Habilitar/desabilitar/recarregar a extensão repetidamente com Ubuntu Dock, Dash to Dock e Dash to Panel e procurar atores, timers ou sinais remanescentes.
 2. Alterar Wi‑Fi, Bluetooth, volume, saída, brilho, bateria e Não Perturbe dentro e fora do WinShell e confirmar sincronização.
 3. Testar falha/ausência de NetworkManager, BlueZ/gnome-bluetooth, UPower, GVC e brilho.
 4. Conferir calendário em locales com domingo e segunda como primeiro dia, virada de mês/ano e múltiplos monitores.
 5. Gerar, atualizar, ativar, dispensar e limpar notificações normais, residentes e com ações.
 6. Exercitar menus em janelas não minimizáveis, não maximizáveis, fullscreen, Wayland nativo e XWayland.
-7. Revalidar Start, Snap Layouts, previews, painel superior e hotplug de monitores.
+7. Revalidar Start, Snap Layouts, previews, painel superior, fullscreen, escalas e hotplug de monitores.
 
 ## Estrutura
 
@@ -160,6 +183,7 @@ Em Ubuntu 24.04 / GNOME Shell 46 / Wayland:
 extension.js / prefs.js
 modules/
   apps.js, startMenu.js, taskbar.js, multiMonitor.js
+  taskbarConflict.js, taskbarConflictModel.mjs, taskbarGeometry.mjs
   quickSettings.js, systemControls.js, quickSettingsModel.mjs
   calendar.js, calendarModel.mjs
   notificationCenter.js, notificationModel.mjs

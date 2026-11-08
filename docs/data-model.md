@@ -2,7 +2,7 @@
 
 ## GSettings da extensão
 
-O schema `org.gnome.shell.extensions.winshell` mantém onze campos:
+O schema `org.gnome.shell.extensions.winshell` mantém treze campos:
 
 | Campo | Tipo/default | Uso |
 |---|---|---|
@@ -16,9 +16,11 @@ O schema `org.gnome.shell.extensions.winshell` mantém onze campos:
 | `multi-monitor` | bool false | quantidade de barras |
 | `snap-layouts` | bool true | ações Snap |
 | `window-previews` | bool true | previews |
+| `taskbar-conflict-handling` | string `automatic` | `automatic`, `warn-only` ou `disabled` |
+| `managed-taskbar-extensions` | string array vazio | UUIDs desativados pelo WinShell, estado interno de restauração |
 | `pinned-apps` | string array | IDs `.desktop` |
 
-Não houve mudança de schema na v0.4.1.
+A v0.4.2 adicionou as duas chaves de conflito sem remover ou renomear campos existentes.
 
 ## Estado efêmero de sistema
 
@@ -55,9 +57,12 @@ Metadados `.desktop` também fornecem ações específicas ao menu contextual.
 
 Persistem apenas GSettings e os arquivos instalados. Corpos de notificação e títulos de janela podem conter dados pessoais, mas ficam no processo local e não são transmitidos pela extensão. Senhas/segredos não são coletados.
 
+O registro `managed-taskbar-extensions` não representa todas as extensões instaladas: contém exclusivamente docks que a política Automatic assumiu como responsabilidade temporária. Entradas desinstaladas são descartadas; entradas não restauráveis permanecem para nova tentativa.
+
 ## Contratos
 
 - `TaskbarManager(settings, menu)` compartilha `SystemControls` com `Taskbar(settings, menu, controls, monitorIndex)`.
 - `ContextMenu.forApp(app, x, y, openSnap)`.
 - `SnapLayoutPanel.forWindow(win, x, y)`.
 - `calendarGrid`, `groupNotifications`, `windowCapabilities` e `normalizeQuickState` são funções puras testadas.
+- `planTaskbarConflicts`, `taskbarGeometry` e `taskbarMonitorIndexes` são funções puras testadas.

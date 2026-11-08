@@ -2,7 +2,7 @@
 
 ## UC-01 — Habilitar/desabilitar
 
-O Shell chama `enable()`; a extensão obtém GSettings, cria Start, gerenciador, controles compartilhados e barras. Falha dispara cleanup e relança o erro. No `disable()`, sinais, timers, atores e serviços são liberados e o painel superior recupera a visibilidade anterior.
+O Shell chama `enable()`; a extensão obtém GSettings, cria Start, gerenciador, controles compartilhados, barras e gerenciador de conflitos. Falha dispara cleanup e relança o erro. No `disable()` real, sinais, timers, atores e serviços são liberados, docks gerenciados são restaurados e o painel superior recupera a visibilidade anterior. No rebase transitório do ExtensionManager, o registro é preservado até o novo `enable()`.
 
 ## UC-02 — Pesquisar/abrir app
 
@@ -42,13 +42,17 @@ O centro acompanha sources e notification-added/removed/notify/destroy. Agrupa e
 
 ## UC-11 — Preferências
 
-GTK/Libadwaita faz bind das onze chaves. Mudanças relevantes renderizam barras ou reconstroem a topologia multi-monitor.
+GTK/Libadwaita expõe as doze opções/valores de usuário. Mudanças relevantes renderizam barras, reconstroem a topologia multi-monitor ou sincronizam a política de conflitos.
 
 ## UC-12 — Instalação/diagnóstico
 
 `install.sh` valida GNOME 46 e `glib-compile-schemas`, copia o artefato e compila o schema. `doctor.sh` relata ferramentas, sessão, extensão e logs; não corrige estado.
 
+## UC-13 — Resolver conflito de barra
+
+Após o enable terminar, um idle consulta os UUIDs conhecidos no ExtensionManager. Automatic registra e desativa os candidatos ativos/mutáveis; Warn Only notifica sem mudar estado; Disabled não age. Sinais de estado reavaliam uma reativação manual sem chamadas recursivas. Troca de política, disable ou uninstall normal restaura os UUIDs registrados.
+
 ## Pendências
 
-- TODO: executar UC-01 e UC-04 a UC-10 em GNOME Shell 46/Wayland.
+- TODO: executar UC-01, UC-04 a UC-10 e UC-13 em GNOME Shell 46/Wayland.
 - TODO: validar recuperação de falha parcial de cópia/compilação no instalador.
