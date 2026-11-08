@@ -2,7 +2,6 @@ import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import St from 'gi://St';
 import Shell from 'gi://Shell';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {activateApp, appById, runningApps} from './apps.js';
 import {ContextMenu} from './contextMenu.js';
 import {QuickSettingsPanel} from './quickSettings.js';
@@ -10,6 +9,7 @@ import {WindowPreview} from './windowPreview.js';
 import {SnapLayoutPanel} from './snapLayouts.js';
 import {NotificationCenter} from './notificationCenter.js';
 import {taskbarGeometry} from './taskbarGeometry.mjs';
+import {addChrome, layoutManager, removeChrome} from './shellCompat.js';
 
 export class Taskbar {
     constructor(settings, menu, systemControls, monitorIndex = 0) {
@@ -18,7 +18,19 @@ export class Taskbar {
         this._menu = menu;
         this._signals = [];
         this._settingsSignals = [];
-        this.actor = new St.BoxLayout({name: `winshell-taskbar-${monitorIndex}`,
+        this._destroyed = false;
+        this.actor = null;
+        try {
+            this._initialize(systemControls);
+        } catch (error) {
+            this.destroy();
+            throw error;
+        }
+    }
+
+    _initialize(systemControls) {
+        const settings = this._settings;
+        this.actor = new St.BoxLayout({name: `winshell-taskbar-${this._monitorIndex}`,
             style_class: 'winshell-taskbar', reactive: true,
             x_expand: true, track_hover: true});
         this._left = new St.BoxLayout({style_class: 'winshell-taskbar-left'});
@@ -27,7 +39,7 @@ export class Taskbar {
         this.actor.add_child(this._left);
         this.actor.add_child(this._center);
         this.actor.add_child(this._right);
-        Main.layoutManager.addChrome(this.actor, {affectsStruts: true, trackFullscreen: true});
+        addChrome(this.actor, {affectsStruts: true, trackFullscreen: true});
         this._context = new ContextMenu(settings);
         this._quick = new QuickSettingsPanel(systemControls);
         this._snap = new SnapLayoutPanel();
@@ -79,8 +91,10 @@ export class Taskbar {
     _anchor(button) {
         const [x] = button.get_transformed_position();
         const [w] = button.get_transformed_size();
-        const monitor = Main.layoutManager.monitors[this._monitorIndex] ?? Main.layoutManager.primaryMonitor;
-        return [x + w / 2, monitor.y + monitor.height - this._settings.get_int('panel-height')];
+        const manager = layoutManager();
+        const monitor = manager.monitors[this._monitorIndex] ?? manager.primaryMonitor;
+        const bottomY = monitor ? monitor.y + monitor.height - this._settings.get_int('panel-height') : 0;
+        return [x + w / 2, bottomY];
     }
 
     _iconButton(iconName, name, callback) {
@@ -118,7 +132,8 @@ export class Taskbar {
     }
 
     _position() {
-        const monitor = Main.layoutManager.monitors[this._monitorIndex] ?? Main.layoutManager.primaryMonitor;
+        const manager = layoutManager();
+        const monitor = manager.monitors[this._monitorIndex] ?? manager.primaryMonitor;
         if (!monitor) return;
         const height = this._settings.get_int('panel-height');
         const geometry = taskbarGeometry(monitor, height);
@@ -185,15 +200,24 @@ export class Taskbar {
     }
 
     destroy() {
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
         if (this._timeout) { GLib.Source.remove(this._timeout); this._timeout = 0; }
-        for (const [object, id] of this._signals) object.disconnect(id);
-        for (const id of this._settingsSignals) this._settings.disconnect(id);
+        for (const [object, id] of this._signals) {
+            try { object.disconnect(id); } catch (_error) { /* Already disposed. */ }
+        }
+        for (const id of this._settingsSignals) {
+            try { this._settings?.disconnect(id); } catch (_error) { /* Already disposed. */ }
+        }
         this._preview?.destroy();
         this._snap?.destroy();
         this._notifications?.destroy();
         this._context?.destroy();
         this._quick?.destroy();
+        removeChrome(this.actor);
         this.actor?.destroy();
+        this.actor = null;
         this._settings = null;
     }
 }

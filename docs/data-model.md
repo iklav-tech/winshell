@@ -2,7 +2,7 @@
 
 ## GSettings da extensão
 
-O schema `org.gnome.shell.extensions.winshell` mantém treze campos:
+O schema `org.gnome.shell.extensions.winshell` mantém 25 campos: treze legados preservados e doze visuais adicionados em v0.5.0.
 
 | Campo | Tipo/default | Uso |
 |---|---|---|
@@ -19,8 +19,26 @@ O schema `org.gnome.shell.extensions.winshell` mantém treze campos:
 | `taskbar-conflict-handling` | string `automatic` | `automatic`, `warn-only` ou `disabled` |
 | `managed-taskbar-extensions` | string array vazio | UUIDs desativados pelo WinShell, estado interno de restauração |
 | `pinned-apps` | string array | IDs `.desktop` |
+| `appearance-mode` | string `follow-system` | `follow-system`, `light`, `dark` |
+| `visual-preset` | string `balanced` | contraste/transparência do Shell |
+| `icon-theme` | string `WinShell` | tema aplicado explicitamente |
+| `wallpaper-selection` | string `synchronized` | sync, light, dark ou custom |
+| `custom-wallpaper-uri` | string vazia | URI escolhida pelo usuário |
+| `background-style` | string `zoom` | posicionamento GNOME |
+| `sync-system-appearance` | bool false | autorização para color scheme/GTK |
+| `desktop-icons-enabled` | bool false | integração DING solicitada |
+| `desktop-show-home` | bool true | Home no DING |
+| `desktop-show-trash` | bool true | Lixeira no DING |
+| `desktop-show-volumes` | bool true | volumes no DING |
+| `nautilus-integration-enabled` | bool false | flag do plugin opcional |
 
-A v0.4.2 adicionou as duas chaves de conflito sem remover ou renomear campos existentes.
+A v0.4.2 adicionou as duas chaves de conflito sem remover ou renomear campos existentes. A v0.5.0 preserva todas elas e adiciona seleção de tema/preset, ícones, wallpaper/posição, sincronização explícita, controles DING e estado da integração Nautilus.
+
+## Backup de aparência v1
+
+`$XDG_CONFIG_HOME/winshell/appearance-backup-v1.json` contém `version`, mapas `original` e `applied`, lista `changed` e marcador `restored`. Os valores são representações GVariant retornadas por `gsettings`, evitando conversão de tipos. O helper ignora schemas/chaves ausentes e escreve atomicamente com permissão 0600.
+
+O backup só contém `org.gnome.desktop.interface`, `org.gnome.desktop.background` e, se solicitado/disponível, `org.gnome.shell.extensions.ding`. Não contém credenciais, dados de aplicativos ou arquivos do usuário.
 
 ## Estado efêmero de sistema
 
@@ -55,7 +73,7 @@ Metadados `.desktop` também fornecem ações específicas ao menu contextual.
 
 ## Persistência e privacidade
 
-Persistem apenas GSettings e os arquivos instalados. Corpos de notificação e títulos de janela podem conter dados pessoais, mas ficam no processo local e não são transmitidos pela extensão. Senhas/segredos não são coletados.
+Persistem apenas GSettings, o backup de aparência, o flag Nautilus e os arquivos instalados. Corpos de notificação e títulos de janela podem conter dados pessoais, mas ficam no processo local e não são transmitidos pela extensão. Senhas/segredos não são coletados.
 
 O registro `managed-taskbar-extensions` não representa todas as extensões instaladas: contém exclusivamente docks que a política Automatic assumiu como responsabilidade temporária. Entradas desinstaladas são descartadas; entradas não restauráveis permanecem para nova tentativa.
 

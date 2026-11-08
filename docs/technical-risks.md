@@ -3,7 +3,7 @@
 | ID | Severidade | Risco e mitigação atual |
 |---|---|---|
 | R-01 | alta | Sem teste de integração gráfico; suíte atual é estática/unitária e há checklist manual |
-| R-02 | alta | APIs JS do Shell/GVC/MessageTray são específicas do GNOME 46; metadata limita a versão |
+| R-02 | alta | APIs JS do Shell/GVC/MessageTray são específicas do GNOME 46; metadata limita a versão e `shellCompat.js` concentra a superfície instável |
 | R-03 | média | Instalação não é transacional; falha depois da cópia pode deixar artefato parcial |
 | R-04 | média | Uninstall remove recursivamente o destino; usuário deve conferir o caminho |
 | R-05 | baixa | Validação Snap existe na UI e executor; manter contratos alinhados |
@@ -16,6 +16,10 @@
 | R-12 | média | Notificações residentes podem reaparecer por decisão do aplicativo |
 | R-13 | média | Painéis de terceiros fora dos três UUIDs suportados não podem ser administrados com segurança; política Warn Only e troubleshooting evitam workaround frágil |
 | R-14 | média | Queda abrupta do Shell pode adiar a restauração de um dock persistente; registro interno e comandos documentados permitem recuperação |
+| R-15 | alta | GTK4/Libadwaita não garante tema global; pacote usa mecanismos suportados e documenta diferenças sem injeção |
+| R-16 | média | Remover tema ainda selecionado deixaria fallback inconsistente; uninstall restaura antes de remover e aborta em conflito externo |
+| R-17 | média | Schemas/versões DING e Nautilus variam; detecção desabilita controles e integração é processo opcional separado |
+| R-18 | média | Assets gerados podem divergir dos tokens; `generate-visual-assets.mjs --check` bloqueia drift na suíte |
 
 ## Melhorias da v0.4.1
 
@@ -31,6 +35,20 @@
 - Geometria negativa/não zero e unicidade por monitor ganharam funções puras e testes.
 - A barra usa a camada de chrome normal, strut inferior e tracking de fullscreen em vez de elevar Z-index.
 - O rebase de ordem do GNOME 46 é distinguido do disable real para evitar ciclos e restauração prematura.
+
+## Melhorias da v0.5.0
+
+- Alterações globais exigem Apply, backup atômico e conflito explícito antes de sobrescrever estado externo.
+- Temas, ícones, wallpapers, integração desktop/Nautilus e extensão têm limites de processo/diretório claros.
+- Instalador e desinstalador idempotentes foram exercitados somente em XDG temporário.
+- SVGs, licenças, fallbacks e CSS gerado ganharam validação automatizada.
+
+## Melhorias da v0.5.1
+
+- Imports JavaScript específicos do Shell foram concentrados numa fronteira de compatibilidade e protegidos por teste arquitetural.
+- Barras e popups removem chrome explicitamente; construção/rebuild parcial das barras faz rollback.
+- Popups ganharam foco inicial/restauração e geometria pura testada para origens negativas, âncoras fracionárias e limites do monitor.
+- A evidência da SPEC 00 separa testes automatizados de homologação GNOME 46/Wayland ainda pendente.
 
 ## Validação pendente
 

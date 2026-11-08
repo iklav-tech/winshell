@@ -7,7 +7,8 @@
 | `TaskbarManager` | Possui o `SystemControls` compartilhado e uma ou mais barras |
 | `Taskbar` | Barra inferior vinculada a um monitor |
 | `TaskbarConflictManager` | Detecta/coordena docks conhecidos e possui o registro reversível |
-| `PopupSurface` | Base de flyouts posicionados e limitados ao monitor da âncora |
+| `PopupSurface` | Base de flyouts com geometria pura por monitor, foco inicial/restaurado e chrome explicitamente removido |
+| `ShellCompat` | Fronteira das APIs JavaScript específicas do GNOME Shell 46 |
 | `SystemControls` | Adaptador assíncrono para NM, Bluetooth/rfkill, GVC, brilho, UPower e GSettings |
 | `QuickSettingsPanel` | Projeção/ações dos controles de sistema |
 | `WinShellCalendar` | Calendário mensal local, sem alterar o calendário GNOME |
@@ -16,11 +17,15 @@
 | `app` | `Shell.App` identificado por ID `.desktop` |
 | `win` | `Meta.Window` com capacidades consultadas antes de mostrar ações |
 | `template/region` | Modelo Snap e tupla normalizada convertida para pixels |
+| `ShellAppearanceController` | Resolve Follow System e mantém classes Light/Dark/preset no `uiGroup` |
+| `AppearanceManager` | Cliente assíncrono das preferências e resolvedor de recursos instalados |
+| backup de aparência | Registro v1 de original/applied/changed para restauração segura |
 
 ## Relações e lifecycle
 
 ```text
 WinShellExtension
+├── ShellAppearanceController
 ├── StartMenu
 ├── TaskbarConflictManager ── GNOME ExtensionManager
 └── TaskbarManager
@@ -44,6 +49,8 @@ WinShellExtension
 - Notificação: criada, atualizada, ativada ou destruída pela fonte autoritativa do Shell.
 - Janela: normal, minimizada, maximizada ou sem capacidade específica.
 - Conflito de barra: ausente, ativo/mutável, ativo/bloqueado ou gerenciado aguardando restauração.
+- Aparência: não aplicada, aplicada, restaurada ou com divergência externa.
+- Integração: DING/Nautilus disponível, ausente ou habilitado pelo usuário.
 
 ## Fora do domínio
 
@@ -52,6 +59,7 @@ WinShellExtension
 - Organizar automaticamente todas as janelas depois de escolher uma região Snap.
 - Pesquisar documentos ou web no menu Iniciar.
 - Destruir atores ou reconfigurar opções privadas de extensões de terceiros.
+- Injetar CSS em Libadwaita, desenhar desktop próprio ou modificar fontes/bibliotecas do sistema.
 
 ## Pendências
 

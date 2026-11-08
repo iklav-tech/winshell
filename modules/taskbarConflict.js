@@ -1,19 +1,18 @@
 import GLib from 'gi://GLib';
-import * as ExtensionUtils from 'resource:///org/gnome/shell/misc/extensionUtils.js';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {
     TASKBAR_CONFLICT_EXTENSIONS,
     TaskbarConflictPolicy,
     installedManagedExtensions,
     planTaskbarConflicts,
 } from './taskbarConflictModel.mjs';
+import {extensionManager, ExtensionState, notify} from './shellCompat.js';
 
 const MANAGED_KEY = 'managed-taskbar-extensions';
 
 export class TaskbarConflictManager {
     constructor(settings) {
         this._settings = settings;
-        this._extensionManager = Main.extensionManager;
+        this._extensionManager = extensionManager();
         this._idle = 0;
         this._destroyed = false;
         this._notified = new Set();
@@ -22,8 +21,8 @@ export class TaskbarConflictManager {
         this._managerSignal = this._extensionManager.connect('extension-state-changed',
             (_manager, extension) => {
                 if (TASKBAR_CONFLICT_EXTENSIONS.some(item => item.uuid === extension?.uuid)) {
-                    if (extension.state === ExtensionUtils.ExtensionState.INACTIVE ||
-                        extension.state === ExtensionUtils.ExtensionState.ERROR) {
+                    if (extension.state === ExtensionState.INACTIVE ||
+                        extension.state === ExtensionState.ERROR) {
                         this._disabling.delete(extension.uuid);
                         this._clearVerification(extension.uuid);
                     }
@@ -46,7 +45,7 @@ export class TaskbarConflictManager {
                 this._sync();
             } catch (error) {
                 console.error(`[WinShell] Falha ao verificar conflitos de barra: ${error.stack ?? error}`);
-                Main.notify('WinShell: verificação de compatibilidade falhou',
+                notify('WinShell: verificação de compatibilidade falhou',
                     'Nenhuma barra de terceiros será manipulada até a próxima mudança de estado. Consulte o journal do GNOME Shell.');
             }
             return GLib.SOURCE_REMOVE;
@@ -59,7 +58,7 @@ export class TaskbarConflictManager {
             return {
                 ...item,
                 installed: Boolean(extension),
-                active: extension?.state === ExtensionUtils.ExtensionState.ACTIVE,
+                active: extension?.state === ExtensionState.ACTIVE,
                 canChange: extension?.canChange === true,
             };
         });
@@ -117,7 +116,7 @@ export class TaskbarConflictManager {
             if (this._destroyed)
                 return GLib.SOURCE_REMOVE;
             const extension = this._extensionManager.lookup(uuid);
-            if (extension?.state === ExtensionUtils.ExtensionState.ACTIVE) {
+            if (extension?.state === ExtensionState.ACTIVE) {
                 this._disabling.delete(uuid);
                 const managed = new Set(this._settings.get_strv(MANAGED_KEY));
                 managed.delete(uuid);
@@ -168,7 +167,7 @@ export class TaskbarConflictManager {
         const detail = failed
             ? `${name} não pôde ser alterado com segurança pelo GNOME.`
             : `${name} está ativo e a política atual não altera outras extensões.`;
-        Main.notify('WinShell: barra de tarefas concorrente',
+        notify('WinShell: barra de tarefas concorrente',
             `${detail} Use o aplicativo Extensões ou selecione “Automático” nas preferências do WinShell.`);
     }
 

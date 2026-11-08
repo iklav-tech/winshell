@@ -1,7 +1,7 @@
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Taskbar} from './taskbar.js';
 import {SystemControls} from './systemControls.js';
 import {taskbarMonitorIndexes} from './taskbarGeometry.mjs';
+import {layoutManager, notify} from './shellCompat.js';
 
 export class TaskbarManager {
     constructor(settings, menu) {
@@ -10,32 +10,59 @@ export class TaskbarManager {
         this._bars = [];
         this._monitorSignal = 0;
         this._settingSignal = 0;
+        this._destroyed = false;
         try {
             this._systemControls = new SystemControls();
-            this._monitorSignal = Main.layoutManager.connect('monitors-changed', () => this._rebuild());
-            this._settingSignal = settings.connect('changed::multi-monitor', () => this._rebuild());
+            this._monitorSignal = layoutManager().connect('monitors-changed', () => this._safeRebuild());
+            this._settingSignal = settings.connect('changed::multi-monitor', () => this._safeRebuild());
             this._rebuild();
         } catch (error) {
             this.destroy();
             throw error;
         }
     }
+    _safeRebuild() {
+        if (this._destroyed)
+            return;
+        try {
+            this._rebuild();
+        } catch (error) {
+            console.error(`[WinShell] Falha ao reconstruir barras: ${error.stack ?? error}`);
+            notify('WinShell', 'Não foi possível reconstruir a barra após a mudança de monitores.');
+        }
+    }
     _rebuild() {
         this._bars.forEach(bar => bar.destroy());
         this._bars = [];
-        const indexes = taskbarMonitorIndexes(Main.layoutManager.monitors,
-            Main.layoutManager.primaryIndex, this._settings.get_boolean('multi-monitor'));
-        for (const index of indexes)
-            this._bars.push(new Taskbar(this._settings, this._menu, this._systemControls, index));
+        const manager = layoutManager();
+        const indexes = taskbarMonitorIndexes(manager.monitors,
+            manager.primaryIndex, this._settings.get_boolean('multi-monitor'));
+        try {
+            for (const index of indexes)
+                this._bars.push(new Taskbar(this._settings, this._menu, this._systemControls, index));
+        } catch (error) {
+            this._bars.forEach(bar => bar.destroy());
+            this._bars = [];
+            throw error;
+        }
     }
     destroy() {
-        if (this._monitorSignal) Main.layoutManager.disconnect(this._monitorSignal);
-        if (this._settingSignal) this._settings.disconnect(this._settingSignal);
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        if (this._monitorSignal) {
+            try { layoutManager().disconnect(this._monitorSignal); } catch (_error) { /* Disposed. */ }
+        }
+        if (this._settingSignal) {
+            try { this._settings?.disconnect(this._settingSignal); } catch (_error) { /* Disposed. */ }
+        }
         this._monitorSignal = 0;
         this._settingSignal = 0;
         this._bars.forEach(bar => bar.destroy());
         this._bars = [];
         this._systemControls?.destroy();
         this._systemControls = null;
+        this._settings = null;
+        this._menu = null;
     }
 }

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=WinShell-Dark
+Comment=WinShell Theme Dark
+Encoding=UTF-8
+GtkTheme=WinShell-Dark
+IconTheme=WinShell
+CursorTheme=Adwaita
+ButtonLayout=:minimize,maximize,close

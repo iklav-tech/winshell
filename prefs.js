@@ -2,6 +2,7 @@ import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import {addAppearancePage} from './modules/appearance/preferences.js';
 
 export default class WinShellPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
@@ -53,5 +54,6 @@ export default class WinShellPreferences extends ExtensionPreferences {
         apps.add(row);
         page.add(apps);
         window.add(page);
+        addAppearancePage(window, settings, this.path);
     }
 }

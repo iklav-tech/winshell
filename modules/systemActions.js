@@ -1,11 +1,11 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {notify} from './shellCompat.js';
 
 export function openDesktop(id) {
     const info = Gio.DesktopAppInfo.new(id);
     if (info) info.launch([], null);
-    else Main.notify('WinShell', `Aplicativo não encontrado: ${id}`);
+    else notify('WinShell', `Aplicativo não encontrado: ${id}`);
 }
 
 export function openWinShellPreferences() {

@@ -34,7 +34,7 @@ GVC fornece sink, volume, mudo e saídas. O proxy Screen recebe brilho percentua
 
 ## UC-09 — Calendário
 
-Clique no relógio/sino abre o centro WinShell. O calendário calcula 42 células, respeita primeiro dia da semana/locale, navega meses/anos, seleciona dias e destaca hoje. `PopupSurface` restringe posição/tamanho ao monitor.
+Clique no relógio/sino abre o centro WinShell. O calendário calcula 42 células, respeita primeiro dia da semana/locale, navega meses/anos, seleciona dias e destaca hoje. `PopupSurface` restringe posição/tamanho ao monitor, foca o primeiro controle interativo e devolve o foco ao fechar.
 
 ## UC-10 — Notificações
 
@@ -42,7 +42,7 @@ O centro acompanha sources e notification-added/removed/notify/destroy. Agrupa e
 
 ## UC-11 — Preferências
 
-GTK/Libadwaita expõe as doze opções/valores de usuário. Mudanças relevantes renderizam barras, reconstroem a topologia multi-monitor ou sincronizam a política de conflitos.
+GTK/Libadwaita expõe preferências de taskbar e uma página Aparência. Mudanças do tema do Shell são imediatas; configurações globais só são enviadas ao helper assíncrono por Aplicar.
 
 ## UC-12 — Instalação/diagnóstico
 
@@ -51,6 +51,14 @@ GTK/Libadwaita expõe as doze opções/valores de usuário. Mudanças relevantes
 ## UC-13 — Resolver conflito de barra
 
 Após o enable terminar, um idle consulta os UUIDs conhecidos no ExtensionManager. Automatic registra e desativa os candidatos ativos/mutáveis; Warn Only notifica sem mudar estado; Disabled não age. Sinais de estado reavaliam uma reativação manual sem chamadas recursivas. Troca de política, disable ou uninstall normal restaura os UUIDs registrados.
+
+## UC-14 — Aplicar e restaurar aparência
+
+Preferências resolvem wallpapers instalados, iniciam `winshell-appearance` sem bloquear a UI e apresentam o resultado. Apply captura valores ainda sem original, detecta divergências, altera somente chaves disponíveis e atualiza `applied`. Restore reverte somente `changed`; divergência exige confirmação e repetição com `--force`.
+
+## UC-15 — Desktop e Nautilus
+
+A página habilita controles DING somente quando schema e extensão compatíveis existem. O helper aplica visibilidade de Home/Trash/volumes. O plugin Nautilus, instalado opcionalmente, verifica o flag do usuário e abre as preferências pela API pública de subprocesso; ícones vêm do tema padrão selecionado.
 
 ## Pendências
 

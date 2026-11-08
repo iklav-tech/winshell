@@ -1,0 +1,47 @@
+[Icon Theme]
+Name=WinShell Icons
+Comment=Original Windows 11-inspired scalable artwork
+Inherits=Adwaita,hicolor
+Directories=scalable/apps,scalable/places,scalable/mimetypes,scalable/devices,scalable/actions,scalable/status
+
+[scalable/apps]
+Size=64
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Applications
+
+[scalable/places]
+Size=64
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Places
+
+[scalable/mimetypes]
+Size=64
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=MimeTypes
+
+[scalable/devices]
+Size=64
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Devices
+
+[scalable/actions]
+Size=64
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Actions
+
+[scalable/status]
+Size=64
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Status

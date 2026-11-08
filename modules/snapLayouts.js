@@ -1,9 +1,9 @@
 import Clutter from 'gi://Clutter';
 import Meta from 'gi://Meta';
 import St from 'gi://St';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {PopupSurface} from './popup.js';
 import {TEMPLATES, regionToPixels} from './layoutGeometry.mjs';
+import {notify} from './shellCompat.js';
 
 export function applyLayout(win, region) {
     if (!win || !win.allows_move() || !win.allows_resize() || win.is_fullscreen())
@@ -54,7 +54,7 @@ export class SnapLayoutPanel extends PopupSurface {
                 button.connect('clicked', () => {
                     this.hide();
                     if (!applyLayout(win, region))
-                        Main.notify('WinShell', 'O aplicativo não aceitou o posicionamento solicitado.');
+                        notify('WinShell', 'O aplicativo não aceitou o posicionamento solicitado.');
                 });
                 canvas.add_child(button);
                 // Relative size is calculated when the canvas is allocated.

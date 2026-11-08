@@ -1,10 +1,10 @@
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import St from 'gi://St';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {WinShellCalendar} from './calendar.js';
 import {groupNotifications} from './notificationModel.mjs';
 import {PopupSurface} from './popup.js';
+import {messageSources, messageTray} from './shellCompat.js';
 
 function safeDisconnect(object, id) {
     if (!object || !id) return;
@@ -19,9 +19,10 @@ export class NotificationCenter extends PopupSurface {
         this._sourceSignals = new Map();
         this._notificationSignals = new Map();
         this._renderId = 0;
+        this._tray = messageTray();
         this._traySignals = [
-            Main.messageTray.connect('source-added', () => this._syncSources()),
-            Main.messageTray.connect('source-removed', () => this._syncSources()),
+            this._tray.connect('source-added', () => this._syncSources()),
+            this._tray.connect('source-removed', () => this._syncSources()),
         ];
         this._state = systemControls.getState();
         this._unsubscribe = systemControls.subscribe(state => {
@@ -46,7 +47,7 @@ export class NotificationCenter extends PopupSurface {
     }
 
     _syncSources() {
-        const current = new Set(Main.messageTray.getSources?.() ?? []);
+        const current = new Set(messageSources());
         for (const [source, ids] of this._sourceSignals) {
             if (current.has(source)) continue;
             for (const id of ids) safeDisconnect(source, id);
@@ -69,7 +70,7 @@ export class NotificationCenter extends PopupSurface {
 
     _syncNotifications() {
         const current = new Set();
-        for (const source of Main.messageTray.getSources?.() ?? [])
+        for (const source of messageSources())
             for (const notification of source.notifications ?? []) current.add(notification);
         for (const notification of current) {
             if (this._notificationSignals.has(notification)) continue;
@@ -99,7 +100,7 @@ export class NotificationCenter extends PopupSurface {
 
     _notifications() {
         const result = [];
-        for (const source of Main.messageTray.getSources?.() ?? []) {
+        for (const source of messageSources()) {
             const app = source.app ?? source._app ?? null;
             for (const notification of source.notifications ?? []) {
                 result.push({
@@ -249,7 +250,7 @@ export class NotificationCenter extends PopupSurface {
     destroy() {
         this._unsubscribe?.();
         if (this._renderId) { GLib.Source.remove(this._renderId); this._renderId = 0; }
-        for (const id of this._traySignals) safeDisconnect(Main.messageTray, id);
+        for (const id of this._traySignals) safeDisconnect(this._tray, id);
         for (const [source, ids] of this._sourceSignals)
             for (const id of ids) safeDisconnect(source, id);
         for (const [notification, ids] of this._notificationSignals)
@@ -258,6 +259,7 @@ export class NotificationCenter extends PopupSurface {
         this._notificationSignals.clear();
         this._calendar.destroy();
         this._controls = null;
+        this._tray = null;
         super.destroy();
     }
 }

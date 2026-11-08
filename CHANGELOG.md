@@ -1,5 +1,67 @@
 # Changelog
 
+## v0.5.1 — 2026-11-08
+
+### Added
+
+- A single GNOME Shell 46 compatibility boundary for version-specific Shell,
+  extension manager, MessageTray, GVC, Slider, panel and chrome APIs.
+- Pure popup geometry with tests for negative monitor origins, fractional logical
+  anchors, edge clamping, oversized surfaces and invalid displays.
+- SPEC 00 verification evidence and automated architecture-quality contracts.
+
+### Changed
+
+- Popups now focus their first interactive child, restore the previous focus on
+  close and explicitly unregister Shell chrome during destruction.
+- Taskbar construction and monitor rebuilds now roll back partially created bars;
+  hotplug failures are isolated and surfaced without escaping the signal callback.
+- Metadata integer version advanced from 7 to 8 with `version-name` 0.5.1; the
+  installer, README, tests and technical documentation were synchronized.
+
+### Fixed
+
+- Regenerated declared icon assets, including terminal/settings originals and
+  their aliases, that made the v0.5.0 baseline suite fail.
+- Taskbar and popup chrome no longer rely on actor destruction as implicit cleanup.
+
+### Validation status
+
+- Static, unit, schema, asset and isolated XDG tests pass.
+- GNOME 46/Wayland and X11 runtime validation remains pending and is not claimed.
+
+## v0.5.0 — 2026-11-08
+
+### Added
+
+- Independent `WinShell` and `WinShell-Dark` GTK3/GTK4/GNOME Shell theme packages generated from shared design tokens.
+- Original CC0 `WinShell Icons` SVG theme with Adwaita/hicolor fallbacks and original CC0 Light/Dark vector wallpapers.
+- Appearance preferences for theme mode, visual preset, icons, wallpaper preview/position, DING and optional Nautilus integration.
+- Versioned user appearance backup/apply/restore helper with idempotence, missing-schema handling and external-change conflicts.
+- DING provider detection and explicit Home, Trash and mounted-volume integration through its public GSettings schema.
+- Optional Nautilus 4 `MenuProvider`, isolated from the GNOME Shell process and gated by a user configuration flag.
+- Isolated tests for appearance selection, providers, asset integrity, generation, backup/restore and idempotent install/uninstall.
+
+### Changed
+
+- Extension CSS now has generated Light/Dark semantic styling, visible focus indicators and balanced/subtle/high-contrast presets.
+- Installer now places extension, themes, icons, wallpapers and helper in user-local XDG paths and supports optional Nautilus installation.
+- Uninstall restores tracked appearance by default and refuses to delete installed themes when newer external changes need a decision.
+- Preferences now include a dedicated Appearance page; global GNOME changes only occur after an explicit Apply action.
+- Metadata integer version advanced from 6 to 7 with `version-name` 0.5.0.
+
+### Safety and compatibility
+
+- Existing schema keys and v0.4.x values are preserved; all new user preferences have defaults.
+- No root privileges, system-file replacement, Nautilus patching or Libadwaita CSS injection is used.
+- GTK4/Libadwaita and DING provider limitations are documented instead of represented as unsupported emulation.
+
+### Limitations
+
+- Visual/runtime acceptance remains pending on a disposable Ubuntu 24.04 GNOME Shell 46 Wayland session.
+- The Nautilus plugin provides a supported preferences action and icon-theme integration, not private-widget restyling.
+- WinShell detects but does not install/enable DING or disable unknown desktop icon providers.
+
 ## v0.4.2 — 2026-11-08
 
 ### Added

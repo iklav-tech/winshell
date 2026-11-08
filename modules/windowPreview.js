@@ -1,7 +1,6 @@
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import St from 'gi://St';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {PopupSurface} from './popup.js';
 
 export class WindowPreview extends PopupSurface {

@@ -1,7 +1,7 @@
 import Clutter from 'gi://Clutter';
 import St from 'gi://St';
-import {Slider} from 'resource:///org/gnome/shell/ui/slider.js';
 import {PopupSurface} from './popup.js';
+import {Slider} from './shellCompat.js';
 import {openDesktop} from './systemActions.js';
 
 export class QuickSettingsPanel extends PopupSurface {

@@ -1,6 +1,7 @@
 import Clutter from 'gi://Clutter';
 import St from 'gi://St';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {monitorAtPoint, popupGeometry} from './popupGeometry.mjs';
+import {addChrome, layoutManager, removeChrome} from './shellCompat.js';
 
 // Popup surfaces are regular Shell actors, avoiding private popup-menu internals.
 export class PopupSurface {
@@ -9,36 +10,51 @@ export class PopupSurface {
         this.height = height;
         this.actor = new St.BoxLayout({style_class: styleClass, vertical: true,
             visible: false, reactive: true, can_focus: true});
-        Main.layoutManager.addChrome(this.actor, {affectsStruts: false, trackFullscreen: true});
-        this._outsideId = global.stage.connect('button-press-event', (_stage, event) => {
-            if (this.actor.visible && !this.actor.contains(event.get_source()))
-                this.hide();
-            return Clutter.EVENT_PROPAGATE;
-        });
-        this._escapeId = global.stage.connect('captured-event', (_stage, event) => {
-            if (this.actor.visible && event.type() === Clutter.EventType.KEY_PRESS &&
-                event.get_key_symbol() === Clutter.KEY_Escape) {
-                this.hide();
-                return Clutter.EVENT_STOP;
-            }
-            return Clutter.EVENT_PROPAGATE;
-        });
+        addChrome(this.actor, {affectsStruts: false, trackFullscreen: true});
+        this._previousFocus = null;
+        this._destroyed = false;
+        this._outsideId = 0;
+        this._escapeId = 0;
+        try {
+            this._outsideId = global.stage.connect('button-press-event', (_stage, event) => {
+                if (this.actor.visible && !this.actor.contains(event.get_source()))
+                    this.hide();
+                return Clutter.EVENT_PROPAGATE;
+            });
+            this._escapeId = global.stage.connect('captured-event', (_stage, event) => {
+                if (this.actor.visible && event.type() === Clutter.EventType.KEY_PRESS &&
+                    event.get_key_symbol() === Clutter.KEY_Escape) {
+                    this.hide();
+                    return Clutter.EVENT_STOP;
+                }
+                return Clutter.EVENT_PROPAGATE;
+            });
+        } catch (error) {
+            if (this._outsideId)
+                global.stage.disconnect(this._outsideId);
+            removeChrome(this.actor);
+            this.actor.destroy();
+            throw error;
+        }
     }
 
     show(anchorX, bottomY) {
-        const monitors = Main.layoutManager.monitors;
-        const monitor = monitors.find(m => anchorX >= m.x && anchorX < m.x + m.width &&
-            bottomY >= m.y && bottomY <= m.y + m.height) ?? Main.layoutManager.primaryMonitor;
-        if (!monitor) return;
-        const width = Math.min(this.width, monitor.width - 24);
-        const height = Math.min(this.height, monitor.height - 32);
-        const x = Math.max(monitor.x + 12,
-            Math.min(Math.round(anchorX - width / 2), monitor.x + monitor.width - width - 12));
-        const y = Math.max(monitor.y + 12, bottomY - height - 10);
-        this.actor.set_size(width, height);
-        this.actor.set_position(x, y);
+        if (this._destroyed)
+            return false;
+        const manager = layoutManager();
+        const monitor = monitorAtPoint(manager.monitors, anchorX, bottomY,
+            manager.primaryMonitor);
+        const geometry = popupGeometry(monitor, anchorX, bottomY, this.width, this.height);
+        if (!geometry)
+            return false;
+        if (!this.actor.visible)
+            this._previousFocus = global.stage.key_focus;
+        this.actor.set_size(geometry.width, geometry.height);
+        this.actor.set_position(geometry.x, geometry.y);
         this.actor.show();
-        global.stage.set_key_focus(this.actor);
+        if (!this.actor.navigate_focus(null, St.DirectionType.TAB_FORWARD, false))
+            global.stage.set_key_focus(this.actor);
+        return true;
     }
 
     toggle(x, bottomY) {
@@ -46,11 +62,27 @@ export class PopupSurface {
         else this.show(x, bottomY);
     }
 
-    hide() { this.actor.hide(); }
+    hide() {
+        if (!this.actor?.visible)
+            return;
+        this.actor.hide();
+        if (this._previousFocus?.get_stage?.())
+            global.stage.set_key_focus(this._previousFocus);
+        this._previousFocus = null;
+    }
 
     destroy() {
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        this.hide();
         if (this._outsideId) global.stage.disconnect(this._outsideId);
         if (this._escapeId) global.stage.disconnect(this._escapeId);
-        this.actor.destroy();
+        this._outsideId = 0;
+        this._escapeId = 0;
+        removeChrome(this.actor);
+        this.actor?.destroy();
+        this.actor = null;
+        this._previousFocus = null;
     }
 }

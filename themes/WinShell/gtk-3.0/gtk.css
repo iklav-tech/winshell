@@ -1,0 +1,19 @@
+/* Generated WinShell GTK theme. Libadwaita may intentionally override application internals. */
+@define-color window_bg_color #f3f6fb;
+@define-color window_fg_color #172033;
+@define-color view_bg_color #ffffff;
+@define-color view_fg_color #172033;
+@define-color accent_bg_color #256fce;
+@define-color accent_fg_color #ffffff;
+@define-color headerbar_bg_color #e8eef7;
+@define-color headerbar_fg_color #172033;
+@define-color card_bg_color #ffffff;
+@define-color borders #9aaac033;
+@define-color error_color #b42318;
+window, .background { background-color: @window_bg_color; color: @window_fg_color; }
+headerbar { background-color: @headerbar_bg_color; color: @headerbar_fg_color; min-height: 42px; }
+button, entry, dropdown { border-radius: 8px; }
+button:focus-visible, entry:focus-within { outline: 2px solid #005fb8; outline-offset: 2px; }
+popover > contents, menu { border-radius: 12px; box-shadow: 0 8px 24px #00000038; }
+selection { background-color: @accent_bg_color; color: @accent_fg_color; }
+:disabled { opacity: 0.45; }

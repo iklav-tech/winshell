@@ -1,196 +1,236 @@
-# WinShell for GNOME v0.4.2
+# WinShell for GNOME v0.5.1
 
-Extensão experimental para **Ubuntu 24.04 LTS / GNOME Shell 46**, inspirada na experiência do Windows 11 sem substituir o GNOME, Mutter, NetworkManager ou os serviços do sistema. O projeto é independente e não tem vínculo com Microsoft ou GNOME Foundation.
+WinShell is an experimental Windows 11-inspired visual and interaction layer for
+**Ubuntu 24.04 LTS / GNOME Shell 46**. It adds a taskbar, Start menu, Quick
+Settings, calendar, notification center, window previews and Snap Layouts, plus
+reversible Light/Dark appearance packages. It does not replace GNOME Shell,
+Mutter, Nautilus, NetworkManager or system libraries and is not affiliated with
+Microsoft or the GNOME Foundation.
 
-> **Status: pré-lançamento.** A v0.4.2 foi validada com testes estáticos e unitários no ambiente de desenvolvimento. A integração visual e o ciclo completo em uma sessão GNOME Shell 46/Wayland ainda exigem validação manual; “compatível” abaixo descreve o alvo do código, não uma homologação concluída.
+> **Pre-release status.** Static, unit, asset and isolated filesystem tests cover
+> v0.5.1. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
+> still required; target compatibility is not a claim of completed certification.
 
-## Destaques da v0.4.2
+## What v0.5.1 provides
 
-- Tratamento configurável e reversível de conflitos com Ubuntu Dock, Dash to Dock e Dash to Panel, usando o gerenciador de extensões do GNOME Shell.
-- Barra ancorada pela geometria lógica de cada monitor, inclusive origens não zero/negativas, com uma única instância por monitor e rebuild em hotplug.
-- Chrome inferior com strut de área útil, ocultação automática em fullscreen e camada abaixo de janelas, popups e diálogos do sistema.
-- Configurações rápidas reais e sincronizadas: Wi‑Fi via NetworkManager, Bluetooth via gnome-bluetooth/rfkill, volume e saídas via GVC, brilho via GNOME Settings Daemon, bateria via UPower e Não Perturbe via GSettings.
-- Calendário mensal próprio, ligado ao relógio e ao centro de notificações, com navegação, seleção, destaque do dia atual, primeira semana/formatação conforme locale e posicionamento restrito ao monitor.
-- Menus contextuais com abrir/nova janela, fixar, listar e ativar janelas, minimizar/restaurar, maximizar/restaurar tamanho, fechar, fechar todas, ações do arquivo `.desktop`, Snap Layouts e preferências da barra.
-- Centro de notificações sincronizado com `Main.messageTray`, agrupado por aplicativo, com ícone, horário, título, corpo, ações, ativação, descarte individual, limpar tudo, estado vazio e Não Perturbe.
-- Modelos puros e testes para calendário, agrupamento de notificações, estado de janelas e normalização de Quick Settings.
+- A GNOME Shell 46 compatibility boundary for version-specific Shell, extension
+  manager, MessageTray, GVC, Slider, panel and chrome APIs.
+- Explicit chrome removal, rollback-safe taskbar construction/rebuild and popup
+  focus restoration across Escape, outside-click and disable paths.
+- Pure, tested popup geometry for negative monitor origins, fractional logical
+  anchors, small displays and monitor-edge clamping.
 
-Consulte [CHANGELOG.md](CHANGELOG.md) para o histórico completo.
+- `WinShell Theme` in Light and Dark variants for GNOME Shell, GTK3 and GTK4,
+  generated from shared color, typography, radius, elevation, opacity and spacing
+  tokens. The extension applies the Shell variant without requiring User Themes.
+- `WinShell Icons`, an original CC0 scalable SVG theme for common apps, folders,
+  files, devices, actions and status indicators. Adwaita and hicolor provide safe
+  fallback coverage for missing app and MIME icons.
+- Original CC0 Light/Dark vector wallpapers, synchronized with the selected
+  appearance or selectable independently, with preview and GNOME positioning.
+- An Appearance preferences page with Light, Dark and Follow System modes,
+  visual presets, icon theme, wallpaper, desktop-icon and Nautilus controls.
+- A versioned appearance backup that records only settings changed by WinShell.
+  Apply/restore is idempotent and detects changes made outside WinShell before
+  replacing them.
+- Optional integration with Desktop Icons NG (DING) through its public GSettings
+  schema and optional Nautilus context actions through `Nautilus.MenuProvider`.
+- All v0.4.x taskbar, Start, search, Quick Settings, calendar, notifications,
+  previews, Snap Layouts, multi-monitor and conflict-management behavior remains.
 
-## Funcionalidades
+## Compatibility and limits
 
-- Barra inferior com alinhamento central/esquerdo, aplicativos fixados/em execução, relógio, pesquisa e opção multi-monitor.
-- Menu Iniciar com busca por nome, descrição, executável e palavras-chave dos aplicativos instalados.
-- Snap Layouts com cinco grades clicáveis e cálculo por área útil do monitor.
-- Pré-visualizações de janelas com ativação, fechamento e acesso aos Snap Layouts.
-- Quick Settings WinShell:
-  - liga/desliga Wi‑Fi, mostra conexão e redes visíveis e conecta perfis já conhecidos;
-  - liga/desliga Bluetooth e conecta/desconecta dispositivos pareados;
-  - controla volume, mudo e saída de áudio;
-  - controla brilho quando o serviço/tela expõe essa capacidade;
-  - mostra porcentagem e carga da bateria;
-  - alterna Não Perturbe e tema escuro.
-- Calendário WinShell e notificações ativas sem desabilitar o calendário/centro nativo do GNOME.
-- Preferências GTK4/Libadwaita persistidas em GSettings.
+The primary target is GNOME Shell 46 on Wayland; X11 uses the same supported
+Shell/GTK paths where GNOME exposes them. GTK3 themes are broadly honored. GTK4
+applications may honor the installed theme, while Libadwaita deliberately owns
+parts of its application styling; WinShell does not inject CSS into applications
+or manipulate Nautilus private widgets. The closest maintainable Nautilus
+integration is the standard icon theme plus a separate supported Python plugin.
 
-Todos os adaptadores de serviço usam operações assíncronas ou propriedades/proxies que não bloqueiam a thread da interface. A ausência de hardware, serviço ou permissão desabilita apenas o controle afetado.
+DING owns desktop rendering, context menus, drag-and-drop and shortcut support.
+WinShell only detects compatible providers and configures Home, Trash and mounted
+volumes when the user explicitly applies appearance. It does not promise Windows
+desktop behavior that DING itself does not implement.
 
-## Requisitos
+All artwork is original; no Microsoft icons, wallpapers or fonts are included.
 
-- Ubuntu 24.04 LTS com GNOME Shell 46 (alvo primário Wayland).
-- Serviços padrão da distribuição: NetworkManager, GNOME Settings Daemon, UPower, gnome-bluetooth e o mixer GVC do GNOME Shell.
-- `glib-compile-schemas` e `gnome-extensions` para instalar.
-- Node.js opcional, mas recomendado para executar todos os testes.
+## Requirements
+
+- Ubuntu 24.04 LTS, GNOME Shell 46 and GJS 1.80.
+- `glib-compile-schemas`, `gnome-extensions` and standard GNOME services.
+- Node.js for the complete developer test suite.
+- Optional: Desktop Icons NG for desktop icons.
+- Optional: `python3-nautilus` and Nautilus 46 for context-menu integration.
+
+Example Ubuntu dependencies:
 
 ```bash
-sudo apt update
-sudo apt install gnome-shell-extensions gnome-shell-extension-prefs \
-  gnome-tweaks gjs libglib2.0-dev-bin unzip
-# Opcional para a suíte unitária:
-sudo apt install nodejs
+sudo apt install gnome-shell-extension-prefs gjs libglib2.0-dev-bin nodejs
+# Optional integrations:
+sudo apt install gnome-shell-extension-desktop-icons-ng python3-nautilus
 ```
 
-## Instalação
+WinShell never installs packages or writes system-wide files itself.
+
+## Install or upgrade
 
 ```bash
-unzip winshell-for-gnome-v0.4.2.zip
+unzip winshell-for-gnome-v0.5.1.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
 ```
 
-Em Wayland, encerre a sessão e entre novamente. Depois:
+To install the optional Nautilus plugin after reviewing its dependency:
+
+```bash
+./scripts/install.sh --with-nautilus
+nautilus -q
+```
+
+The installer is safe to rerun and preserves the existing GSettings path, so a
+v0.4.x upgrade retains previous values. On Wayland, sign out and back in after a
+new extension install, then run:
 
 ```bash
 gnome-extensions enable winshell@iklav-tech
 gnome-extensions prefs winshell@iklav-tech
 ```
 
-O instalador aceita somente GNOME 46, copia o código para o diretório de extensões do usuário e compila o schema. Ele não usa `sudo`.
+User-local installation paths:
 
-## Atualização da v0.4.0
+| Component | Path |
+|---|---|
+| Extension | `$XDG_DATA_HOME/gnome-shell/extensions/winshell@iklav-tech` |
+| GTK/Shell themes | `$XDG_DATA_HOME/themes/WinShell*` |
+| Icon theme | `$XDG_DATA_HOME/icons/WinShell` |
+| Wallpapers/helper | `$XDG_DATA_HOME/winshell` |
+| Nautilus plugin | `$XDG_DATA_HOME/nautilus-python/extensions/winshell-nautilus.py` |
+| Appearance backup | `$XDG_CONFIG_HOME/winshell/appearance-backup-v1.json` |
+
+Defaults are `~/.local/share` and `~/.config` when the XDG variables are unset.
+Metadata uses GNOME integer version **8** and `version-name` **0.5.1**.
+
+## Appearance workflow
+
+Open the **Appearance** page in extension preferences:
+
+1. Choose Follow System, WinShell Light or WinShell Dark and a visual preset.
+2. Choose `WinShell` icons and synchronized, fixed or custom wallpaper.
+3. Optionally enable GNOME appearance synchronization. Until **Apply** is
+   clicked, global GNOME settings are not changed.
+4. Enable DING controls only when the page reports a compatible provider.
+5. Click **Apply WinShell appearance**. The helper first captures color scheme,
+   GTK/icon theme, wallpaper/options and DING keys it will actually change.
+
+The original backup is not overwritten by later applies. If a theme, wallpaper
+or another tracked value changes externally, apply and restore stop and ask for
+confirmation. **Restore original appearance** is safe to repeat. **Reset visual
+preferences** resets WinShell choices but does not silently change global state.
+
+Command-line restoration is also available:
 
 ```bash
-dconf dump /org/gnome/shell/extensions/winshell/ > winshell-settings-backup.ini
-gnome-extensions disable winshell@iklav-tech
-unzip winshell-for-gnome-v0.4.2.zip
-cd winshell-for-gnome
-./tests/check.sh
-./scripts/install.sh
-# encerre a sessão e entre novamente no Wayland
-gnome-extensions enable winshell@iklav-tech
+./scripts/restore-appearance.sh
+# Only after reviewing detected external changes:
+./scripts/restore-appearance.sh --force
 ```
 
-A v0.4.2 adiciona duas chaves de schema sem remover as anteriores; as preferências existentes são preservadas. O `metadata.json` usa versão inteira **6** e `version-name` **0.4.2**.
+Uninstall restores appearance by default and aborts on an external-change
+conflict before deleting themes. Use `--force-restore` after review, or
+`--no-restore` only when intentionally keeping current GNOME values:
 
-## Configuração e uso
+```bash
+./scripts/uninstall.sh
+```
 
-Abra `gnome-extensions prefs winshell@iklav-tech` ou clique com o botão direito na barra e escolha **Preferências da barra de tarefas**. É possível configurar altura, alinhamento, pesquisa, relógio, notificações, Quick Settings, múltiplos monitores, Snap Layouts, pré-visualizações, painel superior e IDs `.desktop` fixados.
+The backup is retained after uninstall for recovery; unrelated user data is not
+removed.
 
-**Tratamento de conflitos da barra de tarefas** oferece:
+## Existing Shell features
 
-- **Automático (recomendado):** identifica extensões ativas pelos UUIDs oficiais, desativa Ubuntu Dock, Dash to Dock e Dash to Panel pela API pública do Shell e registra somente as que o WinShell gerenciou. Ao desabilitar/desinstalar o WinShell ou trocar de política, elas são reabilitadas.
-- **Apenas avisar:** não altera outras extensões; mostra uma notificação com instruções quando encontra uma barra conhecida ativa.
-- **Desativado:** não detecta nem administra barras concorrentes.
+- Bottom taskbar with centered/left alignment, pinned/running apps, search,
+  clock and per-monitor mode.
+- Start search across application names, descriptions, executables and keywords.
+- Five Snap Layout grids and previews with activate, close and arrange actions.
+- Real Wi-Fi, Bluetooth, audio, brightness, battery and Do Not Disturb controls,
+  with unavailable services isolated instead of failing extension startup.
+- Locale-aware calendar and actionable notifications from `Main.messageTray`.
+- Reversible conflict policy for Ubuntu Dock, Dash to Dock and Dash to Panel.
 
-O painel superior nativo do GNOME não é uma dessas barras e permanece ativo por padrão. Ele só é ocultado quando o usuário desativa explicitamente **Manter painel superior GNOME**. Extensões desconhecidas ou bloqueadas por política administrativa não têm atores manipulados: o WinShell avisa quando reconhece que não pode fazer a mudança com segurança.
-
-- Clique no relógio ou no sino para abrir calendário/notificações.
-- Clique no botão de sistema para Quick Settings. Redes com perfil conhecido podem ser conectadas ali; redes novas ou 802.1x devem ser configuradas em **Todas as redes**.
-- Clique com o botão direito num aplicativo para operações de app/janela. As ações indisponíveis para a janela não são exibidas.
-- Clique com o botão direito numa área vazia da barra para personalização rápida.
-
-## Testes
+## Tests and development
 
 ```bash
 ./tests/check.sh
-
-# Casos isolados
-node tests/calendar.test.mjs
-node tests/notifications.test.mjs
-node tests/context-menu.test.mjs
-node tests/quick-settings.test.mjs
-node tests/layouts.test.mjs
-node tests/taskbar-conflicts.test.mjs
-node tests/taskbar-geometry.test.mjs
-
-# Diagnóstico do host
+node --test tests/*.test.mjs
 ./scripts/doctor.sh
 ```
 
-`check.sh` verifica metadata, versão, README/CHANGELOG, schema e compilação GSettings, imports relativos, contratos básicos de cleanup, sintaxe JavaScript/Bash e todos os testes Node. Isso não substitui teste visual no GNOME Shell.
+`check.sh` validates metadata, schemas, imports, JavaScript/Bash/Python syntax,
+SVG integrity, theme/icon metadata, asset licensing, generated-token consistency,
+pure behavior, backup/restore conflicts and isolated idempotent install/uninstall.
+It uses temporary XDG directories and a JSON settings backend; it never changes
+the developer's real GNOME appearance.
 
-## Solução de problemas
+It also enforces that version-specific GNOME Shell JavaScript imports remain in
+`modules/shellCompat.js`, checks for blocking Shell calls, and verifies explicit
+chrome cleanup plus popup focus/geometry contracts.
 
-- Controle ausente ou desabilitado: confirme o hardware e o serviço correspondente; o WinShell não tenta iniciar serviços nem elevar privilégios.
-- Wi‑Fi novo solicita senha: use **Todas as redes**. A extensão deliberadamente não coleta nem armazena credenciais.
-- Brilho indisponível: comum em desktops e monitores sem suporte do GNOME Settings Daemon.
-- Sem histórico antigo de notificações: o centro mostra apenas notificações ativas expostas pelo Shell.
-- Erro ao habilitar: execute `./scripts/doctor.sh` e consulte `journalctl --user -b | grep -i winshell`.
-- Duas barras visíveis: abra as preferências e use **Automático**. Em **Apenas avisar**, desative o dock indicado pelo aplicativo Extensões.
-- Dock original não voltou: primeiro desabilite normalmente o WinShell. Se o Shell encerrou de forma abrupta antes do cleanup, reabilite o dock desejado com um dos comandos abaixo; o registro interno também permite nova tentativa no próximo lifecycle do WinShell.
-- Em Wayland, mudanças de código normalmente exigem encerrar e reabrir a sessão.
-
-```bash
-gnome-extensions enable ubuntu-dock@ubuntu.com
-gnome-extensions enable dash-to-dock@micxgx.gmail.com
-gnome-extensions enable dash-to-panel@jderose9.github.com
-```
-
-Para recuperar uma sessão problemática:
+Regenerate CSS, icons and wallpapers after changing design tokens:
 
 ```bash
-gnome-extensions disable winshell@iklav-tech
-# se necessário em um TTY:
-mv ~/.local/share/gnome-shell/extensions/winshell@iklav-tech \
-   ~/.local/share/gnome-shell/extensions/winshell@iklav-tech.disabled
+node scripts/generate-visual-assets.mjs
+node scripts/generate-visual-assets.mjs --check
 ```
 
-`scripts/uninstall.sh` desabilita e remove o diretório da extensão; confira o destino antes de executá-lo.
+## Troubleshooting
 
-## Limitações conhecidas
+- Run `./scripts/doctor.sh` to inspect GNOME version, resources, DING and the
+  optional Nautilus plugin.
+- If Appearance reports DING unavailable, install/enable DING yourself; WinShell
+  does not alter unrelated extensions to obtain desktop icons.
+- If Nautilus actions are absent, install with `--with-nautilus`, enable the row
+  in Appearance and restart Nautilus. The action opens WinShell preferences.
+- If restore reports external changes, inspect the current theme/wallpaper first;
+  use force only when replacing those newer values is intended.
+- If a new GTK theme is not visible immediately, restart the affected app.
+  Libadwaita applications may intentionally retain application-owned styling.
+- For extension errors, inspect `journalctl --user -b | grep -i winshell`.
+- On Wayland, extension code updates generally require signing out and back in.
 
-- A v0.4.2 ainda não foi homologada visualmente numa sessão descartável Ubuntu 24.04/GNOME 46/Wayland.
-- A detecção automática cobre apenas Ubuntu Dock, Dash to Dock e Dash to Panel. Outras extensões podem desenhar painéis inferiores sem um contrato seguro de controle.
-- Uma queda do processo GNOME Shell entre a desativação de um dock e o cleanup pode adiar a restauração até o próximo lifecycle do WinShell; os comandos de recuperação acima são o fallback explícito.
-- APIs JavaScript do GNOME Shell, `Main.messageTray` e GVC são específicas da versão alvo; uma futura versão do Shell pode exigir adaptação.
-- O centro respeita a fonte autoritativa do GNOME: não cria armazenamento próprio e só mostra/descarta notificações ainda ativas.
-- O botão **Limpar tudo** chama o descarte suportado de cada notificação; aplicativos podem recriar notificações residentes.
-- Notificações são agrupadas quando a fonte fornece identidade de aplicativo; caso contrário, usam o título da fonte.
-- Somente redes Wi‑Fi conhecidas são conectadas diretamente. Autenticação nova, portal cativo e 802.1x ficam nas Configurações do GNOME.
-- A lista Bluetooth contém dispositivos pareados/confiáveis; pareamento novo fica nas Configurações.
-- Saídas de áudio dependem das sinks expostas por GVC/PulseAudio-PipeWire.
-- Snap Layouts não preenche automaticamente as demais regiões e respeita restrições de tamanho/compositor.
-- Pré-visualizações podem faltar para janelas minimizadas/desmapeadas.
-- O menu lista no máximo oito janelas e oito ações `.desktop` por aplicativo para permanecer utilizável.
-- A barra multi-monitor replica a lista de apps; não filtra por monitor.
+## Known limitations and manual validation
 
-## Validação manual pendente
+- Visual fidelity, focus traversal, fractional scaling, contrast and lifecycle
+  still need manual acceptance on real GNOME 46/Wayland hardware.
+- The optional Nautilus plugin cannot restyle private navigation widgets and only
+  exposes a supported preferences action; file/folder visuals come from icons.
+- WinShell does not enable DING or disable unknown desktop providers.
+- Snap Layouts do not automatically fill remaining regions, and previews can be
+  absent for minimized/unmapped windows.
+- GNOME Shell, MessageTray and GVC JavaScript APIs are version-specific.
 
-Em Ubuntu 24.04 / GNOME Shell 46 / Wayland:
+Manual validation should cover Light/Dark/system transitions; keyboard focus and
+screen scaling; apply, external edit, conflict and restore; wallpaper sync across
+displays; DING Home/Trash/volumes and context menus; Nautilus icon/menu behavior;
+Wayland/XWayland windows; enable/disable loops; fullscreen, hotplug and v0.4.x
+settings migration.
 
-1. Habilitar/desabilitar/recarregar a extensão repetidamente com Ubuntu Dock, Dash to Dock e Dash to Panel e procurar atores, timers ou sinais remanescentes.
-2. Alterar Wi‑Fi, Bluetooth, volume, saída, brilho, bateria e Não Perturbe dentro e fora do WinShell e confirmar sincronização.
-3. Testar falha/ausência de NetworkManager, BlueZ/gnome-bluetooth, UPower, GVC e brilho.
-4. Conferir calendário em locales com domingo e segunda como primeiro dia, virada de mês/ano e múltiplos monitores.
-5. Gerar, atualizar, ativar, dispensar e limpar notificações normais, residentes e com ações.
-6. Exercitar menus em janelas não minimizáveis, não maximizáveis, fullscreen, Wayland nativo e XWayland.
-7. Revalidar Start, Snap Layouts, previews, painel superior, fullscreen, escalas e hotplug de monitores.
+The release evidence and rollback checklist are in
+[`docs/verification/0.5.1.md`](docs/verification/0.5.1.md).
 
-## Estrutura
+## Repository layout
 
 ```text
-extension.js / prefs.js
-modules/
-  apps.js, startMenu.js, taskbar.js, multiMonitor.js
-  taskbarConflict.js, taskbarConflictModel.mjs, taskbarGeometry.mjs
-  quickSettings.js, systemControls.js, quickSettingsModel.mjs
-  calendar.js, calendarModel.mjs
-  notificationCenter.js, notificationModel.mjs
-  contextMenu.js, windowActions.mjs
-  popup.js, systemActions.js, windowPreview.js
-  snapLayouts.js, layoutGeometry.mjs
-schemas/  scripts/  tests/  docs/
+extension.js, prefs.js, stylesheet.css
+modules/                 Shell runtime and appearance controllers
+themes/                  tokens plus WinShell / WinShell-Dark packages
+icons/WinShell/           scalable icon theme and license
+wallpapers/               original Light/Dark SVG artwork and license
+integrations/appearance/  versioned apply/restore helper
+integrations/desktop/     DING integration contract
+integrations/nautilus/    optional Nautilus MenuProvider
+schemas/ scripts/ tests/ docs/
 ```
 
-Licença MIT. Consulte [LICENSE](LICENSE).
+See [CHANGELOG.md](CHANGELOG.md) and [docs/architecture.md](docs/architecture.md).
+Code is MIT licensed; asset subdirectories contain their CC0 notices.

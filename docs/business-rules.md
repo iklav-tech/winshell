@@ -19,11 +19,16 @@
 - **RN-15 — capacidade real:** controles e ações de janela ausentes, bloqueados por hardware ou não suportados não ficam acionáveis.
 - **RN-16 — notificações autoritativas:** WinShell não persiste cópia; ativação e descarte chamam a API da notificação do Shell.
 - **RN-17 — sincronização externa:** serviços, GSettings, fontes/notificações e janelas emitem sinais que atualizam a projeção WinShell.
-- **RN-18 — versão:** release v0.4.2 usa `metadata.version=6` e `version-name=0.4.2`.
+- **RN-18 — versão:** release v0.5.1 usa `metadata.version=8` e `version-name=0.5.1`.
+- **RN-19 — consentimento visual:** nenhuma aparência global é alterada antes de Aplicar; sincronização de color scheme/GTK requer opção explícita.
+- **RN-20 — backup:** o primeiro valor observado de cada chave alterada é preservado no backup v1 e não é substituído por reaplicações.
+- **RN-21 — conflito externo:** valores atuais diferentes do original e do último aplicado interrompem apply/restore sem confirmação forçada.
+- **RN-22 — integrações:** DING e Nautilus são opcionais, detectados e nunca substituídos/reimplementados dentro do Shell.
+- **RN-23 — assets:** ícones e wallpapers distribuídos são originais CC0; fallbacks pertencem aos temas herdados.
 - **RN-19 — conflito automático:** somente Ubuntu Dock, Dash to Dock e Dash to Panel ativos e mutáveis são desativados pela API pública do Shell.
 - **RN-20 — restauração:** somente UUIDs que o WinShell registrou em `managed-taskbar-extensions` são reabilitados em disable real ou saída do modo Automático.
 - **RN-21 — fallback seguro:** Warn Only apenas notifica; Disabled não detecta nem altera; extensão bloqueada por política administrativa recebe aviso em vez de manipulação de atores.
-- **RN-22 — chrome:** cada barra usa `addChrome` com strut e tracking de fullscreen, ficando abaixo de janelas e diálogos do sistema.
+- **RN-22 — chrome:** cada barra usa `addChrome` com strut e tracking de fullscreen, ficando abaixo de janelas e diálogos do sistema; barras e popups chamam `removeChrome` no destroy.
 - **RN-23 — geometria:** a barra ocupa a largura e borda inferior lógicas do monitor correspondente; origens não zero/negativas são preservadas e cada índice recebe no máximo uma barra.
 
 ## Hipóteses abertas

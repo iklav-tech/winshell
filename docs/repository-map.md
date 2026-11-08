@@ -4,7 +4,7 @@
 |---|---|
 | `extension.js` | enable/disable e painel superior |
 | `prefs.js` | preferências GTK/Libadwaita |
-| `metadata.json` | UUID, Shell 46, versão inteira 6 / 0.4.2 |
+| `metadata.json` | UUID, Shell 46, versão inteira 8 / 0.5.1 |
 | `stylesheet.css` | barra, flyouts, claro/escuro |
 | `modules/taskbar.js` | composição e eventos da barra |
 | `modules/multiMonitor.js` | topologia e controles compartilhados |
@@ -17,12 +17,19 @@
 | `modules/startMenu.js`, `apps.js` | catálogo/pesquisa/ativação |
 | `modules/windowPreview.js` | miniaturas e ações |
 | `modules/snapLayouts.js` | UI/aplicação de layouts |
-| `modules/popup.js` | base/posicionamento de flyouts |
+| `modules/popup.js`, `popupGeometry.mjs` | lifecycle/foco e geometria pura de flyouts |
+| `modules/shellCompat.js` | fronteira de APIs JavaScript específicas do GNOME Shell 46 |
 | `modules/*Model.mjs`, `windowActions.mjs`, `layoutGeometry.mjs`, `taskbarGeometry.mjs` | lógica pura testável |
-| `schemas/` | doze valores de usuário e um registro interno persistente |
-| `tests/` | estrutura, sintaxe, schema e sete suítes unitárias |
-| `scripts/` | instalação, remoção e diagnóstico |
-| `docs/` | referência alinhada à v0.4.2 |
+| `modules/appearance/` | modo efetivo, classes do Shell, preferências e cliente assíncrono |
+| `themes/` | tokens e pacotes WinShell Light/Dark para GTK3, GTK4 e Shell |
+| `icons/WinShell/` | tema SVG original com fallback e licença |
+| `wallpapers/` | arte original Light/Dark vetorial e licença |
+| `integrations/appearance/` | apply/restore versionado e testável |
+| `integrations/desktop/`, `integrations/nautilus/` | DING e plugin Nautilus opcional |
+| `schemas/` | valores legados, visuais e registros internos persistentes |
+| `tests/` | estrutura, assets, sintaxe, schema e suítes unitárias/isoladas |
+| `scripts/` | geração, instalação, restauração, remoção e diagnóstico |
+| `docs/` | referência alinhada à v0.5.1 e evidência em `verification/` |
 
 ## Dependências de runtime
 
@@ -30,7 +37,7 @@ GNOME Shell resources; GI `St`, `Clutter`, `Gio`, `GLib`, `Shell`, `Meta`, `NM`,
 
 ## Artefato
 
-`scripts/install.sh` copia metadata, entradas, CSS, todo `modules/` e `schemas/`, depois executa `glib-compile-schemas --strict`. Testes/docs não são necessários no diretório instalado.
+`scripts/install.sh` copia o artefato da extensão e instala temas, ícones, wallpapers e helper em caminhos XDG do usuário. `--with-nautilus` valida a API Nautilus 4 antes de copiar o plugin. O schema é compilado com `--strict`.
 
 ## Ausências
 

@@ -1,0 +1,247 @@
+#!/usr/bin/env python3
+"""Apply and restore user appearance settings without touching system files."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+
+BACKUP_VERSION = 1
+INTERFACE = "org.gnome.desktop.interface"
+BACKGROUND = "org.gnome.desktop.background"
+DING = "org.gnome.shell.extensions.ding"
+
+
+class SettingsError(RuntimeError):
+    pass
+
+
+class GSettingsBackend:
+    def __init__(self):
+        result = subprocess.run(["gsettings", "list-schemas"], text=True,
+                                capture_output=True, check=False)
+        if result.returncode:
+            raise SettingsError(result.stderr.strip() or "gsettings is unavailable")
+        self.schemas = set(result.stdout.splitlines())
+        self._keys = {}
+
+    def has(self, schema, key):
+        if schema not in self.schemas:
+            return False
+        if schema not in self._keys:
+            result = subprocess.run(["gsettings", "list-keys", schema], text=True,
+                                    capture_output=True, check=False)
+            self._keys[schema] = set(result.stdout.splitlines()) if not result.returncode else set()
+        return key in self._keys[schema]
+
+    def get(self, schema, key):
+        result = subprocess.run(["gsettings", "get", schema, key], text=True,
+                                capture_output=True, check=False)
+        if result.returncode:
+            raise SettingsError(result.stderr.strip())
+        return result.stdout.strip()
+
+    def set(self, schema, key, value):
+        result = subprocess.run(["gsettings", "set", schema, key, value], text=True,
+                                capture_output=True, check=False)
+        if result.returncode:
+            raise SettingsError(result.stderr.strip())
+
+
+class JsonBackend:
+    """Test-only backend selected explicitly with WINSHELL_TEST_STATE."""
+
+    def __init__(self, path):
+        self.path = Path(path)
+        self.state = json.loads(self.path.read_text(encoding="utf-8"))
+
+    def has(self, schema, key):
+        return f"{schema}/{key}" in self.state
+
+    def get(self, schema, key):
+        return self.state[f"{schema}/{key}"]
+
+    def set(self, schema, key, value):
+        self.state[f"{schema}/{key}"] = value
+        atomic_json(self.path, self.state)
+
+
+def atomic_json(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(value, stream, ensure_ascii=False, indent=2, sort_keys=True)
+            stream.write("\n")
+        os.chmod(temporary, 0o600)
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def quoted(value):
+    return "'" + str(value).replace("\\", "\\\\").replace("'", "\\'") + "'"
+
+
+def setting_id(schema, key):
+    return f"{schema}/{key}"
+
+
+def split_setting(identifier):
+    return identifier.rsplit("/", 1)
+
+
+def default_backup_path():
+    config = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+    return config / "winshell" / "appearance-backup-v1.json"
+
+
+def backend_from_environment():
+    path = os.environ.get("WINSHELL_TEST_STATE")
+    return JsonBackend(path) if path else GSettingsBackend()
+
+
+def load_backup(path):
+    if not path.exists():
+        return None
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if data.get("version") != BACKUP_VERSION:
+        raise SettingsError(f"unsupported backup version: {data.get('version')}")
+    return data
+
+
+def desired_settings(args, backend):
+    desired = {
+        setting_id(INTERFACE, "icon-theme"): quoted(args.icon_theme),
+        setting_id(BACKGROUND, "picture-uri"): quoted(args.wallpaper),
+        setting_id(BACKGROUND, "picture-uri-dark"): quoted(args.wallpaper_dark),
+        setting_id(BACKGROUND, "picture-options"): quoted(args.background_style),
+    }
+    if args.sync_system:
+        mode = args.mode
+        if mode == "follow-system":
+            current = backend.get(INTERFACE, "color-scheme") if backend.has(INTERFACE, "color-scheme") else "'default'"
+            mode = "dark" if current == "'prefer-dark'" else "light"
+        desired[setting_id(INTERFACE, "color-scheme")] = quoted("prefer-dark" if mode == "dark" else "default")
+        desired[setting_id(INTERFACE, "gtk-theme")] = quoted("WinShell-Dark" if mode == "dark" else "WinShell")
+    if args.desktop:
+        desired.update({
+            setting_id(DING, "show-home"): str(args.show_home).lower(),
+            setting_id(DING, "show-trash"): str(args.show_trash).lower(),
+            setting_id(DING, "show-volumes"): str(args.show_volumes).lower(),
+        })
+    return {identifier: value for identifier, value in desired.items()
+            if backend.has(*split_setting(identifier))}
+
+
+def conflicts_for(backend, backup, identifiers):
+    conflicts = []
+    for identifier in identifiers:
+        schema, key = split_setting(identifier)
+        if not backend.has(schema, key):
+            continue
+        current = backend.get(schema, key)
+        applied = backup.get("applied", {}).get(identifier)
+        original = backup.get("original", {}).get(identifier)
+        if applied is not None and current not in (applied, original):
+            conflicts.append(identifier)
+    return conflicts
+
+
+def apply(args, backend, backup_path):
+    desired = desired_settings(args, backend)
+    backup = load_backup(backup_path) or {
+        "version": BACKUP_VERSION, "original": {}, "applied": {}, "changed": []}
+    conflicts = conflicts_for(backend, backup, desired)
+    if conflicts and not args.force:
+        print(json.dumps({"ok": False, "reason": "external-changes", "conflicts": conflicts}))
+        return 3
+    backup.pop("restored", None)
+    for identifier, value in desired.items():
+        schema, key = split_setting(identifier)
+        current = backend.get(schema, key)
+        backup["original"].setdefault(identifier, current)
+        if current != value:
+            backend.set(schema, key, value)
+        backup["applied"][identifier] = value
+        if identifier not in backup["changed"]:
+            backup["changed"].append(identifier)
+    atomic_json(backup_path, backup)
+    print(json.dumps({"ok": True, "changed": sorted(desired), "backup": str(backup_path)}))
+    return 0
+
+
+def restore(args, backend, backup_path):
+    backup = load_backup(backup_path)
+    if not backup:
+        print(json.dumps({"ok": True, "restored": [], "backup": None}))
+        return 0
+    identifiers = backup.get("changed", [])
+    conflicts = conflicts_for(backend, backup, identifiers)
+    if conflicts and not args.force:
+        print(json.dumps({"ok": False, "reason": "external-changes", "conflicts": conflicts}))
+        return 3
+    restored = []
+    for identifier in identifiers:
+        schema, key = split_setting(identifier)
+        if not backend.has(schema, key) or identifier not in backup.get("original", {}):
+            continue
+        original = backup["original"][identifier]
+        if backend.get(schema, key) != original:
+            backend.set(schema, key, original)
+        restored.append(identifier)
+    backup["restored"] = True
+    atomic_json(backup_path, backup)
+    print(json.dumps({"ok": True, "restored": sorted(restored), "backup": str(backup_path)}))
+    return 0
+
+
+def status(backend, backup_path):
+    backup = load_backup(backup_path)
+    conflicts = conflicts_for(backend, backup, backup.get("changed", [])) if backup else []
+    print(json.dumps({"ok": True, "backup": str(backup_path) if backup else None,
+                      "applied": bool(backup and not backup.get("restored")),
+                      "externalChanges": conflicts}, sort_keys=True))
+    return 0
+
+
+def parser():
+    result = argparse.ArgumentParser(description=__doc__)
+    result.add_argument("command", choices=("apply", "restore", "status"))
+    result.add_argument("--backup", type=Path, default=default_backup_path())
+    result.add_argument("--force", action="store_true")
+    result.add_argument("--mode", choices=("follow-system", "light", "dark"), default="follow-system")
+    result.add_argument("--icon-theme", default="WinShell")
+    result.add_argument("--wallpaper", default="")
+    result.add_argument("--wallpaper-dark", default="")
+    result.add_argument("--background-style", choices=("zoom", "scaled", "centered", "spanned", "wallpaper"), default="zoom")
+    result.add_argument("--sync-system", action="store_true")
+    result.add_argument("--desktop", action="store_true")
+    result.add_argument("--show-home", action=argparse.BooleanOptionalAction, default=True)
+    result.add_argument("--show-trash", action=argparse.BooleanOptionalAction, default=True)
+    result.add_argument("--show-volumes", action=argparse.BooleanOptionalAction, default=True)
+    return result
+
+
+def main():
+    args = parser().parse_args()
+    try:
+        backend = backend_from_environment()
+        if args.command == "apply":
+            return apply(args, backend, args.backup)
+        if args.command == "restore":
+            return restore(args, backend, args.backup)
+        return status(backend, args.backup)
+    except (OSError, ValueError, json.JSONDecodeError, SettingsError) as error:
+        print(json.dumps({"ok": False, "reason": "error", "message": str(error)}))
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

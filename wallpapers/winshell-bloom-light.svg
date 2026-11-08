@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" preserveAspectRatio="xMidYMid slice">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#edf5ff"/><stop offset="1" stop-color="#dbe9fb"/></linearGradient><filter id="blur"><feGaussianBlur stdDeviation="85"/></filter></defs>
+<rect width="3840" height="2160" fill="url(#bg)"/><g filter="url(#blur)" opacity=".88">
+<path d="M2310 70c580 300 1060 820 820 1320-280 590-1250 690-1700 260-430-410-80-860 380-930 390-60 530-330 500-650z" fill="#67aaf0"/>
+<path d="M2950 310c380 470 180 1100-390 1340-470 200-1090-40-1090-420 0-320 430-360 710-440 350-100 450-340 770-480z" fill="#9c7bd4" opacity=".78"/>
+<ellipse cx="1420" cy="1060" rx="520" ry="430" fill="#78d7cc" opacity=".58"/></g>
+<path d="M2100 330c420 210 720 570 600 900-140 390-750 570-1120 260-310-260-60-560 250-630 300-70 360-310 270-530z" fill="none" stroke="#fff" stroke-width="18" opacity=".24"/>
+</svg>

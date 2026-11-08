@@ -4,8 +4,8 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GnomeBluetooth from 'gi://GnomeBluetooth';
 import NM from 'gi://NM';
-import {getMixerControl} from 'resource:///org/gnome/shell/ui/status/volume.js';
 import {clampUnit, normalizeQuickState} from './quickSettingsModel.mjs';
+import {mixerControl} from './shellCompat.js';
 
 const BRIGHTNESS_XML = `<node><interface name="org.gnome.SettingsDaemon.Power.Screen">
   <property name="Brightness" type="i" access="readwrite"/>
@@ -161,7 +161,7 @@ export class SystemControls {
 
     _initAudio() {
         try {
-            this._mixer = getMixerControl();
+            this._mixer = mixerControl();
             for (const signal of ['state-changed', 'default-sink-changed', 'stream-added',
                 'stream-changed', 'stream-removed', 'output-added', 'output-removed',
                 'active-output-update'])

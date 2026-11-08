@@ -1,3 +1,39 @@
+# WinShell — repository instructions for Codex
+
+## Mission
+Build an independent, maintainable, Windows 11-inspired GNOME Shell experience for Ubuntu 24.04 LTS / GNOME Shell 46. Prefer correct native integration to superficial mockups. This is **not** a Windows emulator.
+
+## Required workflow
+1. Read `specs/INDEX.md`, `specs/00-architecture-and-quality.md`, and the requested version spec(s). Inspect the actual repository before editing.
+2. Record existing functionality, gaps, and potential regressions. Do not assume a feature or module exists because it appears in a roadmap.
+3. Implement code, configuration, tests, and documentation. Use small cohesive modules; no stubs or decorative nonfunctional controls counted as complete.
+4. Test what is possible and explicitly distinguish static checks from GNOME 46/Wayland runtime validation.
+5. Update `README.md` **throughout** for each release, update `CHANGELOG.md`, installer/uninstaller, GSettings, and integer `metadata.json` version consistently.
+6. Finish with changed files, acceptance status, tests run, evidence, unresolved issues and manual validation steps.
+7. **Never commit, tag, or publish automatically.** Wait for an explicit user request.
+
+## Hard requirements
+- Target: Ubuntu 24.04, GNOME Shell 46, Wayland first, X11 where feasible. GJS ES Modules.
+- Extension UUID: `winshell@iklav-tech` unless existing project differs; do not silently change it.
+- Free resources on disable: actors, timeouts, signals, D-Bus proxies, keybindings, monitors, shell chrome.
+- Do not block shell main loop. Prefer async D-Bus; handle missing services/hardware and error paths.
+- Prefer documented GNOME interfaces and isolate any internal GNOME API use behind compatibility modules.
+- Do not write to `/usr`, override system libraries, patch Mutter/Nautilus, or require root for preference changes.
+- For conflicting dock extensions, never destroy another extension's actors or irreversibly disable an extension. Restore changes after errors/restarts.
+- Theme/app integration separate from shell extension; respect GTK4/Libadwaita limitations.
+- Icons/wallpapers: original or redistributable with tracked license; no proprietary Microsoft assets.
+- Windows app compatibility, full Nautilus UI replacement, and 99% functional identity are NOT acceptance criteria.
+
+## Test baseline
+Where available: `bash tests/check.sh`, `node --test tests/*.test.mjs`, `bash -n scripts/*.sh`, `glib-compile-schemas --strict --dry-run schemas`, `gnome-extensions info winshell@iklav-tech`, plus live GNOME 46 checks. Adapt to actual repo.
+
+## Multi-agent safety
+- Different implementation branches/worktrees for concurrent feature work.
+- Do not run two agents changing `extension.js`, `prefs.js`, `metadata.json`, `README.md`, `CHANGELOG.md`, or GSettings simultaneously on the same branch.
+- Merge/integrate one branch at a time; one integration owner handles shared files, release version and regression suite.
+- Never mark a release as stable without manual runtime evidence.
+
+
 # WinShell — índice técnico
 
 ## Estrutura rápida

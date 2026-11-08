@@ -1,0 +1,20 @@
+{
+  "name": "WinShell Theme",
+  "version": "0.5.0",
+  "typography": {"body": "10.5pt", "caption": "9pt", "title": "16pt"},
+  "radius": {"small": 6, "control": 8, "card": 10, "surface": 12, "round": 999},
+  "spacing": {"xs": 4, "sm": 8, "md": 12, "lg": 18, "xl": 24},
+  "opacity": {"disabled": 0.45, "subtle": 0.72, "surface": 0.96},
+  "light": {
+    "surface": "#f3f6fb", "surfaceAlt": "#e8eef7", "card": "#ffffff",
+    "text": "#172033", "muted": "#58667a", "border": "#9aaac033",
+    "accent": "#256fce", "accentHover": "#185aa9", "focus": "#005fb8",
+    "danger": "#b42318", "shadow": "#00000038"
+  },
+  "dark": {
+    "surface": "#20242ccc", "surfaceAlt": "#303642", "card": "#3a424f",
+    "text": "#f5f7fb", "muted": "#bac4d2", "border": "#b7c3d44d",
+    "accent": "#4b91e5", "accentHover": "#73adf0", "focus": "#60a5fa",
+    "danger": "#ff8b85", "shadow": "#00000070"
+  }
+}
