@@ -19,7 +19,7 @@
 - **RN-15 — capacidade real:** controles e ações de janela ausentes, bloqueados por hardware ou não suportados não ficam acionáveis.
 - **RN-16 — notificações autoritativas:** WinShell não persiste cópia; ativação e descarte chamam a API da notificação do Shell.
 - **RN-17 — sincronização externa:** serviços, GSettings, fontes/notificações e janelas emitem sinais que atualizam a projeção WinShell.
-- **RN-18 — versão:** release v0.5.1 usa `metadata.version=8` e `version-name=0.5.1`.
+- **RN-18 — versão:** release v0.5.2 usa `metadata.version=9` e `version-name=0.5.2`.
 - **RN-19 — consentimento visual:** nenhuma aparência global é alterada antes de Aplicar; sincronização de color scheme/GTK requer opção explícita.
 - **RN-20 — backup:** o primeiro valor observado de cada chave alterada é preservado no backup v1 e não é substituído por reaplicações.
 - **RN-21 — conflito externo:** valores atuais diferentes do original e do último aplicado interrompem apply/restore sem confirmação forçada.

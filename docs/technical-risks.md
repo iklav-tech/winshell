@@ -4,7 +4,7 @@
 |---|---|---|
 | R-01 | alta | Sem teste de integração gráfico; suíte atual é estática/unitária e há checklist manual |
 | R-02 | alta | APIs JS do Shell/GVC/MessageTray são específicas do GNOME 46; metadata limita a versão e `shellCompat.js` concentra a superfície instável |
-| R-03 | média | Instalação não é transacional; falha depois da cópia pode deixar artefato parcial |
+| R-03 | média | Cópias do pacote principal não são transacionais; dependências e versão do ambiente são validadas antes da primeira escrita, mas falha de I/O durante cópia ainda pode deixar artefato parcial |
 | R-04 | média | Uninstall remove recursivamente o destino; usuário deve conferir o caminho |
 | R-05 | baixa | Validação Snap existe na UI e executor; manter contratos alinhados |
 | R-06 | média | Sources podem omitir app/icon/action/timestamp; UI usa fallbacks sem inventar histórico |
@@ -49,6 +49,12 @@
 - Barras e popups removem chrome explicitamente; construção/rebuild parcial das barras faz rollback.
 - Popups ganharam foco inicial/restauração e geometria pura testada para origens negativas, âncoras fracionárias e limites do monitor.
 - A evidência da SPEC 00 separa testes automatizados de homologação GNOME 46/Wayland ainda pendente.
+
+## Melhorias da v0.5.2
+
+- A baseline histórica SPEC 0.0.1 ganhou contrato automatizado, evidência dedicada e guia de contribuição.
+- Dependências opcionais do Nautilus são validadas antes de qualquer escrita do instalador.
+- Metadata, instalador, README, changelog e documentação foram sincronizados sem rebaixar a release atual.
 
 ## Validação pendente
 

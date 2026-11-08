@@ -48,6 +48,7 @@ Falha geral de enable gera log, cleanup e relançamento. Serviços/hardware ause
 - `appearance.test.mjs`;
 - `appearance-backup.test.mjs`;
 - `install.test.mjs`.
+- `bootstrap.test.mjs`.
 
 Testes gráficos e D-Bus reais permanecem manuais.
 

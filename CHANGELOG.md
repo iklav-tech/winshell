@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.5.2 — 2026-11-08
+
+### Added
+
+- A repository contribution guide covering architecture boundaries, lifecycle,
+  local-only operation, release synchronization and GNOME runtime validation.
+- A SPEC 0.0.1 bootstrap contract test for UUID, Shell 46 metadata, ES Modules,
+  lifecycle cleanup, user-local paths, rollback guards and required project files.
+- Historical bootstrap evidence plus a v0.5.2 release verification checklist.
+
+### Changed
+
+- Optional Nautilus dependencies are now validated before the installer writes
+  any WinShell destination, avoiding a rejected optional request leaving core
+  files behind.
+- Metadata integer version advanced from 8 to 9 with `version-name` 0.5.2; README,
+  installer, tests and technical documentation were synchronized.
+
+### Validation status
+
+- Static, unit, schema, asset and isolated XDG tests pass.
+- GNOME 46/Wayland and X11 runtime validation remains pending and is not claimed.
+
 ## v0.5.1 — 2026-11-08
 
 ### Added

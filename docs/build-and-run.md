@@ -1,4 +1,4 @@
-# Build, testes e execução — v0.5.1
+# Build, testes e execução — v0.5.2
 
 ## Ambiente observado em 2026-11-08
 
@@ -11,9 +11,10 @@
 | DING schema | disponível |
 | Nautilus | disponível; plugin WinShell não instalado |
 
-O perfil gráfico real não foi modificado. Temas, ícones e plugin aparecem como
-ausentes no `doctor.sh` porque o artefato do repositório não foi instalado no
-`XDG_DATA_HOME` real; isso é esperado e evita alterar a aparência do desenvolvedor.
+O perfil gráfico real não foi modificado por esta validação. O `doctor.sh`
+encontrou temas e ícones WinShell preexistentes no `XDG_DATA_HOME`, além do schema
+DING; o plugin Nautilus não está instalado. A extensão não foi reconhecida por
+`gnome-extensions info`, portanto esses assets não são evidência do artefato v0.5.2.
 
 ## Suíte confirmada
 
@@ -24,14 +25,15 @@ ausentes no `doctor.sh` porque o artefato do repositório não foi instalado no
 Exit code 0. A execução confirmou:
 
 ```text
-OK: metadata v0.5.1, GSettings, imports, assets, licenses and lifecycle contracts
+OK: metadata v0.5.2, GSettings, imports, assets, licenses and lifecycle contracts
+OK: SPEC 0.0.1 metadata, ESM lifecycle, local install, rollback and project baseline
 OK: generated visual assets match design tokens
 OK: Shell API boundary, nonblocking contracts, explicit chrome cleanup and popup focus
 OK: versioned appearance backup, conflicts, force, restore and idempotence
 OK: appearance modes, wallpaper selection and optional integration detection
 OK: calendar navigation, alignment, leap year and locale
 OK: context menu window visibility, capabilities and state labels
-OK: isolated idempotent install and clean uninstall
+OK: preflight rejection, isolated idempotent install and clean uninstall
 OK: all graphical layout templates and pixel bounds
 OK: notification grouping, sanitization and snapshot lifecycle
 OK: popup monitor selection, bounds, negative origins and fractional anchors
@@ -55,14 +57,14 @@ node --test tests/*.test.mjs
 ./scripts/doctor.sh
 ```
 
-Ambos terminaram com exit code 0; o runner registrou 12 testes, sem falhas ou
-skips. O doctor detectou GNOME 46/Wayland,
-`gsettings`, Nautilus, Python e schema DING; relatou corretamente os recursos
-WinShell ainda não instalados e não encontrou logs recentes.
+Ambos terminaram com exit code 0; o runner registrou 13 testes, sem falhas ou
+skips. O doctor detectou GNOME 46/Wayland, `gsettings`, Nautilus, Python, schema
+DING e assets WinShell preexistentes; o plugin Nautilus segue ausente. O journal
+continha ativações do serviço de extensões anteriores a esta validação, que não
+foram tratadas como evidência runtime da v0.5.2.
 
-`gnome-extensions info winshell@iklav-tech` terminou com exit code 2 porque não
-há cópia instalada neste perfil. Portanto, não conta como validação runtime do
-artefato do repositório.
+`gnome-extensions info winshell@iklav-tech` terminou com exit code 2 e sem dados
+da extensão. Portanto, não conta como validação runtime do artefato do repositório.
 
 ## Assets reproduzíveis
 
@@ -84,6 +86,8 @@ O primeiro comando atualiza CSS, temas, ícones e wallpapers a partir de
 
 O teste automatizado usa `WINSHELL_SKIP_GNOME_CHECK=1` somente dentro de XDG
 temporário. Instalação normal valida GNOME 46 e `glib-compile-schemas`.
+Quando `--with-nautilus` é solicitado, Nautilus 4 e `python3-nautilus` também são
+validados antes da primeira escrita no destino.
 
 ## Restauração e remoção
 

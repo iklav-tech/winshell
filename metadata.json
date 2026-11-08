@@ -6,7 +6,7 @@
     "46"
   ],
   "settings-schema": "org.gnome.shell.extensions.winshell",
-  "version": 8,
-  "version-name": "0.5.1",
+  "version": 9,
+  "version-name": "0.5.2",
   "url": "https://github.com/iklav-tech"
 }

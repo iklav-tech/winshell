@@ -1,4 +1,4 @@
-# WinShell for GNOME v0.5.1
+# WinShell for GNOME v0.5.2
 
 WinShell is an experimental Windows 11-inspired visual and interaction layer for
 **Ubuntu 24.04 LTS / GNOME Shell 46**. It adds a taskbar, Start menu, Quick
@@ -8,10 +8,16 @@ Mutter, Nautilus, NetworkManager or system libraries and is not affiliated with
 Microsoft or the GNOME Foundation.
 
 > **Pre-release status.** Static, unit, asset and isolated filesystem tests cover
-> v0.5.1. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
+> v0.5.2. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
 > still required; target compatibility is not a claim of completed certification.
 
-## What v0.5.1 provides
+## What v0.5.2 provides
+
+- A verified SPEC 0.0.1 development baseline: fixed UUID and GNOME 46 metadata,
+  ES Module lifecycle cleanup, user-local install/rollback, contributor guidance
+  and a dedicated automated bootstrap contract.
+- Optional Nautilus requirements are checked before installation writes begin,
+  so a rejected `--with-nautilus` request does not leave the core half-installed.
 
 - A GNOME Shell 46 compatibility boundary for version-specific Shell, extension
   manager, MessageTray, GVC, Slider, panel and chrome APIs.
@@ -75,7 +81,7 @@ WinShell never installs packages or writes system-wide files itself.
 ## Install or upgrade
 
 ```bash
-unzip winshell-for-gnome-v0.5.1.zip
+unzip winshell-for-gnome-v0.5.2.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
@@ -109,7 +115,7 @@ User-local installation paths:
 | Appearance backup | `$XDG_CONFIG_HOME/winshell/appearance-backup-v1.json` |
 
 Defaults are `~/.local/share` and `~/.config` when the XDG variables are unset.
-Metadata uses GNOME integer version **8** and `version-name` **0.5.1**.
+Metadata uses GNOME integer version **9** and `version-name` **0.5.2**.
 
 ## Appearance workflow
 
@@ -216,7 +222,9 @@ Wayland/XWayland windows; enable/disable loops; fullscreen, hotplug and v0.4.x
 settings migration.
 
 The release evidence and rollback checklist are in
-[`docs/verification/0.5.1.md`](docs/verification/0.5.1.md).
+[`docs/verification/0.5.2.md`](docs/verification/0.5.2.md). The retrospective
+SPEC 0.0.1 evidence is in
+[`docs/verification/v0.0.1.md`](docs/verification/v0.0.1.md).
 
 ## Repository layout
 
@@ -233,4 +241,5 @@ schemas/ scripts/ tests/ docs/
 ```
 
 See [CHANGELOG.md](CHANGELOG.md) and [docs/architecture.md](docs/architecture.md).
-Code is MIT licensed; asset subdirectories contain their CC0 notices.
+Code is MIT licensed; asset subdirectories contain their CC0 notices. Development
+and validation conventions are in [CONTRIBUTING.md](CONTRIBUTING.md).

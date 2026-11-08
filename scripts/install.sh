@@ -31,13 +31,27 @@ if [[ "${WINSHELL_SKIP_GNOME_CHECK:-0}" != '1' ]]; then
   fi
   VERSION="$(gnome-shell --version | sed -nE 's/.* ([0-9]+)\..*/\1/p')"
   if [[ "$VERSION" != '46' ]]; then
-    echo "ERROR: WinShell v0.5.1 targets GNOME 46 (detected: ${VERSION:-unknown})." >&2
+    echo "ERROR: WinShell v0.5.2 targets GNOME 46 (detected: ${VERSION:-unknown})." >&2
     exit 1
   fi
 fi
 if ! command -v glib-compile-schemas >/dev/null 2>&1; then
   echo 'ERROR: glib-compile-schemas is required (libglib2.0-dev-bin on Ubuntu).' >&2
   exit 1
+fi
+
+# Validate optional dependencies before writing any destination. This keeps a
+# rejected --with-nautilus request from leaving the main package half-installed.
+if $WITH_NAUTILUS; then
+  if ! command -v nautilus >/dev/null 2>&1; then
+    echo 'ERROR: Nautilus is not installed; no WinShell files were installed.' >&2
+    exit 1
+  fi
+  if ! command -v python3 >/dev/null 2>&1 || \
+      ! python3 -c 'import gi; gi.require_version("Nautilus", "4.0"); from gi.repository import Nautilus' >/dev/null 2>&1; then
+    echo 'ERROR: python3-nautilus with the Nautilus 4 API is required; no WinShell files were installed.' >&2
+    exit 1
+  fi
 fi
 
 install -d "$EXTENSION_DEST" "$THEME_DEST" "$ICON_DEST" "$RESOURCE_DEST/bin" "$RESOURCE_DEST/wallpapers"
@@ -61,14 +75,6 @@ cp -a "$ROOT/wallpapers/." "$RESOURCE_DEST/wallpapers/"
 install -m 0755 "$ROOT/integrations/appearance/winshell-appearance" "$RESOURCE_DEST/bin/winshell-appearance"
 
 if $WITH_NAUTILUS; then
-  if ! command -v nautilus >/dev/null 2>&1; then
-    echo 'ERROR: Nautilus is not installed; optional integration was not installed.' >&2
-    exit 1
-  fi
-  if ! python3 -c 'import gi; gi.require_version("Nautilus", "4.0"); from gi.repository import Nautilus' >/dev/null 2>&1; then
-    echo 'ERROR: python3-nautilus with the Nautilus 4 API is required for --with-nautilus.' >&2
-    exit 1
-  fi
   install -d "$NAUTILUS_DEST"
   install -m 0644 "$ROOT/integrations/nautilus/winshell-nautilus.py" "$NAUTILUS_DEST/winshell-nautilus.py"
   echo 'Optional Nautilus integration installed; restart Nautilus to load it.'
@@ -76,7 +82,7 @@ else
   echo 'Optional Nautilus integration not requested. Use --with-nautilus to install it.'
 fi
 
-echo "WinShell v0.5.1 installed at: $EXTENSION_DEST"
+echo "WinShell v0.5.2 installed at: $EXTENSION_DEST"
 echo "Themes: $THEME_DEST/WinShell and $THEME_DEST/WinShell-Dark"
 echo "Icons: $ICON_DEST/WinShell"
 echo "Wallpapers and appearance helper: $RESOURCE_DEST"
