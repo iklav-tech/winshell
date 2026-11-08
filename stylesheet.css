@@ -1,0 +1,38 @@
+.winshell-taskbar {
+    background-color: rgba(229, 238, 250, 0.96);
+    border-top: 1px solid rgba(112, 133, 161, 0.30);
+    padding: 0 12px;
+    spacing: 4px;
+    color: #17243a;
+}
+.winshell-taskbar-center, .winshell-taskbar-left, .winshell-taskbar-right { spacing: 4px; }
+.winshell-task-icon {
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin: 4px 1px;
+    color: #182840;
+    background-color: transparent;
+}
+.winshell-task-icon:hover { background-color: rgba(255,255,255,0.85); }
+.winshell-task-icon.winshell-running { border-bottom: 3px solid #719bd0; }
+.winshell-task-icon.winshell-active { background-color: rgba(255,255,255,0.90); border-bottom: 3px solid #2474d6; }
+.winshell-clock-button { border-radius: 6px; padding: 5px 10px; margin: 3px 0; }
+.winshell-clock-button:hover { background-color: rgba(255,255,255,0.7); }
+.winshell-clock { font-size: 11pt; text-align: right; color: #16263e; }
+.winshell-start-menu {
+    padding: 22px;
+    border-radius: 12px;
+    background-color: rgba(242, 246, 252, 0.98);
+    border: 1px solid rgba(120, 145, 180, 0.55);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.30);
+    color: #1c2940;
+    spacing: 14px;
+}
+.winshell-menu-title { font-weight: bold; font-size: 17pt; margin: 0 4px 8px 4px; }
+.winshell-search-entry { padding: 10px 12px; background-color: #ffffff; border-radius: 6px; color: #1c2940; }
+.winshell-app-scroll { padding: 2px; }
+.winshell-app-list { spacing: 3px; }
+.winshell-app-item { padding: 9px 10px; border-radius: 6px; text-align: left; }
+.winshell-app-item:hover, .winshell-app-item:focus { background-color: rgba(65,130,220,0.17); }
+.winshell-app-name { padding-left: 14px; color: #1d2d47; }
+.winshell-empty, .winshell-menu-footer { font-size: 10pt; color: #52637a; padding: 8px; }
