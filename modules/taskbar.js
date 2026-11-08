@@ -8,6 +8,7 @@ import {QuickSettingsPanel} from './quickSettings.js';
 import {WindowPreview} from './windowPreview.js';
 import {SnapLayoutPanel} from './snapLayouts.js';
 import {NotificationCenter} from './notificationCenter.js';
+import {taskbarPrimaryAction} from './shellFoundationModel.mjs';
 import {taskbarGeometry} from './taskbarGeometry.mjs';
 import {addChrome, layoutManager, removeChrome} from './shellCompat.js';
 
@@ -166,8 +167,12 @@ export class Taskbar {
             button.set_child(app.create_icon_texture(26));
             button.set_accessible_name(app.get_name());
             button.connect('clicked', () => {
-                if (global.display.focus_window && windows.includes(global.display.focus_window) &&
-                    !global.display.focus_window.minimized) global.display.focus_window.minimize();
+                const focusedWindow = global.display.focus_window;
+                const action = taskbarPrimaryAction({
+                    focusedWindowOwned: Boolean(focusedWindow && windows.includes(focusedWindow)),
+                    focusedWindowMinimized: Boolean(focusedWindow?.minimized),
+                });
+                if (action === 'minimize') focusedWindow.minimize();
                 else activateApp(app);
             });
             button.connect('button-press-event', (_actor, event) => {

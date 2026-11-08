@@ -4,7 +4,7 @@
 |---|---|
 | `extension.js` | enable/disable e painel superior |
 | `prefs.js` | preferências GTK/Libadwaita |
-| `metadata.json` | UUID, Shell 46, versão inteira 9 / 0.5.2 |
+| `metadata.json` | UUID, Shell 46, versão inteira 10 / 0.5.3 |
 | `stylesheet.css` | barra, flyouts, claro/escuro |
 | `modules/taskbar.js` | composição e eventos da barra |
 | `modules/multiMonitor.js` | topologia e controles compartilhados |
@@ -14,7 +14,7 @@
 | `modules/calendar.js` | calendário mensal |
 | `modules/notificationCenter.js` | agrupamento e gestão de notificações |
 | `modules/contextMenu.js` | apps, janelas e barra |
-| `modules/startMenu.js`, `apps.js` | catálogo/pesquisa/ativação |
+| `modules/startMenu.js`, `apps.js`, `shellFoundationModel.mjs` | catálogo, pesquisa e decisões puras de fixação/ativação |
 | `modules/windowPreview.js` | miniaturas e ações |
 | `modules/snapLayouts.js` | UI/aplicação de layouts |
 | `modules/popup.js`, `popupGeometry.mjs` | lifecycle/foco e geometria pura de flyouts |
@@ -29,7 +29,7 @@
 | `schemas/` | valores legados, visuais e registros internos persistentes |
 | `tests/` | estrutura, assets, sintaxe, schema e suítes unitárias/isoladas |
 | `scripts/` | geração, instalação, restauração, remoção e diagnóstico |
-| `docs/` | referência alinhada à v0.5.2 e evidência em `verification/` |
+| `docs/` | referência alinhada à v0.5.3 e evidência em `verification/` |
 
 ## Dependências de runtime
 

@@ -1,4 +1,4 @@
-# WinShell for GNOME v0.5.2
+# WinShell for GNOME v0.5.3
 
 WinShell is an experimental Windows 11-inspired visual and interaction layer for
 **Ubuntu 24.04 LTS / GNOME Shell 46**. It adds a taskbar, Start menu, Quick
@@ -8,10 +8,16 @@ Mutter, Nautilus, NetworkManager or system libraries and is not affiliated with
 Microsoft or the GNOME Foundation.
 
 > **Pre-release status.** Static, unit, asset and isolated filesystem tests cover
-> v0.5.2. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
+> v0.5.3. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
 > still required; target compatibility is not a claim of completed certification.
 
-## What v0.5.2 provides
+## What v0.5.3 provides
+
+- A reconciled SPEC 0.1.0 shell foundation: pure/tested Start search, pinned-app
+  ordering and taskbar click decisions, plus a visible and accessible running
+  state in the Start application list.
+- Historical acceptance evidence for the taskbar, Start, clock/calendar access,
+  persistent preferences, native-panel coexistence and complete disable paths.
 
 - A verified SPEC 0.0.1 development baseline: fixed UUID and GNOME 46 metadata,
   ES Module lifecycle cleanup, user-local install/rollback, contributor guidance
@@ -81,7 +87,7 @@ WinShell never installs packages or writes system-wide files itself.
 ## Install or upgrade
 
 ```bash
-unzip winshell-for-gnome-v0.5.2.zip
+unzip winshell-for-gnome-v0.5.3.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
@@ -115,7 +121,7 @@ User-local installation paths:
 | Appearance backup | `$XDG_CONFIG_HOME/winshell/appearance-backup-v1.json` |
 
 Defaults are `~/.local/share` and `~/.config` when the XDG variables are unset.
-Metadata uses GNOME integer version **9** and `version-name` **0.5.2**.
+Metadata uses GNOME integer version **10** and `version-name` **0.5.3**.
 
 ## Appearance workflow
 
@@ -157,7 +163,8 @@ removed.
 
 - Bottom taskbar with centered/left alignment, pinned/running apps, search,
   clock and per-monitor mode.
-- Start search across application names, descriptions, executables and keywords.
+- Start search across application names, descriptions, executables and keywords,
+  with pinned apps first and a visible/accessible running-app state.
 - Five Snap Layout grids and previews with activate, close and arrange actions.
 - Real Wi-Fi, Bluetooth, audio, brightness, battery and Do Not Disturb controls,
   with unavailable services isolated instead of failing extension startup.
@@ -222,9 +229,9 @@ Wayland/XWayland windows; enable/disable loops; fullscreen, hotplug and v0.4.x
 settings migration.
 
 The release evidence and rollback checklist are in
-[`docs/verification/0.5.2.md`](docs/verification/0.5.2.md). The retrospective
-SPEC 0.0.1 evidence is in
-[`docs/verification/v0.0.1.md`](docs/verification/v0.0.1.md).
+[`docs/verification/0.5.3.md`](docs/verification/0.5.3.md). Retrospective SPEC
+evidence is in [`docs/verification/v0.0.1.md`](docs/verification/v0.0.1.md) and
+[`docs/verification/v0.1.0.md`](docs/verification/v0.1.0.md).
 
 ## Repository layout
 

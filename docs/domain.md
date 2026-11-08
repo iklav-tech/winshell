@@ -14,6 +14,7 @@
 | `WinShellCalendar` | Calendário mensal local, sem alterar o calendário GNOME |
 | `NotificationCenter` | Projeção reativa das sources e notifications de `Main.messageTray` |
 | `ContextMenu` | Ações suportadas de app, janela e barra |
+| `ShellFoundationModel` | Busca/ordenação de apps, fixação e decisão ativar/minimizar sem dependência GJS |
 | `app` | `Shell.App` identificado por ID `.desktop` |
 | `win` | `Meta.Window` com capacidades consultadas antes de mostrar ações |
 | `template/region` | Modelo Snap e tupla normalizada convertida para pixels |

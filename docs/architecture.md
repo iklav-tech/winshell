@@ -22,6 +22,8 @@ flowchart TD
   C --> AV[GVC / Brightness / UPower]
   N --> MT[Main.messageTray]
   M --> PG[Popup geometry puro]
+  S --> SF[Shell foundation model puro]
+  T --> SF
   T --> GS[(GSettings)]
   P[prefs.js] --> AM[AppearanceManager]
   AM --> AH[winshell-appearance]
@@ -37,7 +39,7 @@ flowchart TD
 | Compatibilidade GNOME 46 | `shellCompat.js`, único ponto para Main/MessageTray/GVC/Slider/ExtensionManager/chrome |
 | Plataforma | `systemControls.js`, `systemActions.js`, `apps.js` |
 | Apresentação | Quick Settings, calendário, notificações, contexto, Start, previews e Snap |
-| Domínio puro | `calendarModel.mjs`, `notificationModel.mjs`, `quickSettingsModel.mjs`, `windowActions.mjs`, `layoutGeometry.mjs`, `popupGeometry.mjs`, `taskbarConflictModel.mjs`, `taskbarGeometry.mjs` |
+| Domínio puro | `shellFoundationModel.mjs`, `calendarModel.mjs`, `notificationModel.mjs`, `quickSettingsModel.mjs`, `windowActions.mjs`, `layoutGeometry.mjs`, `popupGeometry.mjs`, `taskbarConflictModel.mjs`, `taskbarGeometry.mjs` |
 | Persistência/configuração | schema GSettings e `prefs.js` |
 | Aparência do Shell | `modules/appearance/theme.js`, CSS gerado e tokens |
 | Aplicação reversível | `modules/appearance/manager.js`, `integrations/appearance/winshell-appearance` |

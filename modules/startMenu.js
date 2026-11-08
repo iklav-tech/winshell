@@ -3,6 +3,7 @@ import Gio from 'gi://Gio';
 import St from 'gi://St';
 import {activateApp, installedApps} from './apps.js';
 import {PopupSurface} from './popup.js';
+import {searchApplications} from './shellFoundationModel.mjs';
 import {openDesktop} from './systemActions.js';
 
 const SHORTCUTS = [
@@ -52,17 +53,18 @@ export class StartMenu extends PopupSurface {
         this._grid.destroy_all_children();
         const term = this._entry.get_text().trim().toLocaleLowerCase();
         const favorites = this._settings.get_strv('pinned-apps');
-        const apps = installedApps();
-        this._matches = apps.filter(app => {
+        const apps = installedApps().map(app => {
             const info = app.get_app_info();
-            const searchable = [app.get_name(), info?.get_description() ?? '',
-                info?.get_executable() ?? '', ...(info?.get_keywords() ?? [])].join(' ').toLocaleLowerCase();
-            return searchable.includes(term);
-        }).sort((a, b) => {
-            const aFav = favorites.includes(a.get_id()) ? 0 : 1;
-            const bFav = favorites.includes(b.get_id()) ? 0 : 1;
-            return aFav - bFav || a.get_name().localeCompare(b.get_name());
+            return {
+                id: app.get_id(),
+                name: app.get_name(),
+                description: info?.get_description() ?? '',
+                executable: info?.get_executable() ?? '',
+                keywords: info?.get_keywords() ?? [],
+                app,
+            };
         });
+        this._matches = searchApplications(apps, term, favorites).map(item => item.app);
         this._header.set_text(term ? `Resultados (${this._matches.length})` : 'Fixados e aplicativos');
         for (const app of this._matches.slice(0, 100)) {
             const button = new St.Button({style_class: 'winshell-app-item', can_focus: true, x_expand: true});
@@ -75,9 +77,13 @@ export class StartMenu extends PopupSurface {
                 text.add_child(new St.Label({text: app.get_app_info().get_description().slice(0, 95),
                     style_class: 'winshell-app-description'}));
             row.add_child(text);
+            const running = app.get_n_windows() > 0;
+            if (running)
+                row.add_child(new St.Label({text: 'Em execução', style_class: 'winshell-app-description'}));
             if (favorites.includes(app.get_id()))
                 row.add_child(new St.Icon({icon_name: 'starred-symbolic', icon_size: 14}));
             button.set_child(row);
+            button.set_accessible_name(running ? `${app.get_name()}, em execução` : app.get_name());
             button.connect('clicked', () => { activateApp(app); this.hide(); });
             this._grid.add_child(button);
         }

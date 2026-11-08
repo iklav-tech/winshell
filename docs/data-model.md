@@ -82,5 +82,7 @@ O registro `managed-taskbar-extensions` não representa todas as extensões inst
 - `TaskbarManager(settings, menu)` compartilha `SystemControls` com `Taskbar(settings, menu, controls, monitorIndex)`.
 - `ContextMenu.forApp(app, x, y, openSnap)`.
 - `SnapLayoutPanel.forWindow(win, x, y)`.
-- `calendarGrid`, `groupNotifications`, `windowCapabilities` e `normalizeQuickState` são funções puras testadas.
+- `calendarGrid`, `groupNotifications`, `windowCapabilities`, `normalizeQuickState`,
+  `searchApplications`, `togglePinnedApp` e `taskbarPrimaryAction` são funções
+  puras testadas.
 - `planTaskbarConflicts`, `taskbarGeometry` e `taskbarMonitorIndexes` são funções puras testadas.

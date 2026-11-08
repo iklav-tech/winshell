@@ -2,7 +2,7 @@
 
 ## Confirmado pelo código/testes
 
-- UUID `winshell@iklav-tech`, Shell 46, integer version 9 e version-name 0.5.2.
+- UUID `winshell@iklav-tech`, Shell 46, integer version 10 e version-name 0.5.3.
 - Vinte e cinco chaves GSettings; as chaves v0.4.x foram preservadas.
 - Assets SVG parseáveis, metadata de fallback, licenças, geração por tokens e instalação XDG isolada.
 - Backup v1 idempotente, detecção de divergência e restauração sob backend de teste.
@@ -12,6 +12,8 @@
 - Capacidade/labels de janelas e normalização de controles.
 - Imports relativos, sintaxe JS/Bash e schema válidos quando `check.sh` passa.
 - Imports internos do Shell isolados em `shellCompat.js`, geometria de popup com origens negativas testada e chrome removido explicitamente.
+- Busca do Start, prioridade de fixados, transições de fixação e decisão
+  ativar/minimizar cobertas pelo modelo puro `shellFoundationModel.mjs`.
 
 ## Não confirmado neste ambiente
 

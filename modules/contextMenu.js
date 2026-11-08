@@ -3,6 +3,7 @@ import Gio from 'gi://Gio';
 import St from 'gi://St';
 import {PopupSurface} from './popup.js';
 import {openDesktop, openWinShellPreferences} from './systemActions.js';
+import {togglePinnedApp} from './shellFoundationModel.mjs';
 import {windowCapabilities} from './windowActions.mjs';
 
 export class ContextMenu extends PopupSurface {
@@ -65,9 +66,8 @@ export class ContextMenu extends PopupSurface {
         if (app.can_open_new_window?.())
             this._item('Abrir nova janela', () => app.open_new_window(-1));
         this._item(pinned ? 'Desafixar da barra de tarefas' : 'Fixar na barra de tarefas', () => {
-            const apps = this._settings.get_strv('pinned-apps').filter(value => value !== id);
-            if (!pinned) apps.push(id);
-            this._settings.set_strv('pinned-apps', apps);
+            this._settings.set_strv('pinned-apps',
+                togglePinnedApp(this._settings.get_strv('pinned-apps'), id));
         });
 
         if (windows.length) {

@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.5.3 — 2026-11-08
+
+### Added
+
+- A pure shell-foundation model and focused tests for application search,
+  pinned-first ordering, pin/unpin transitions and taskbar activate/minimize
+  decisions.
+- A visible and accessible “Em execução” state for running applications in the
+  Start list.
+- Retrospective SPEC 0.1.0 evidence and a v0.5.3 release verification checklist.
+
+### Changed
+
+- Start search and context-menu pinning now share the tested pure model without
+  changing their persisted GSettings contract.
+- Metadata integer version advanced from 9 to 10 with `version-name` 0.5.3;
+  README, installer, tests and technical documentation were synchronized.
+
+### Validation status
+
+- Static, unit, schema, asset and isolated XDG tests pass.
+- GNOME 46/Wayland and X11 runtime validation remains pending and is not claimed.
+
 ## v0.5.2 — 2026-11-08
 
 ### Added
