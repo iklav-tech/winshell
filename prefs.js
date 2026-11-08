@@ -13,12 +13,12 @@ export default class WinShellPreferences extends ExtensionPreferences {
             ['center-icons', 'Centralizar ícones', 'Estilo Windows 11'],
             ['show-search', 'Mostrar pesquisa', 'Atalho de pesquisa ao lado do Iniciar'],
             ['show-clock', 'Mostrar relógio', 'Data e hora na área direita'],
-            ['show-notifications', 'Mostrar notificações', 'Atalho para o centro de notificações nativo'],
-            ['show-quick-settings', 'Mostrar configurações rápidas', 'Painel WinShell e controles do GNOME'],
+            ['show-notifications', 'Mostrar notificações', 'Centro WinShell com agrupamento e ações'],
+            ['show-quick-settings', 'Mostrar configurações rápidas', 'Wi-Fi, Bluetooth, áudio, brilho, bateria e Não Perturbe'],
             ['multi-monitor', 'Barra em todos os monitores', 'Mostra uma barra em cada monitor conectado'],
             ['snap-layouts', 'Snap Layouts gráficos', 'Organize janelas em modelos visuais pelo menu contextual e pré-visualizações'],
             ['window-previews', 'Pré-visualização de janelas', 'Miniaturas e ações ao passar o mouse'],
-            ['show-activities-panel', 'Manter painel superior GNOME', 'Recomendado inicialmente para acessar os controles nativos'],
+            ['show-activities-panel', 'Manter painel superior GNOME', 'Preserva o painel nativo sem interferir em seus controles'],
         ]) {
             const row = new Adw.SwitchRow({title, subtitle});
             settings.bind(key, row, 'active', Gio.SettingsBindFlags.DEFAULT);

@@ -8,21 +8,28 @@ tree=ET.parse(root/'schemas/org.gnome.shell.extensions.winshell.gschema.xml'); a
 keys={k.get('name') for k in tree.findall('.//key')}
 required={'panel-height','center-icons','show-clock','show-search','show-notifications','show-quick-settings','show-activities-panel','pinned-apps','multi-monitor','window-previews','snap-layouts'}
 assert required <= keys, f'Missing GSettings keys: {required-keys}'
-assert data['version']==4
-required_modules={'popup.js','quickSettings.js','contextMenu.js','systemActions.js','taskbar.js','startMenu.js','apps.js','snapLayouts.js','windowPreview.js','notificationCenter.js','multiMonitor.js','layoutGeometry.mjs'}
+assert data['version']==5 and data['version-name']=='0.4.1'
+required_modules={'popup.js','quickSettings.js','quickSettingsModel.mjs','systemControls.js','calendar.js','calendarModel.mjs','contextMenu.js','windowActions.mjs','systemActions.js','taskbar.js','startMenu.js','apps.js','snapLayouts.js','windowPreview.js','notificationCenter.js','notificationModel.mjs','multiMonitor.js','layoutGeometry.mjs'}
 assert required_modules <= {p.name for p in (root/'modules').iterdir() if p.suffix in ('.js', '.mjs')}
 for f in [root/'extension.js',root/'prefs.js',*sorted((root/'modules').glob('*.js'))]:
     assert f.stat().st_size>0
-assert 'v0.4.0' in (root/'README.md').read_text()
-assert 'winshell-for-gnome-v0.4.0.zip' in (root/'README.md').read_text()
-assert 'v0.3.0.zip' not in (root/'README.md').read_text()
-print('OK: metadata, GSettings XML, módulos e versão README')
+readme=(root/'README.md').read_text()
+assert 'v0.4.1' in readme and 'winshell-for-gnome-v0.4.1.zip' in readme
+assert (root/'CHANGELOG.md').is_file() and 'v0.4.1' in (root/'CHANGELOG.md').read_text()
+for source in [root/'extension.js',root/'prefs.js',*sorted((root/'modules').glob('*.js')), *sorted((root/'modules').glob('*.mjs'))]:
+    text=source.read_text()
+    for match in __import__('re').finditer(r"from\s+['\"](\.[^'\"]+)['\"]", text):
+        assert (source.parent/match.group(1)).resolve().is_file(), f'Broken relative import in {source}: {match.group(1)}'
+system=(root/'modules/systemControls.js').read_text(); notifications=(root/'modules/notificationCenter.js').read_text()
+assert 'destroy()' in system and 'safeDisconnect' in system and '_callbacks.clear()' in system
+assert 'source-added' in notifications and 'notification-removed' in notifications and 'safeDisconnect' in notifications
+print('OK: metadata, GSettings XML, módulos, imports, lifecycle e versão')
 PY
 if command -v node >/dev/null; then
   for file in "$ROOT/extension.js" "$ROOT/prefs.js" "$ROOT"/modules/*.js "$ROOT"/modules/*.mjs; do node --check "$file"; done
   echo 'OK: sintaxe dos arquivos JavaScript'
-  node "$ROOT/tests/layouts.test.mjs"
-  echo 'OK: cálculo e integridade das regiões Snap Layouts'
+  for test in "$ROOT"/tests/*.test.mjs; do node "$test"; done
+  echo 'OK: modelos de calendário, notificações, contexto, Quick Settings e Snap Layouts'
 else echo 'AVISO: Node.js não encontrado; testes JavaScript e de geometria não executados'; fi
 if command -v glib-compile-schemas >/dev/null; then
   glib-compile-schemas --strict --dry-run "$ROOT/schemas"

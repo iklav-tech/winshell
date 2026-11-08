@@ -1,155 +1,81 @@
 # Build, testes e execução
 
-## Ambiente detectado
+## Ambiente observado em 2026-11-08
 
-Versões obtidas em 2026-11-08 (America/Sao_Paulo):
-
-| Ferramenta/ambiente | Detectado |
+| Item | Valor |
 |---|---|
-| GNOME Shell | `GNOME Shell 46.0` |
-| Sessão / desktop | `wayland` / `ubuntu:GNOME` |
-| Node.js | `v22.23.1` |
-| Python | `Python 3.12.3` |
-| GLib schemas | `2.80.0` |
-| Bash | `5.2.21(1)-release` |
-| `gnome-extensions` | `/usr/bin/gnome-extensions` |
+| GNOME Shell | 46.0 |
+| Sessão / desktop | Wayland / ubuntu:GNOME |
+| GJS | 1.80.2 |
+| Node.js | v22.23.1 |
+| GLib schemas | disponível |
 
-O alvo declarado é Shell 46 (`metadata.json:5-9`) e o instalador impõe a mesma
-major (`scripts/install.sh:6-15`).
+O ambiente tem a sessão alvo, mas a extensão do repositório não foi instalada no perfil real nem habilitada durante esta entrega; portanto não há homologação visual/runtime.
 
-## Build
-
-Não há compilação do JavaScript ou CSS. A única etapa gerada é
-`gschemas.compiled`, criada pelo instalador (`scripts/install.sh:16-19`).
-
-### ✅ Instalação isolada confirmada
-
-```bash
-XDG_DATA_HOME=/tmp/winshell-docs-install.l6YtJJ ./scripts/install.sh
-```
-
-Exit code `0`. Saída essencial:
-
-```text
-Instalado em: /tmp/winshell-docs-install.l6YtJJ/gnome-shell/extensions/winshell@iklav-tech
-IMPORTANTE: encerre a sessão GNOME e entre novamente para detectar uma extensão nova (Wayland).
-Depois execute: gnome-extensions enable 'winshell@iklav-tech'
-Preferências: gnome-extensions prefs 'winshell@iklav-tech'
-```
-
-Foi verificada a presença dos quatro arquivos raiz, dos doze módulos, do XML e de
-`schemas/gschemas.compiled`. O diretório temporário foi removido ao final. O
-script copiado/testado é `scripts/install.sh:1-23`.
-
-## Testes
-
-### ✅ Suíte estática confirmada
+## Suíte confirmada
 
 ```bash
 ./tests/check.sh
 ```
 
-Exit code `0`:
+Exit code 0:
 
 ```text
-OK: metadata, GSettings XML, módulos e versão README
+OK: metadata, GSettings XML, módulos, imports, lifecycle e versão
 OK: sintaxe dos arquivos JavaScript
+OK: calendar navigation, alignment, leap year and locale
+OK: context menu window visibility, capabilities and state labels
 OK: all graphical layout templates and pixel bounds
-OK: cálculo e integridade das regiões Snap Layouts
+OK: notification grouping, sanitization and snapshot lifecycle
+OK: quick settings normalization, bounds and external synchronization snapshots
+OK: modelos de calendário, notificações, contexto, Quick Settings e Snap Layouts
 OK: esquema GSettings validado
 OK: sintaxe dos scripts Bash
 ```
 
-O comando orquestra Python, `node --check`, geometria, validação GSettings e
-`bash -n` (`tests/check.sh:4-35`).
+O script executa `node --check` em entradas/módulos, todos os `*.test.mjs`, `glib-compile-schemas --strict --dry-run`, validação XML/metadata/imports/docs e `bash -n`.
 
-### ✅ Geometria isolada confirmada
+## Instalação isolada confirmada
 
 ```bash
-node tests/layouts.test.mjs
+XDG_DATA_HOME=/tmp/winshell-v041-install.FpXjh8 ./scripts/install.sh
 ```
 
-Exit code `0`; saída literal:
+Exit code 0. Foram conferidos metadata, entradas, CSS, os 18 módulos, XML e `gschemas.compiled` no destino temporário, removido após a checagem. Isso valida o empacotamento por cópia e compilação, não o enable no Shell.
 
-```text
-OK: all graphical layout templates and pixel bounds
-```
-
-Os casos estão em `tests/layouts.test.mjs:3-31`.
-
-## Diagnóstico e execução
-
-### ✅ Diagnóstico confirmado
+## Diagnóstico confirmado
 
 ```bash
 ./scripts/doctor.sh
 ```
 
-Exit code `0`; detectou `gnome-shell`, `gnome-extensions` e
-`glib-compile-schemas`, reportou GNOME 46.0, Wayland e `ubuntu:GNOME`. Não havia
-linhas recentes de log WinShell na saída. O script consultado está em
-`scripts/doctor.sh:1-12`.
+Exit code 0; detectou `gnome-shell`, `gnome-extensions`, `glib-compile-schemas`, GNOME 46.0, Wayland e `ubuntu:GNOME`. Não havia logs WinShell recentes na saída.
 
-### ⚠️ Ativação da extensão inferida, não executada
+## Pacote GNOME confirmado
 
-```bash
-gnome-extensions enable winshell@iklav-tech
-gnome-extensions prefs winshell@iklav-tech
-```
+`gnome-extensions pack` com `modules/` e o schema produziu um ZIP válido em `/tmp`; `unzip -l` confirmou entradas, CSS, os 18 módulos, metadata e schema. O diretório temporário foi removido. Esse teste valida a composição do bundle, não sua ativação.
 
-Os comandos são emitidos pelo instalador (`scripts/install.sh:20-23`) e aparecem
-no README (`README.md:63-68`). Não foram executados porque alterariam o estado da
-sessão gráfica do usuário; portanto não há homologação visual nesta sessão.
+## Checagem GJS adicional
 
-### ⚠️ Desinstalação inferida, não executada
+`calendar.js` pôde ser carregado por GJS com typelibs/resources do Shell pré-carregados. O carregamento standalone de `systemControls.js` chegou ao grafo interno do GNOME Shell, mas parou em `endSessionDialog.js` porque o processo `gjs` isolado não inicializa os globais de tradução do Shell (`C_`). Esse resultado não é classificado como falha da extensão nem como teste runtime aprovado; o módulo deve ser carregado dentro do processo GNOME Shell.
 
-```bash
-./scripts/uninstall.sh
-```
+## Não executado
 
-O script desabilita a extensão e remove recursivamente seu diretório
-(`scripts/uninstall.sh:3-9`). Não foi executado porque poderia desabilitar/remover
-uma instalação real do usuário.
+- instalação no `XDG_DATA_HOME` real;
+- `gnome-extensions enable/disable`;
+- janela de preferências;
+- controles D-Bus/GVC em interação real;
+- checklist visual multi-monitor/Wayland;
+- `uninstall.sh`, pois remove a instalação do usuário.
 
-### ⚠️ Instalação no destino real não executada
+## Comandos para validação manual
 
 ```bash
 ./scripts/install.sh
+# encerrar e entrar novamente na sessão Wayland
+gnome-extensions enable winshell@iklav-tech
+gnome-extensions prefs winshell@iklav-tech
+journalctl --user -f | grep -i winshell
 ```
 
-Somente a variante com `XDG_DATA_HOME` temporário foi confirmada. Sem a variável,
-o destino é `$HOME/.local/share/...` (`scripts/install.sh:5`), então o comando
-acima não foi executado contra o perfil real.
-
-## Matriz de status
-
-| Módulo/atividade | Build | Testes | Execução |
-|---|---|---|---|
-| Extensão GNOME | ✅ cópia/schema em `/tmp` | ✅ estático; ⚠️ sem integração visual | ⚠️ não habilitada |
-| Geometria pura | não se aplica | ✅ Node | ✅ exercitada pelos testes |
-| Preferências | não se aplica | ✅ sintaxe/bindings estruturais | ⚠️ janela não aberta |
-| Scripts operacionais | não se aplica | ✅ `bash -n`; instalador isolado | ✅ doctor; ⚠️ uninstall não executado |
-
-## README versus realidade observada
-
-- O README afirma validação estática e de geometria, mas não homologação gráfica
-  (`README.md:3-5`); isso coincide com esta sessão.
-- Os comandos `./tests/check.sh` e `node tests/layouts.test.mjs` documentados
-  (`README.md:97-104`) passaram sem divergência.
-- A instalação limpa começa com um ZIP chamado
-  `winshell-for-gnome-v0.4.0.zip` (`README.md:54-61`), mas nenhum ZIP ou processo
-  de empacotamento existe na árvore inspecionada; essa etapa não pôde ser testada.
-- O README chama Node opcional (`README.md:39-44`), e `check.sh` realmente pula
-  as verificações JS se ele não estiver instalado (`tests/check.sh:21-26`).
-- A estrutura mostrada no README não inclui `.github/skills/` nem os documentos
-  gerados (`README.md:136-166`); não afeta o artefato, mas ficará desatualizada se
-  a intenção for representar toda a árvore.
-
-## Pendências
-
-- TODO: executar checklist visual do README em GNOME 46/Wayland e X11 descartáveis.
-- TODO: testar `uninstall.sh` em uma sessão/usuário isolado, inclusive ausência e
-  presença da extensão.
-- TODO: definir e testar o processo que produz o ZIP citado pelo README.
-- TODO: registrar versões mínimas suportadas de Node, Python, Bash e GLib.
-
+Siga o checklist do README e desabilite a extensão antes de substituir arquivos durante novos testes.

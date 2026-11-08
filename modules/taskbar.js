@@ -6,17 +6,15 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {activateApp, appById, runningApps} from './apps.js';
 import {ContextMenu} from './contextMenu.js';
 import {QuickSettingsPanel} from './quickSettings.js';
-import {openNativeMenu} from './systemActions.js';
 import {WindowPreview} from './windowPreview.js';
 import {SnapLayoutPanel} from './snapLayouts.js';
 import {NotificationCenter} from './notificationCenter.js';
 
 export class Taskbar {
-    constructor(settings, menu, panelController, monitorIndex = 0) {
+    constructor(settings, menu, systemControls, monitorIndex = 0) {
         this._monitorIndex = monitorIndex;
         this._settings = settings;
         this._menu = menu;
-        this._panelController = panelController;
         this._signals = [];
         this._settingsSignals = [];
         this.actor = new St.BoxLayout({style_class: 'winshell-taskbar', reactive: true,
@@ -29,12 +27,15 @@ export class Taskbar {
         this.actor.add_child(this._right);
         Main.layoutManager.addChrome(this.actor, {affectsStruts: true, trackFullscreen: true});
         this._context = new ContextMenu(settings);
-        this._quick = new QuickSettingsPanel(panelController);
+        this._quick = new QuickSettingsPanel(systemControls);
         this._snap = new SnapLayoutPanel();
         this._preview = new WindowPreview(this._snap, settings);
-        this._notifications = new NotificationCenter(panelController);
+        this._notifications = new NotificationCenter(systemControls);
         this._clockButton = this._iconButton('x-office-calendar-symbolic', 'Notificações e calendário',
-            () => openNativeMenu('calendar', this._panelController));
+            () => {
+                const [x, y] = this._anchor(this._clockButton);
+                this._notifications.toggle(x, y);
+            });
         this._clock = new St.Label({style_class: 'winshell-clock', y_align: Clutter.ActorAlign.CENTER});
         this._clockButton.set_child(this._clock);
         this._quickButton = this._iconButton('emblem-system-symbolic', 'Configurações rápidas', () => {
@@ -66,7 +67,6 @@ export class Taskbar {
         const appSystem = Shell.AppSystem.get_default();
         this._signals.push([appSystem, appSystem.connect('app-state-changed', () => this._renderApps())]);
         this._signals.push([global.display, global.display.connect('notify::focus-window', () => this._renderApps())]);
-        this._signals.push([Main.layoutManager, Main.layoutManager.connect('monitors-changed', () => this._position())]);
         this._timeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 10, () => {
             this._updateClock();
             return GLib.SOURCE_CONTINUE;
@@ -174,20 +174,22 @@ export class Taskbar {
     }
 
     _updateClock() {
-        const now = GLib.DateTime.new_now_local();
-        this._clock.set_text(`${now.format('%H:%M')}\n${now.format('%d/%m/%Y')}`);
+        const now = new Date();
+        const time = new Intl.DateTimeFormat(undefined, {hour: '2-digit', minute: '2-digit'}).format(now);
+        const date = new Intl.DateTimeFormat(undefined, {day: '2-digit', month: '2-digit', year: 'numeric'}).format(now);
+        this._clock.set_text(`${time}\n${date}`);
     }
 
     destroy() {
-        if (this._timeout) GLib.Source.remove(this._timeout);
+        if (this._timeout) { GLib.Source.remove(this._timeout); this._timeout = 0; }
         for (const [object, id] of this._signals) object.disconnect(id);
         for (const id of this._settingsSignals) this._settings.disconnect(id);
-        this._preview.destroy();
-        this._snap.destroy();
-        this._notifications.destroy();
-        this._context.destroy();
-        this._quick.destroy();
-        this.actor.destroy();
+        this._preview?.destroy();
+        this._snap?.destroy();
+        this._notifications?.destroy();
+        this._context?.destroy();
+        this._quick?.destroy();
+        this.actor?.destroy();
         this._settings = null;
     }
 }

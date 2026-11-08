@@ -1,11 +1,12 @@
 {
   "uuid": "winshell@iklav-tech",
   "name": "WinShell for GNOME",
-  "description": "Windows 11-inspired GNOME taskbar, Start menu, graphical Snap Layouts, window previews, multi-monitor support and notifications.",
+  "description": "Windows 11-inspired taskbar, Start menu, system controls, calendar, notifications, Snap Layouts and multi-monitor support.",
   "shell-version": [
     "46"
   ],
   "settings-schema": "org.gnome.shell.extensions.winshell",
-  "version": 4,
+  "version": 5,
+  "version-name": "0.4.1",
   "url": "https://github.com/iklav-tech"
 }

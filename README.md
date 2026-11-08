@@ -1,174 +1,172 @@
-# WinShell for GNOME v0.4.0
+# WinShell for GNOME v0.4.1
 
-Uma extensão experimental para **GNOME Shell 46 / Ubuntu 24.04 LTS** que adiciona uma interface inspirada no Windows 11, preservando o GNOME como ambiente gráfico. Projeto independente, sem vínculo com a Microsoft ou a GNOME Foundation.
+Extensão experimental para **Ubuntu 24.04 LTS / GNOME Shell 46**, inspirada na experiência do Windows 11 sem substituir o GNOME, Mutter, NetworkManager ou os serviços do sistema. O projeto é independente e não tem vínculo com Microsoft ou GNOME Foundation.
 
-> **Status: pré-lançamento.** A v0.4.0 foi validada por verificações estáticas e testes de geometria. Não foi homologada em sessão gráfica real GNOME 46/Wayland neste ambiente. Faça backup dos seus dados e mantenha acesso a um TTY antes de testar extensões de interface.
+> **Status: pré-lançamento.** A v0.4.1 foi validada com testes estáticos e unitários no ambiente de desenvolvimento. A integração visual e o ciclo completo em uma sessão GNOME Shell 46/Wayland ainda exigem validação manual; “compatível” abaixo descreve o alvo do código, não uma homologação concluída.
 
-## Novidades da v0.4.0
+## Destaques da v0.4.1
 
-- **Snap Layouts gráficos:** cinco modelos visuais clicáveis (duas metades, três colunas, principal à esquerda, principal à direita, quatro quadrantes). Selecione diretamente uma região do desenho para mover/redimensionar a janela.
-- **Acesso ao Snap Layouts:** menu de contexto do aplicativo em execução ou botão de organizar na pré-visualização de janela.
-- **Preferência de ativação:** novo controle `snap-layouts` em `prefs.js`/GSettings para habilitar ou ocultar as ações de organização.
-- **Acabamento visual:** botões com realce no hover/foco, painéis de layouts com divisões proporcionais, melhor contraste e espaçamento.
-- **Testabilidade:** funções puras para cálculo de retângulos (`modules/layoutGeometry.mjs`) e testes automatizados para limites, cobertura e sobreposição das regiões.
-- **Consistência de estado:** cancelamento de temporizadores pendentes de pré-visualização durante atualizações da barra.
-- **Documentação revisada integralmente:** instruções, limitações, checklist e referências agora correspondem à v0.4.0.
+- Configurações rápidas reais e sincronizadas: Wi‑Fi via NetworkManager, Bluetooth via gnome-bluetooth/rfkill, volume e saídas via GVC, brilho via GNOME Settings Daemon, bateria via UPower e Não Perturbe via GSettings.
+- Calendário mensal próprio, ligado ao relógio e ao centro de notificações, com navegação, seleção, destaque do dia atual, primeira semana/formatação conforme locale e posicionamento restrito ao monitor.
+- Menus contextuais com abrir/nova janela, fixar, listar e ativar janelas, minimizar/restaurar, maximizar/restaurar tamanho, fechar, fechar todas, ações do arquivo `.desktop`, Snap Layouts e preferências da barra.
+- Centro de notificações sincronizado com `Main.messageTray`, agrupado por aplicativo, com ícone, horário, título, corpo, ações, ativação, descarte individual, limpar tudo, estado vazio e Não Perturbe.
+- Modelos puros e testes para calendário, agrupamento de notificações, estado de janelas e normalização de Quick Settings.
 
-## Funcionalidades disponíveis (v0.1.0–v0.4.0)
+Consulte [CHANGELOG.md](CHANGELOG.md) para o histórico completo.
 
-- Barra de tarefas inferior com ícones centralizados ou alinhados à esquerda; aplicativos fixados e em execução.
-- Menu Iniciar com pesquisa por aplicativos instalados (nome, descrição, comando e palavras-chave `.desktop`).
-- Clique em um aplicativo para abrir, ativar ou minimizar; menu com ações de fixar, abrir e fechar.
-- Configurações rápidas: alternância entre modo escuro/Não Perturbe e atalhos para controles nativos de rede, Bluetooth e áudio.
-- Relógio, data, calendário nativo e centro de notificações de leitura **best-effort**.
-- Pré-visualizações de janelas via compositor, com ações de ativar, fechar e abrir Snap Layouts.
-- Barra opcional em todos os monitores conectados, com atualização em mudanças de monitor.
-- Preferências GTK4/Libadwaita persistentes via GSettings e painel superior GNOME opcional.
+## Funcionalidades
 
-## Limitações conhecidas
+- Barra inferior com alinhamento central/esquerdo, aplicativos fixados/em execução, relógio, pesquisa e opção multi-monitor.
+- Menu Iniciar com busca por nome, descrição, executável e palavras-chave dos aplicativos instalados.
+- Snap Layouts com cinco grades clicáveis e cálculo por área útil do monitor.
+- Pré-visualizações de janelas com ativação, fechamento e acesso aos Snap Layouts.
+- Quick Settings WinShell:
+  - liga/desliga Wi‑Fi, mostra conexão e redes visíveis e conecta perfis já conhecidos;
+  - liga/desliga Bluetooth e conecta/desconecta dispositivos pareados;
+  - controla volume, mudo e saída de áudio;
+  - controla brilho quando o serviço/tela expõe essa capacidade;
+  - mostra porcentagem e carga da bateria;
+  - alterna Não Perturbe e tema escuro.
+- Calendário WinShell e notificações ativas sem desabilitar o calendário/centro nativo do GNOME.
+- Preferências GTK4/Libadwaita persistidas em GSettings.
 
-- A compatibilidade real com **GNOME 46 e Wayland/X11 depende de testes na máquina de destino**. Algumas APIs do Shell não são estáveis entre versões.
-- Snap Layouts atuam sobre a janela selecionada, **não organizam automaticamente todas as demais janelas**. O compositor, o tamanho mínimo do aplicativo e o Wayland podem impor restrições ao redimensionamento. A grade gráfica não surge ao passar o mouse no botão maximizar da janela, diferentemente do Windows 11.
-- Sem captura de janela exclusiva: pré-visualizações usam atores do compositor e podem não aparecer para janelas minimizadas/desmapeadas.
-- O centro de notificações é somente leitura das fontes atualmente disponíveis: não substitui o histórico nativo nem permite apagar todas as notificações.
-- Busca apenas aplicativos instalados; não indexa documentos, arquivos ou a web.
-- A barra em monitores adicionais lista os mesmos aplicativos em todas as telas; não filtra janelas por monitor.
-- Configurações avançadas de rede, Bluetooth e som continuam no GNOME nativo; Nautilus e Mutter não são substituídos.
-- A ocultação do painel superior é opcional; ele pode reaparecer temporariamente ao utilizar menus nativos.
+Todos os adaptadores de serviço usam operações assíncronas ou propriedades/proxies que não bloqueiam a thread da interface. A ausência de hardware, serviço ou permissão desabilita apenas o controle afetado.
 
-## Requisitos e dependências
+## Requisitos
 
-- Ubuntu 24.04 LTS com GNOME Shell **46**.
-- Acesso à sessão gráfica GNOME; recomenda-se testar com o painel superior visível primeiro.
-- `glib-compile-schemas` e `gnome-extensions` para instalação.
-- Node.js é **opcional** para testes estáticos de JavaScript e testes de geometria.
+- Ubuntu 24.04 LTS com GNOME Shell 46 (alvo primário Wayland).
+- Serviços padrão da distribuição: NetworkManager, GNOME Settings Daemon, UPower, gnome-bluetooth e o mixer GVC do GNOME Shell.
+- `glib-compile-schemas` e `gnome-extensions` para instalar.
+- Node.js opcional, mas recomendado para executar todos os testes.
 
 ```bash
 sudo apt update
 sudo apt install gnome-shell-extensions gnome-shell-extension-prefs \
   gnome-tweaks gjs libglib2.0-dev-bin unzip
-# Opcional para testes estáticos:
+# Opcional para a suíte unitária:
 sudo apt install nodejs
 ```
 
-## Instalação limpa
+## Instalação
 
 ```bash
-unzip winshell-for-gnome-v0.4.0.zip
+unzip winshell-for-gnome-v0.4.1.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
 ```
 
-**Wayland:** encerre a sessão do GNOME e entre novamente. Em seguida:
+Em Wayland, encerre a sessão e entre novamente. Depois:
 
 ```bash
 gnome-extensions enable winshell@iklav-tech
 gnome-extensions prefs winshell@iklav-tech
 ```
 
-## Atualização da v0.3.0
+O instalador aceita somente GNOME 46, copia o código para o diretório de extensões do usuário e compila o schema. Ele não usa `sudo`.
+
+## Atualização da v0.4.0
 
 ```bash
-# Opcional: exporte suas preferências antes de atualizar
 dconf dump /org/gnome/shell/extensions/winshell/ > winshell-settings-backup.ini
-
 gnome-extensions disable winshell@iklav-tech
-unzip winshell-for-gnome-v0.4.0.zip
+unzip winshell-for-gnome-v0.4.1.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
-# Saia da sessão e entre novamente, principalmente em Wayland
+# encerre a sessão e entre novamente no Wayland
 gnome-extensions enable winshell@iklav-tech
 ```
 
-As configurações existentes são mantidas; `snap-layouts` começa habilitado por padrão.
+Não há migração de schema na v0.4.1: as preferências da v0.4.0 são preservadas. O `metadata.json` usa versão inteira **5** e `version-name` **0.4.1**.
 
-## Como usar os Snap Layouts gráficos
+## Configuração e uso
 
-1. Abra pelo menos duas janelas redimensionáveis (ex.: Arquivos e Terminal).
-2. Clique com o botão direito no ícone do aplicativo em execução na barra inferior.
-3. Escolha **Organizar janela (Snap Layouts)**.
-4. No painel gráfico, selecione um dos cinco modelos e **clique na região que deseja ocupar**.
-5. Repita com uma segunda janela, selecionando outra região.
-6. Alternativamente, use o ícone de grade na pré-visualização da janela.
-7. Em Preferências do WinShell, desligue **Snap Layouts gráficos** para ocultar essas opções.
+Abra `gnome-extensions prefs winshell@iklav-tech` ou clique com o botão direito na barra e escolha **Preferências da barra de tarefas**. É possível configurar altura, alinhamento, pesquisa, relógio, notificações, Quick Settings, múltiplos monitores, Snap Layouts, pré-visualizações, painel superior e IDs `.desktop` fixados.
 
-## Testes automatizados
+- Clique no relógio ou no sino para abrir calendário/notificações.
+- Clique no botão de sistema para Quick Settings. Redes com perfil conhecido podem ser conectadas ali; redes novas ou 802.1x devem ser configuradas em **Todas as redes**.
+- Clique com o botão direito num aplicativo para operações de app/janela. As ações indisponíveis para a janela não são exibidas.
+- Clique com o botão direito numa área vazia da barra para personalização rápida.
+
+## Testes
 
 ```bash
 ./tests/check.sh
+
+# Casos isolados
+node tests/calendar.test.mjs
+node tests/notifications.test.mjs
+node tests/context-menu.test.mjs
+node tests/quick-settings.test.mjs
 node tests/layouts.test.mjs
-```
 
-O script valida metadados da versão 4, estrutura e chaves GSettings, conteúdo do README, JavaScript (se Node estiver instalado), geometria, schemas (se `glib-compile-schemas` estiver instalado) e Bash. **Testes estáticos não validam o funcionamento visual do GNOME Shell**.
-
-## Checklist manual no Ubuntu 24.04
-
-1. Confirme `gnome-shell --version` (esperado: `GNOME Shell 46.x`) e `echo "$XDG_SESSION_TYPE"`.
-2. Habilite a extensão e confirme barra inferior, Iniciar e pesquisa de aplicativos.
-3. Abra dois aplicativos; confira foco, minimização, menu contextual e persistência de fixados.
-4. Abra Snap Layouts: confirme cinco modelos visuais e que clicar em regiões distintas posiciona janelas corretamente.
-5. Teste janelas com limites mínimos, maximizadas, não redimensionáveis e em um segundo monitor.
-6. Teste pré-visualizações e o botão de organização, incluindo alternar `snap-layouts` nas preferências.
-7. Abra Notificações e Configurações rápidas e confira os atalhos nativos.
-8. Conecte/desconecte um segundo monitor com `multi-monitor` habilitado.
-9. Desabilite a extensão e confirme que o painel superior GNOME reaparece, sem elementos WinShell remanescentes.
-
-## Diagnóstico, desativação e recuperação
-
-```bash
+# Diagnóstico do host
 ./scripts/doctor.sh
-gnome-extensions disable winshell@iklav-tech
-# Opcional: remover os arquivos instalados
-./scripts/uninstall.sh
 ```
 
-Se o GNOME não responder, abra um TTY com `Ctrl+Alt+F3` e desabilite a extensão manualmente:
+`check.sh` verifica metadata, versão, README/CHANGELOG, schema e compilação GSettings, imports relativos, contratos básicos de cleanup, sintaxe JavaScript/Bash e todos os testes Node. Isso não substitui teste visual no GNOME Shell.
+
+## Solução de problemas
+
+- Controle ausente ou desabilitado: confirme o hardware e o serviço correspondente; o WinShell não tenta iniciar serviços nem elevar privilégios.
+- Wi‑Fi novo solicita senha: use **Todas as redes**. A extensão deliberadamente não coleta nem armazena credenciais.
+- Brilho indisponível: comum em desktops e monitores sem suporte do GNOME Settings Daemon.
+- Sem histórico antigo de notificações: o centro mostra apenas notificações ativas expostas pelo Shell.
+- Erro ao habilitar: execute `./scripts/doctor.sh` e consulte `journalctl --user -b | grep -i winshell`.
+- Em Wayland, mudanças de código normalmente exigem encerrar e reabrir a sessão.
+
+Para recuperar uma sessão problemática:
 
 ```bash
+gnome-extensions disable winshell@iklav-tech
+# se necessário em um TTY:
 mv ~/.local/share/gnome-shell/extensions/winshell@iklav-tech \
    ~/.local/share/gnome-shell/extensions/winshell@iklav-tech.disabled
 ```
 
-Reinicie a sessão gráfica ou o computador. O diretório renomeado poderá ser restaurado depois.
+`scripts/uninstall.sh` desabilita e remove o diretório da extensão; confira o destino antes de executá-lo.
 
-## Estrutura do projeto
+## Limitações conhecidas
+
+- A v0.4.1 ainda não foi homologada visualmente numa sessão descartável Ubuntu 24.04/GNOME 46/Wayland.
+- APIs JavaScript do GNOME Shell, `Main.messageTray` e GVC são específicas da versão alvo; uma futura versão do Shell pode exigir adaptação.
+- O centro respeita a fonte autoritativa do GNOME: não cria armazenamento próprio e só mostra/descarta notificações ainda ativas.
+- O botão **Limpar tudo** chama o descarte suportado de cada notificação; aplicativos podem recriar notificações residentes.
+- Notificações são agrupadas quando a fonte fornece identidade de aplicativo; caso contrário, usam o título da fonte.
+- Somente redes Wi‑Fi conhecidas são conectadas diretamente. Autenticação nova, portal cativo e 802.1x ficam nas Configurações do GNOME.
+- A lista Bluetooth contém dispositivos pareados/confiáveis; pareamento novo fica nas Configurações.
+- Saídas de áudio dependem das sinks expostas por GVC/PulseAudio-PipeWire.
+- Snap Layouts não preenche automaticamente as demais regiões e respeita restrições de tamanho/compositor.
+- Pré-visualizações podem faltar para janelas minimizadas/desmapeadas.
+- O menu lista no máximo oito janelas e oito ações `.desktop` por aplicativo para permanecer utilizável.
+- A barra multi-monitor replica a lista de apps; não filtra por monitor.
+
+## Validação manual pendente
+
+Em Ubuntu 24.04 / GNOME Shell 46 / Wayland:
+
+1. Habilitar/desabilitar/recarregar a extensão repetidamente e procurar atores, timers ou sinais remanescentes.
+2. Alterar Wi‑Fi, Bluetooth, volume, saída, brilho, bateria e Não Perturbe dentro e fora do WinShell e confirmar sincronização.
+3. Testar falha/ausência de NetworkManager, BlueZ/gnome-bluetooth, UPower, GVC e brilho.
+4. Conferir calendário em locales com domingo e segunda como primeiro dia, virada de mês/ano e múltiplos monitores.
+5. Gerar, atualizar, ativar, dispensar e limpar notificações normais, residentes e com ações.
+6. Exercitar menus em janelas não minimizáveis, não maximizáveis, fullscreen, Wayland nativo e XWayland.
+7. Revalidar Start, Snap Layouts, previews, painel superior e hotplug de monitores.
+
+## Estrutura
 
 ```text
-winshell-for-gnome/
-├── extension.js
-├── prefs.js
-├── metadata.json
-├── stylesheet.css
-├── modules/
-│   ├── apps.js
-│   ├── contextMenu.js
-│   ├── layoutGeometry.mjs       # NOVO: geometria pura de layouts
-│   ├── multiMonitor.js
-│   ├── notificationCenter.js
-│   ├── popup.js
-│   ├── quickSettings.js
-│   ├── snapLayouts.js           # ATUALIZADO: grade gráfica interativa
-│   ├── startMenu.js
-│   ├── systemActions.js
-│   ├── taskbar.js
-│   └── windowPreview.js
-├── schemas/
-│   └── org.gnome.shell.extensions.winshell.gschema.xml
-├── scripts/
-│   ├── doctor.sh
-│   ├── install.sh
-│   └── uninstall.sh
-└── tests/
-    ├── check.sh
-    └── layouts.test.mjs         # NOVO: testes de geometria
+extension.js / prefs.js
+modules/
+  apps.js, startMenu.js, taskbar.js, multiMonitor.js
+  quickSettings.js, systemControls.js, quickSettingsModel.mjs
+  calendar.js, calendarModel.mjs
+  notificationCenter.js, notificationModel.mjs
+  contextMenu.js, windowActions.mjs
+  popup.js, systemActions.js, windowPreview.js
+  snapLayouts.js, layoutGeometry.mjs
+schemas/  scripts/  tests/  docs/
 ```
 
-## Segurança e licença
-
-Não exige `sudo` para instalação no diretório do usuário; utiliza APIs locais do GNOME Shell. Código-fonte sob licença MIT (`LICENSE`). Antes de divulgar como versão estável, valide os recursos em uma sessão GNOME Shell 46 real.
-
-## Próximos passos
-
-Testes de integração reais no GNOME 46/Wayland, ajuste das interações com popups e menus, acessibilidade, navegação por teclado e possível expansão para preenchimento de layouts com múltiplas janelas.
+Licença MIT. Consulte [LICENSE](LICENSE).
