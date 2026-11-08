@@ -2,13 +2,33 @@ import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import St from 'gi://St';
 import {WinShellCalendar} from './calendar.js';
-import {groupNotifications} from './notificationModel.mjs';
+import {groupNotifications, notificationCapabilities} from './notificationModel.mjs';
 import {PopupSurface} from './popup.js';
-import {messageSources, messageTray} from './shellCompat.js';
+import {messageSources, messageSourcesSupported, messageTray} from './shellCompat.js';
 
 function safeDisconnect(object, id) {
     if (!object || !id) return;
     try { object.disconnect(id); } catch (_error) { /* Source may already be disposed. */ }
+}
+
+function safeConnect(object, signal, callback) {
+    if (!object?.connect) return 0;
+    try {
+        return object.connect(signal, callback);
+    } catch (error) {
+        console.debug(`[WinShell] Sinal de notificação indisponível (${signal}): ${error.message}`);
+        return 0;
+    }
+}
+
+function safeInvoke(label, callback) {
+    try {
+        callback();
+        return true;
+    } catch (error) {
+        console.warn(`[WinShell] Falha ao ${label}: ${error.message}`);
+        return false;
+    }
 }
 
 export class NotificationCenter extends PopupSurface {
@@ -20,10 +40,11 @@ export class NotificationCenter extends PopupSurface {
         this._notificationSignals = new Map();
         this._renderId = 0;
         this._tray = messageTray();
+        this._sourceApiAvailable = messageSourcesSupported();
         this._traySignals = [
-            this._tray.connect('source-added', () => this._syncSources()),
-            this._tray.connect('source-removed', () => this._syncSources()),
-        ];
+            safeConnect(this._tray, 'source-added', () => this._syncSources()),
+            safeConnect(this._tray, 'source-removed', () => this._syncSources()),
+        ].filter(Boolean);
         this._state = systemControls.getState();
         this._unsubscribe = systemControls.subscribe(state => {
             this._state = state;
@@ -56,12 +77,15 @@ export class NotificationCenter extends PopupSurface {
         for (const source of current) {
             if (this._sourceSignals.has(source)) continue;
             const ids = [];
-            for (const signal of ['notification-added', 'notification-removed'])
-                ids.push(source.connect(signal, () => this._scheduleRender()));
-            ids.push(source.connect('destroy', () => {
+            for (const signal of ['notification-added', 'notification-removed']) {
+                const id = safeConnect(source, signal, () => this._scheduleRender());
+                if (id) ids.push(id);
+            }
+            const destroyId = safeConnect(source, 'destroy', () => {
                 this._sourceSignals.delete(source);
                 this._scheduleRender();
-            }));
+            });
+            if (destroyId) ids.push(destroyId);
             this._sourceSignals.set(source, ids);
         }
         this._syncNotifications();
@@ -74,21 +98,18 @@ export class NotificationCenter extends PopupSurface {
             for (const notification of source.notifications ?? []) current.add(notification);
         for (const notification of current) {
             if (this._notificationSignals.has(notification)) continue;
-            const ids = [
-                notification.connect('notify', () => {
+            const ids = [];
+            for (const signal of ['notify', 'action-added', 'action-removed']) {
+                const id = safeConnect(notification, signal, () => {
                     this._queueRender();
-                }),
-                notification.connect('action-added', () => {
-                    this._queueRender();
-                }),
-                notification.connect('action-removed', () => {
-                    this._queueRender();
-                }),
-                notification.connect('destroy', () => {
-                    this._notificationSignals.delete(notification);
-                    this._queueRender();
-                }),
-            ];
+                });
+                if (id) ids.push(id);
+            }
+            const destroyId = safeConnect(notification, 'destroy', () => {
+                this._notificationSignals.delete(notification);
+                this._queueRender();
+            });
+            if (destroyId) ids.push(destroyId);
             this._notificationSignals.set(notification, ids);
         }
         for (const [notification, ids] of this._notificationSignals) {
@@ -135,6 +156,7 @@ export class NotificationCenter extends PopupSurface {
     }
 
     _notificationCard(item) {
+        const capabilities = notificationCapabilities(item.notification);
         const card = new St.BoxLayout({vertical: true, style_class: 'winshell-notification-card'});
         const top = new St.BoxLayout({style_class: 'winshell-notification-top'});
         top.add_child(new St.Label({text: item.title, style_class: 'winshell-notification-title',
@@ -142,12 +164,15 @@ export class NotificationCenter extends PopupSurface {
         top.add_child(new St.Label({text: this._timestamp(item), style_class: 'winshell-notification-time',
             y_align: Clutter.ActorAlign.CENTER}));
         const dismiss = new St.Button({style_class: 'winshell-mini-action', icon_name: 'window-close-symbolic',
-            can_focus: true, accessible_name: 'Dispensar notificação'});
-        dismiss.connect('clicked', () => item.notification.destroy());
+            can_focus: capabilities.canDismiss, reactive: capabilities.canDismiss,
+            accessible_name: capabilities.canDismiss ? 'Dispensar notificação' : 'Dispensa indisponível'});
+        if (capabilities.canDismiss)
+            dismiss.connect('clicked', () => safeInvoke('dispensar notificação',
+                () => item.notification.destroy()));
         top.add_child(dismiss);
         card.add_child(top);
-        const content = new St.Button({style_class: 'winshell-notification-content', can_focus: true,
-            x_expand: true});
+        const content = new St.Button({style_class: 'winshell-notification-content',
+            can_focus: capabilities.canActivate, reactive: capabilities.canActivate, x_expand: true});
         const body = new St.BoxLayout({vertical: true});
         if (item.body) {
             const bodyLabel = new St.Label({text: item.body, style_class: 'winshell-notification-body',
@@ -155,19 +180,23 @@ export class NotificationCenter extends PopupSurface {
             bodyLabel.clutter_text.line_wrap = true;
             body.add_child(bodyLabel);
         }
-        body.add_child(new St.Label({text: 'Abrir', style_class: 'winshell-notification-open'}));
+        if (capabilities.canActivate)
+            body.add_child(new St.Label({text: 'Abrir', style_class: 'winshell-notification-open'}));
         content.set_child(body);
-        content.connect('clicked', () => {
-            this.hide();
-            item.notification.activate();
-        });
+        if (capabilities.canActivate) {
+            content.connect('clicked', () => {
+                if (safeInvoke('ativar notificação', () => item.notification.activate()))
+                    this.hide();
+            });
+        }
         card.add_child(content);
-        if (item.notification.actions?.length) {
+        if (capabilities.actions.length) {
             const actions = new St.BoxLayout({style_class: 'winshell-notification-actions'});
-            for (const action of item.notification.actions.slice(0, 3)) {
+            for (const action of capabilities.actions.slice(0, 3)) {
                 const button = new St.Button({label: action.label, style_class: 'winshell-footer-button',
                     can_focus: true, x_expand: true});
-                button.connect('clicked', () => action.activate());
+                button.connect('clicked', () => safeInvoke('executar ação de notificação',
+                    () => action.activate()));
                 actions.add_child(button);
             }
             card.add_child(actions);
@@ -176,7 +205,8 @@ export class NotificationCenter extends PopupSurface {
     }
 
     _clearAll() {
-        const notifications = this._notifications().map(item => item.notification);
+        const notifications = this._notifications().map(item => item.notification)
+            .filter(notification => notificationCapabilities(notification).canDismiss);
         for (const notification of notifications) {
             try { notification.destroy(); } catch (error) {
                 console.debug(`[WinShell] Notificação não pôde ser dispensada: ${error.message}`);
@@ -207,8 +237,10 @@ export class NotificationCenter extends PopupSurface {
         notificationHeader.add_child(new St.Label({text: 'Atividade recente',
             style_class: 'winshell-section-title', x_expand: true}));
         const allItems = this._notifications();
+        const canClear = allItems.some(item =>
+            notificationCapabilities(item.notification).canDismiss);
         const clear = new St.Button({label: 'Limpar tudo', style_class: 'winshell-footer-button',
-            can_focus: true, reactive: allItems.length > 0});
+            can_focus: canClear, reactive: canClear});
         clear.connect('clicked', () => this._clearAll());
         notificationHeader.add_child(clear);
         this.actor.add_child(notificationHeader);
@@ -234,7 +266,8 @@ export class NotificationCenter extends PopupSurface {
         if (!groups.length) {
             const empty = new St.BoxLayout({vertical: true, style_class: 'winshell-notification-empty'});
             empty.add_child(new St.Icon({icon_name: 'no-notifications-symbolic', icon_size: 36}));
-            empty.add_child(new St.Label({text: 'Nenhuma notificação'}));
+            empty.add_child(new St.Label({text: this._sourceApiAvailable ? 'Nenhuma notificação' :
+                'Notificações indisponíveis nesta versão do GNOME'}));
             list.add_child(empty);
         }
     }

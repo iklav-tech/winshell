@@ -38,7 +38,11 @@ Clique no relógio/sino abre o centro WinShell. O calendário calcula 42 célula
 
 ## UC-10 — Notificações
 
-O centro acompanha sources e notification-added/removed/notify/destroy. Agrupa e ordena, ativa a notificação ou uma action, descarta individualmente e limpa itens ativos. Não Perturbe altera `show-banners`, mas não apaga itens.
+O centro acompanha sources e notification-added/removed/notify/destroy quando
+esses sinais internos existem. Agrupa e ordena, ativa a notificação ou uma
+action e descarta itens somente quando os callbacks reais estão disponíveis.
+Ausência da API de sources produz estado indisponível explícito. Não Perturbe
+altera `show-banners`, mas não apaga itens.
 
 ## UC-11 — Preferências
 

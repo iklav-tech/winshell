@@ -19,12 +19,15 @@
 - **RN-15 — capacidade real:** controles e ações de janela ausentes, bloqueados por hardware ou não suportados não ficam acionáveis.
 - **RN-16 — notificações autoritativas:** WinShell não persiste cópia; ativação e descarte chamam a API da notificação do Shell.
 - **RN-17 — sincronização externa:** serviços, GSettings, fontes/notificações e janelas emitem sinais que atualizam a projeção WinShell.
-- **RN-18 — versão:** release v0.5.3 usa `metadata.version=10` e `version-name=0.5.3`.
+- **RN-18 — versão:** release v0.5.4 usa `metadata.version=11` e `version-name=0.5.4`.
 - **RN-19 — consentimento visual:** nenhuma aparência global é alterada antes de Aplicar; sincronização de color scheme/GTK requer opção explícita.
 - **RN-20 — backup:** o primeiro valor observado de cada chave alterada é preservado no backup v1 e não é substituído por reaplicações.
 - **RN-21 — conflito externo:** valores atuais diferentes do original e do último aplicado interrompem apply/restore sem confirmação forçada.
 - **RN-22 — integrações:** DING e Nautilus são opcionais, detectados e nunca substituídos/reimplementados dentro do Shell.
 - **RN-23 — assets:** ícones e wallpapers distribuídos são originais CC0; fallbacks pertencem aos temas herdados.
+- **RN-24 — capacidade de notificação:** abrir, dispensar, executar ações e
+  limpar só ficam interativos quando o objeto do Shell expõe o callback real;
+  ausência da API de sources é mostrada como indisponibilidade, não lista vazia.
 - **RN-19 — conflito automático:** somente Ubuntu Dock, Dash to Dock e Dash to Panel ativos e mutáveis são desativados pela API pública do Shell.
 - **RN-20 — restauração:** somente UUIDs que o WinShell registrou em `managed-taskbar-extensions` são reabilitados em disable real ou saída do modo Automático.
 - **RN-21 — fallback seguro:** Warn Only apenas notifica; Disabled não detecta nem altera; extensão bloqueada por política administrativa recebe aviso em vez de manipulação de atores.

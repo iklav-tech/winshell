@@ -4,7 +4,7 @@
 |---|---|
 | `extension.js` | enable/disable e painel superior |
 | `prefs.js` | preferências GTK/Libadwaita |
-| `metadata.json` | UUID, Shell 46, versão inteira 10 / 0.5.3 |
+| `metadata.json` | UUID, Shell 46, versão inteira 11 / 0.5.4 |
 | `stylesheet.css` | barra, flyouts, claro/escuro |
 | `modules/taskbar.js` | composição e eventos da barra |
 | `modules/multiMonitor.js` | topologia e controles compartilhados |
@@ -29,7 +29,7 @@
 | `schemas/` | valores legados, visuais e registros internos persistentes |
 | `tests/` | estrutura, assets, sintaxe, schema e suítes unitárias/isoladas |
 | `scripts/` | geração, instalação, restauração, remoção e diagnóstico |
-| `docs/` | referência alinhada à v0.5.3 e evidência em `verification/` |
+| `docs/` | referência alinhada à v0.5.4 e evidência em `verification/` |
 
 ## Dependências de runtime
 

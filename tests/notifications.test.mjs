@@ -1,8 +1,24 @@
 import assert from 'node:assert/strict';
-import {groupNotifications, notificationTimestamp, plainText} from '../modules/notificationModel.mjs';
+import {groupNotifications, notificationCapabilities, notificationTimestamp,
+    plainText} from '../modules/notificationModel.mjs';
 
 assert.equal(plainText('<b>Hello</b>   world'), 'Hello world');
 assert.equal(notificationTimestamp({to_unix: () => 123}), 123000);
+
+const activate = () => {};
+const destroy = () => {};
+const validAction = {label: 'Responder', activate};
+assert.deepEqual(notificationCapabilities({activate, destroy,
+    actions: [validAction, {label: 'Sem callback'}]}), {
+    canActivate: true,
+    canDismiss: true,
+    actions: [validAction],
+});
+assert.deepEqual(notificationCapabilities({actions: null}), {
+    canActivate: false,
+    canDismiss: false,
+    actions: [],
+});
 
 const initial = groupNotifications([
     {appId: 'mail', appName: 'Mail', title: 'Old', body: '<i>one</i>', timestamp: 100},

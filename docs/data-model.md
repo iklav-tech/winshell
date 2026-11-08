@@ -59,7 +59,10 @@ O backup só contém `org.gnome.desktop.interface`, `org.gnome.desktop.backgroun
 
 ## Notificações
 
-Cada projeção retém referência à `source` e `notification`, app ID/nome, título, corpo sanitizado e timestamp. `notificationModel.mjs` ordena globalmente e agrupa; nenhuma informação é escrita em arquivo ou banco.
+Cada projeção retém referência à `source` e `notification`, app ID/nome, título,
+corpo sanitizado, timestamp e capacidades reais de ativação/dispensa/ações.
+`notificationModel.mjs` ordena globalmente, agrupa e filtra callbacks ausentes;
+nenhuma informação é escrita em arquivo ou banco.
 
 ## Apps, janelas e layouts
 

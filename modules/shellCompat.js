@@ -27,7 +27,11 @@ export function messageTray() {
 }
 
 export function messageSources() {
-    return Main.messageTray.getSources?.() ?? [];
+    return Main.messageTray?.getSources?.() ?? [];
+}
+
+export function messageSourcesSupported() {
+    return typeof Main.messageTray?.getSources === 'function';
 }
 
 export function mixerControl() {

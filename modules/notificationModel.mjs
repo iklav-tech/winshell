@@ -13,6 +13,21 @@ export function notificationTimestamp(value) {
     return 0;
 }
 
+export function notificationCapabilities(notification = {}) {
+    let actions = [];
+    try {
+        actions = Array.from(notification.actions ?? [])
+            .filter(action => typeof action?.activate === 'function');
+    } catch (_error) {
+        // An internal Shell collection can become unavailable during teardown.
+    }
+    return {
+        canActivate: typeof notification.activate === 'function',
+        canDismiss: typeof notification.destroy === 'function',
+        actions,
+    };
+}
+
 export function groupNotifications(items, limit = Number.POSITIVE_INFINITY) {
     const groups = new Map();
     const normalized = items.map((item, index) => ({

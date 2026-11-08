@@ -1,4 +1,4 @@
-# WinShell for GNOME v0.5.3
+# WinShell for GNOME v0.5.4
 
 WinShell is an experimental Windows 11-inspired visual and interaction layer for
 **Ubuntu 24.04 LTS / GNOME Shell 46**. It adds a taskbar, Start menu, Quick
@@ -8,10 +8,17 @@ Mutter, Nautilus, NetworkManager or system libraries and is not affiliated with
 Microsoft or the GNOME Foundation.
 
 > **Pre-release status.** Static, unit, asset and isolated filesystem tests cover
-> v0.5.3. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
+> v0.5.4. Visual/runtime acceptance in a disposable GNOME 46 Wayland session is
 > still required; target compatibility is not a claim of completed certification.
 
-## What v0.5.3 provides
+## What v0.5.4 provides
+
+- A reconciled SPEC 0.2.0 system-panel baseline covering real Quick Settings
+  service actions, locale-aware calendar behavior, capable window/context
+  actions, MessageTray source synchronization and per-monitor popup placement.
+- Notification controls now detect activation, dismissal and action support;
+  unavailable internal MessageTray signals or source enumeration degrade to an
+  explicit non-actionable state instead of failing taskbar construction.
 
 - A reconciled SPEC 0.1.0 shell foundation: pure/tested Start search, pinned-app
   ordering and taskbar click decisions, plus a visible and accessible running
@@ -87,7 +94,7 @@ WinShell never installs packages or writes system-wide files itself.
 ## Install or upgrade
 
 ```bash
-unzip winshell-for-gnome-v0.5.3.zip
+unzip winshell-for-gnome-v0.5.4.zip
 cd winshell-for-gnome
 ./tests/check.sh
 ./scripts/install.sh
@@ -121,7 +128,7 @@ User-local installation paths:
 | Appearance backup | `$XDG_CONFIG_HOME/winshell/appearance-backup-v1.json` |
 
 Defaults are `~/.local/share` and `~/.config` when the XDG variables are unset.
-Metadata uses GNOME integer version **10** and `version-name` **0.5.3**.
+Metadata uses GNOME integer version **11** and `version-name` **0.5.4**.
 
 ## Appearance workflow
 
@@ -168,7 +175,9 @@ removed.
 - Five Snap Layout grids and previews with activate, close and arrange actions.
 - Real Wi-Fi, Bluetooth, audio, brightness, battery and Do Not Disturb controls,
   with unavailable services isolated instead of failing extension startup.
-- Locale-aware calendar and actionable notifications from `Main.messageTray`.
+- Locale-aware calendar and capability-gated notifications from
+  `Main.messageTray`, with explicit fallback when its internal source API is
+  unavailable.
 - Reversible conflict policy for Ubuntu Dock, Dash to Dock and Dash to Panel.
 
 ## Tests and development
@@ -220,7 +229,9 @@ node scripts/generate-visual-assets.mjs --check
 - WinShell does not enable DING or disable unknown desktop providers.
 - Snap Layouts do not automatically fill remaining regions, and previews can be
   absent for minimized/unmapped windows.
-- GNOME Shell, MessageTray and GVC JavaScript APIs are version-specific.
+- GNOME Shell, MessageTray and GVC JavaScript APIs are version-specific;
+  unsupported notification capabilities are disabled and must be validated
+  against the target Shell build.
 
 Manual validation should cover Light/Dark/system transitions; keyboard focus and
 screen scaling; apply, external edit, conflict and restore; wallpaper sync across
@@ -229,9 +240,10 @@ Wayland/XWayland windows; enable/disable loops; fullscreen, hotplug and v0.4.x
 settings migration.
 
 The release evidence and rollback checklist are in
-[`docs/verification/0.5.3.md`](docs/verification/0.5.3.md). Retrospective SPEC
-evidence is in [`docs/verification/v0.0.1.md`](docs/verification/v0.0.1.md) and
-[`docs/verification/v0.1.0.md`](docs/verification/v0.1.0.md).
+[`docs/verification/0.5.4.md`](docs/verification/0.5.4.md). Retrospective SPEC
+evidence is in [`docs/verification/v0.0.1.md`](docs/verification/v0.0.1.md),
+[`docs/verification/v0.1.0.md`](docs/verification/v0.1.0.md) and
+[`docs/verification/v0.2.0.md`](docs/verification/v0.2.0.md).
 
 ## Repository layout
 

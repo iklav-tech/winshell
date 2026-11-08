@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.5.4 — 2026-11-08
+
+### Added
+
+- Capability detection for notification activation, dismissal and action
+  callbacks, with pure tests for supported and unsupported projections.
+- A SPEC 0.2.0 contract covering real service actions, calendar navigation,
+  context actions, notification synchronization/fallbacks and cleanup.
+- Retrospective SPEC 0.2.0 evidence and a v0.5.4 verification checklist.
+
+### Changed
+
+- MessageTray/source/notification signal connections are now guarded so an
+  unavailable internal signal does not abort taskbar construction.
+- Notification actions and “Limpar tudo” are only interactive when the Shell
+  object exposes the corresponding operation; unavailable source enumeration is
+  represented explicitly instead of as an empty notification history.
+- Metadata integer version advanced from 10 to 11 with `version-name` 0.5.4;
+  README, installer, tests and technical documentation were synchronized.
+
+### Validation status
+
+- Static, unit, schema, asset and isolated XDG tests pass.
+- GNOME 46/Wayland and X11 runtime validation remains pending and is not claimed.
+
 ## v0.5.3 — 2026-11-08
 
 ### Added

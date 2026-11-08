@@ -53,7 +53,10 @@ flowchart TD
 - Áudio reutiliza o singleton GVC do próprio GNOME Shell; não abre uma segunda conexão de mixer.
 - Brilho e UPower são proxies D-Bus construídos de forma assíncrona.
 - Tema e Não Perturbe usam GSettings e recebem mudanças externas.
-- Notificações continuam sob autoridade de `Main.messageTray`; acesso a MessageTray e demais módulos JavaScript específicos da versão alvo passa por `shellCompat.js`.
+- Notificações continuam sob autoridade de `Main.messageTray`; acesso a
+  MessageTray e demais módulos JavaScript específicos da versão alvo passa por
+  `shellCompat.js`. Sinais e callbacks internos são detectados antes do uso e
+  degradam para estado não acionável quando ausentes.
 - Conflitos são identificados por `Main.extensionManager.lookup()` e alterados somente por `disableExtension()`/`enableExtension()`; atores de terceiros nunca são destruídos.
 - Light/Dark do Shell é uma classe no `uiGroup`, removida no disable; o runtime não escreve preferências globais.
 - O helper captura o valor original antes de cada primeira alteração, registra o último valor aplicado e recusa divergências externas sem `--force`.

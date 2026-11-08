@@ -3,7 +3,7 @@
 | ID | Severidade | Risco e mitigação atual |
 |---|---|---|
 | R-01 | alta | Sem teste de integração gráfico; suíte atual é estática/unitária e há checklist manual |
-| R-02 | alta | APIs JS do Shell/GVC/MessageTray são específicas do GNOME 46; metadata limita a versão e `shellCompat.js` concentra a superfície instável |
+| R-02 | alta | APIs JS do Shell/GVC/MessageTray são específicas do GNOME 46; metadata limita a versão, `shellCompat.js` concentra a superfície instável e notificações detectam sinais/callbacks opcionais |
 | R-03 | média | Cópias do pacote principal não são transacionais; dependências e versão do ambiente são validadas antes da primeira escrita, mas falha de I/O durante cópia ainda pode deixar artefato parcial |
 | R-04 | média | Uninstall remove recursivamente o destino; usuário deve conferir o caminho |
 | R-05 | baixa | Validação Snap existe na UI e executor; manter contratos alinhados |
@@ -55,6 +55,22 @@
 - A baseline histórica SPEC 0.0.1 ganhou contrato automatizado, evidência dedicada e guia de contribuição.
 - Dependências opcionais do Nautilus são validadas antes de qualquer escrita do instalador.
 - Metadata, instalador, README, changelog e documentação foram sincronizados sem rebaixar a release atual.
+
+## Melhorias da v0.5.3
+
+- Busca, ordenação de fixados, fixar/desafixar e decisão ativar/minimizar foram
+  extraídas para um modelo puro e ganharam contrato da SPEC 0.1.0.
+- O Start passou a identificar aplicativos em execução visualmente e por
+  acessibilidade.
+
+## Melhorias da v0.5.4
+
+- Conexões com sinais internos do MessageTray, sources e notifications agora
+  toleram ausência sem derrubar a construção da barra.
+- Abrir, dispensar, ações específicas e limpar são exibidos como interativos
+  somente quando o objeto autoritativo fornece o callback correspondente.
+- Ausência da enumeração de sources é diferenciada de uma lista realmente vazia.
+- A SPEC 0.2.0 ganhou contrato e evidência separados da homologação gráfica.
 
 ## Validação pendente
 
