@@ -31,7 +31,7 @@ export class Taskbar {
         this._context = new ContextMenu(settings);
         this._quick = new QuickSettingsPanel(panelController);
         this._snap = new SnapLayoutPanel();
-        this._preview = new WindowPreview(this._snap);
+        this._preview = new WindowPreview(this._snap, settings);
         this._notifications = new NotificationCenter(panelController);
         this._clockButton = this._iconButton('x-office-calendar-symbolic', 'Notificações e calendário',
             () => openNativeMenu('calendar', this._panelController));
@@ -61,7 +61,7 @@ export class Taskbar {
         });
         this._settingsSignals.push(settings.connect('changed', (_s, key) => {
             if (['panel-height', 'center-icons', 'show-clock', 'show-search',
-                'show-notifications', 'show-quick-settings', 'pinned-apps'].includes(key)) this._render();
+                'show-notifications', 'show-quick-settings', 'pinned-apps', 'window-previews', 'snap-layouts'].includes(key)) this._render();
         }));
         const appSystem = Shell.AppSystem.get_default();
         this._signals.push([appSystem, appSystem.connect('app-state-changed', () => this._renderApps())]);
@@ -92,6 +92,7 @@ export class Taskbar {
 
     _render() {
         this._position();
+        this._preview.cancelPending();
         this._left.destroy_all_children();
         this._center.destroy_all_children();
         this._start = this._iconButton('view-app-grid-symbolic', 'Iniciar', () => {
@@ -124,6 +125,7 @@ export class Taskbar {
 
     _renderApps() {
         if (!this._center || !this._start) return;
+        this._preview.cancelPending();
         for (const item of [...this._center.get_children()])
             if (item._winshellAppButton) item.destroy();
         const apps = [];
@@ -153,7 +155,8 @@ export class Taskbar {
                 if (event.get_button() !== Clutter.BUTTON_SECONDARY)
                     return Clutter.EVENT_PROPAGATE;
                 const [x, y] = this._anchor(button);
-                this._context.forApp(app, x, y, win => this._snap.forWindow(win, x, y));
+                this._context.forApp(app, x, y, this._settings.get_boolean('snap-layouts')
+                    ? win => this._snap.forWindow(win, x, y) : null);
                 return Clutter.EVENT_STOP;
             });
             if (this._settings.get_boolean('window-previews')) {

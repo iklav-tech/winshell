@@ -16,6 +16,7 @@ export default class WinShellPreferences extends ExtensionPreferences {
             ['show-notifications', 'Mostrar notificações', 'Atalho para o centro de notificações nativo'],
             ['show-quick-settings', 'Mostrar configurações rápidas', 'Painel WinShell e controles do GNOME'],
             ['multi-monitor', 'Barra em todos os monitores', 'Mostra uma barra em cada monitor conectado'],
+            ['snap-layouts', 'Snap Layouts gráficos', 'Organize janelas em modelos visuais pelo menu contextual e pré-visualizações'],
             ['window-previews', 'Pré-visualização de janelas', 'Miniaturas e ações ao passar o mouse'],
             ['show-activities-panel', 'Manter painel superior GNOME', 'Recomendado inicialmente para acessar os controles nativos'],
         ]) {

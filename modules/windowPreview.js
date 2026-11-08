@@ -5,9 +5,10 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {PopupSurface} from './popup.js';
 
 export class WindowPreview extends PopupSurface {
-    constructor(snapPanel) {
+    constructor(snapPanel, settings) {
         super('winshell-flyout winshell-preview', 342, 252);
         this._snapPanel = snapPanel;
+        this._settings = settings;
         this._pending = 0;
         this._activeButton = null;
     }
@@ -36,6 +37,7 @@ export class WindowPreview extends PopupSurface {
                 style_class: 'winshell-preview-title', x_expand: true, can_focus: true});
             title.connect('clicked', () => { this.hide(); win.activate(global.get_current_time()); });
             line.add_child(title);
+            if (this._settings.get_boolean('snap-layouts')) {
             const snap = new St.Button({style_class: 'winshell-mini-action', can_focus: true});
             snap.set_child(new St.Icon({icon_name: 'view-grid-symbolic', icon_size: 16}));
             snap.set_accessible_name('Organizar janela');
@@ -45,6 +47,7 @@ export class WindowPreview extends PopupSurface {
                 this._snapPanel.forWindow(win, x, bottomY);
             });
             line.add_child(snap);
+            }
             const close = new St.Button({style_class: 'winshell-mini-action', can_focus: true});
             close.set_child(new St.Icon({icon_name: 'window-close-symbolic', icon_size: 16}));
             close.set_accessible_name('Fechar janela');

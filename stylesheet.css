@@ -83,3 +83,16 @@
 .winshell-notification-heading { spacing: 8px; }
 .winshell-notification-card { padding: 10px; border-radius: 8px; background-color: #e2eaf6; spacing: 5px; }
 .winshell-notification-body { color: #3c4b60; font-size: 10pt; }
+
+/* v0.4.0 — interactive graphical layouts and polish */
+.winshell-snap-panel { padding: 14px; spacing: 6px; }
+.winshell-snap-subtitle { font-size: 9pt; color: #627188; padding-bottom: 4px; }
+.winshell-snap-scroll { padding: 0 2px; }
+.winshell-snap-list { spacing: 7px; }
+.winshell-snap-template { background-color: rgba(225,233,245,0.65); border-radius: 9px; padding: 7px 10px; spacing: 5px; }
+.winshell-snap-template-name { color: #32445e; font-size: 9pt; }
+.winshell-snap-canvas { background-color: rgba(255,255,255,0.70); border-radius: 7px; }
+.winshell-snap-region { background-color: #aac6e9; border: 1px solid #e5effb; border-radius: 5px; }
+.winshell-snap-region:hover, .winshell-snap-region:focus { background-color: #2678d9; border: 1px solid #1554a3; }
+.winshell-task-icon:focus { background-color: rgba(38,120,217,0.18); }
+.winshell-context-item:focus, .winshell-footer-button:focus { background-color: #cbdff7; }
