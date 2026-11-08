@@ -1,9 +1,11 @@
 {
   "uuid": "winshell@iklav-tech",
   "name": "WinShell for GNOME",
-  "description": "Barra inferior e menu de aplicativos com experiência inspirada no Windows 11, para GNOME Shell 46.",
-  "shell-version": ["46"],
+  "description": "Barra, menu Iniciar, busca, configurações rápidas e menus contextuais inspirados no Windows 11 para GNOME Shell 46.",
+  "shell-version": [
+    "46"
+  ],
   "settings-schema": "org.gnome.shell.extensions.winshell",
-  "version": 1,
+  "version": 2,
   "url": "https://github.com/iklav-tech"
 }

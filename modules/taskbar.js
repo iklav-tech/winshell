@@ -4,20 +4,19 @@ import St from 'gi://St';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {activateApp, appById, runningApps} from './apps.js';
+import {ContextMenu} from './contextMenu.js';
+import {QuickSettingsPanel} from './quickSettings.js';
+import {openNativeMenu} from './systemActions.js';
 
 export class Taskbar {
-    constructor(settings, menu) {
+    constructor(settings, menu, panelController) {
         this._settings = settings;
         this._menu = menu;
+        this._panelController = panelController;
         this._signals = [];
         this._settingsSignals = [];
-        this._timeout = 0;
-        this.actor = new St.BoxLayout({
-            style_class: 'winshell-taskbar',
-            reactive: true,
-            x_expand: true,
-            track_hover: true,
-        });
+        this.actor = new St.BoxLayout({style_class: 'winshell-taskbar', reactive: true,
+            x_expand: true, track_hover: true});
         this._left = new St.BoxLayout({style_class: 'winshell-taskbar-left'});
         this._center = new St.BoxLayout({style_class: 'winshell-taskbar-center'});
         this._right = new St.BoxLayout({style_class: 'winshell-taskbar-right'});
@@ -25,17 +24,34 @@ export class Taskbar {
         this.actor.add_child(this._center);
         this.actor.add_child(this._right);
         Main.layoutManager.addChrome(this.actor, {affectsStruts: true, trackFullscreen: true});
-        this._clockButton = new St.Button({style_class: 'winshell-clock-button', can_focus: true});
+        this._context = new ContextMenu(settings);
+        this._quick = new QuickSettingsPanel(panelController);
+        this._clockButton = this._iconButton('x-office-calendar-symbolic', 'Notificações e calendário',
+            () => openNativeMenu('calendar', this._panelController));
         this._clock = new St.Label({style_class: 'winshell-clock', y_align: Clutter.ActorAlign.CENTER});
         this._clockButton.set_child(this._clock);
-        this._clockButton.connect('clicked', () => {
-            // Mantém o calendário/notificações nativos como fonte de verdade.
-            Main.panel.statusArea.dateMenu?.menu.toggle();
+        this._quickButton = this._iconButton('emblem-system-symbolic', 'Configurações rápidas', () => {
+            const [x, y] = this._anchor(this._quickButton);
+            this._quick.toggle(x, y);
         });
+        this._notificationButton = this._iconButton('preferences-system-notifications-symbolic',
+            'Centro de notificações', () => openNativeMenu('calendar', this._panelController));
+        this._right.add_child(this._notificationButton);
+        this._right.add_child(this._quickButton);
         this._right.add_child(this._clockButton);
+        this.actor.connect('button-press-event', (_actor, event) => {
+            if (event.get_button() !== Clutter.BUTTON_SECONDARY) return Clutter.EVENT_PROPAGATE;
+            const source = event.get_source();
+            if (source === this.actor || source === this._left || source === this._center) {
+                const [x, y] = event.get_coords();
+                this._context.forTaskbar(x, y);
+                return Clutter.EVENT_STOP;
+            }
+            return Clutter.EVENT_PROPAGATE;
+        });
         this._settingsSignals.push(settings.connect('changed', (_s, key) => {
-            if (['panel-height', 'center-icons', 'show-clock', 'show-search', 'pinned-apps'].includes(key))
-                this._render();
+            if (['panel-height', 'center-icons', 'show-clock', 'show-search',
+                'show-notifications', 'show-quick-settings', 'pinned-apps'].includes(key)) this._render();
         }));
         const appSystem = Shell.AppSystem.get_default();
         this._signals.push([appSystem, appSystem.connect('app-state-changed', () => this._renderApps())]);
@@ -48,30 +64,42 @@ export class Taskbar {
         this._render();
     }
 
+    _anchor(button) {
+        const [x] = button.get_transformed_position();
+        const [w] = button.get_transformed_size();
+        const monitor = Main.layoutManager.primaryMonitor;
+        return [x + w / 2, monitor.y + monitor.height - this._settings.get_int('panel-height')];
+    }
+
+    _iconButton(iconName, name, callback) {
+        const button = new St.Button({style_class: 'winshell-task-icon', can_focus: true,
+            reactive: true, track_hover: true});
+        button.set_child(new St.Icon({icon_name: iconName, icon_size: 22}));
+        button.set_accessible_name(name);
+        button.connect('clicked', callback);
+        return button;
+    }
+
     _render() {
         this._position();
         this._left.destroy_all_children();
         this._center.destroy_all_children();
         this._start = this._iconButton('view-app-grid-symbolic', 'Iniciar', () => {
-            const [x] = this._start.get_transformed_position();
-            const [width] = this._start.get_transformed_size();
-            const monitor = Main.layoutManager.primaryMonitor;
-            this._menu.toggle(x + width / 2, monitor.y + monitor.height - this._settings.get_int('panel-height'));
+            const [x, y] = this._anchor(this._start);
+            this._menu.toggle(x, y);
         });
         this._center.add_child(this._start);
         if (this._settings.get_boolean('show-search'))
             this._center.add_child(this._iconButton('system-search-symbolic', 'Pesquisar', () => {
-                const [x] = this._start.get_transformed_position();
-                const [w] = this._start.get_transformed_size();
-                const m = Main.layoutManager.primaryMonitor;
-                this._menu.show(x + w / 2, m.y + m.height - this._settings.get_int('panel-height'));
+                const [x, y] = this._anchor(this._start);
+                this._menu.focusSearch(x, y);
             }));
         this._clockButton.visible = this._settings.get_boolean('show-clock');
+        this._notificationButton.visible = this._settings.get_boolean('show-notifications');
+        this._quickButton.visible = this._settings.get_boolean('show-quick-settings');
         this._center.x_expand = true;
         this._center.x_align = this._settings.get_boolean('center-icons')
             ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
-        this._left.x_expand = false;
-        this._right.x_expand = false;
         this._renderApps();
         this._updateClock();
     }
@@ -84,52 +112,45 @@ export class Taskbar {
         this.actor.set_size(monitor.width, height);
     }
 
-    _iconButton(iconName, tooltip, callback) {
-        const button = new St.Button({style_class: 'winshell-task-icon', can_focus: true, reactive: true, track_hover: true});
-        button.set_child(new St.Icon({icon_name: iconName, icon_size: 24}));
-        button.set_accessible_name(tooltip);
-        button.connect('clicked', callback);
-        return button;
-    }
-
     _renderApps() {
         if (!this._center || !this._start) return;
-        // Preserva Iniciar/Pesquisa; remove apenas os ícones gerados de aplicativos.
-        for (const item of [...this._center.get_children()]) {
+        for (const item of [...this._center.get_children()])
             if (item._winshellAppButton) item.destroy();
-        }
-        const ordered = [];
+        const apps = [];
         const seen = new Set();
         for (const id of this._settings.get_strv('pinned-apps')) {
             const app = appById(id);
-            if (app && !seen.has(app.get_id())) { ordered.push(app); seen.add(app.get_id()); }
+            if (app && !seen.has(app.get_id())) { apps.push(app); seen.add(app.get_id()); }
         }
         for (const app of runningApps()) {
-            if (!seen.has(app.get_id())) { ordered.push(app); seen.add(app.get_id()); }
+            if (!seen.has(app.get_id())) { apps.push(app); seen.add(app.get_id()); }
         }
         const focused = global.display.focus_window;
-        for (const app of ordered) {
+        for (const app of apps) {
             const windows = app.get_windows();
             const active = focused && windows.includes(focused);
-            const button = new St.Button({
-                style_class: `winshell-task-icon ${windows.length ? 'winshell-running' : ''} ${active ? 'winshell-active' : ''}`,
-                can_focus: true,
-            });
+            const button = new St.Button({style_class: `winshell-task-icon ${windows.length ? 'winshell-running' : ''} ${active ? 'winshell-active' : ''}`,
+                can_focus: true, reactive: true});
             button._winshellAppButton = true;
             button.set_child(app.create_icon_texture(26));
             button.set_accessible_name(app.get_name());
             button.connect('clicked', () => {
-                if (focused && windows.includes(focused) && !focused.minimized)
-                    focused.minimize();
-                else
-                    activateApp(app);
+                if (global.display.focus_window && windows.includes(global.display.focus_window) &&
+                    !global.display.focus_window.minimized) global.display.focus_window.minimize();
+                else activateApp(app);
+            });
+            button.connect('button-press-event', (_actor, event) => {
+                if (event.get_button() !== Clutter.BUTTON_SECONDARY)
+                    return Clutter.EVENT_PROPAGATE;
+                const [x, y] = this._anchor(button);
+                this._context.forApp(app, x, y);
+                return Clutter.EVENT_STOP;
             });
             this._center.add_child(button);
         }
     }
 
     _updateClock() {
-        if (!this._clock) return;
         const now = GLib.DateTime.new_now_local();
         this._clock.set_text(`${now.format('%H:%M')}\n${now.format('%d/%m/%Y')}`);
     }
@@ -138,6 +159,8 @@ export class Taskbar {
         if (this._timeout) GLib.Source.remove(this._timeout);
         for (const [object, id] of this._signals) object.disconnect(id);
         for (const id of this._settingsSignals) this._settings.disconnect(id);
+        this._context.destroy();
+        this._quick.destroy();
         this.actor.destroy();
         this._settings = null;
     }

@@ -13,6 +13,8 @@ export default class WinShellPreferences extends ExtensionPreferences {
             ['center-icons', 'Centralizar ícones', 'Estilo Windows 11'],
             ['show-search', 'Mostrar pesquisa', 'Atalho de pesquisa ao lado do Iniciar'],
             ['show-clock', 'Mostrar relógio', 'Data e hora na área direita'],
+            ['show-notifications', 'Mostrar notificações', 'Atalho para o centro de notificações nativo'],
+            ['show-quick-settings', 'Mostrar configurações rápidas', 'Painel WinShell e controles do GNOME'],
             ['show-activities-panel', 'Manter painel superior GNOME', 'Recomendado inicialmente para acessar os controles nativos'],
         ]) {
             const row = new Adw.SwitchRow({title, subtitle});
